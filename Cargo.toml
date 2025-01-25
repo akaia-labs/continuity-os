@@ -1,0 +1,9 @@
+[package]
+name = "avatar-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.95"
+mistralrs = { git = "https://github.com/EricLBuehler/mistral.rs.git" }
+reqwest = "0.12.12"

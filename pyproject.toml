@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "akaia-avatar-rs"
+version = "12025.0.1"
+# dynamic = ["version"]
+
+dependencies = [
+	"mistralrs"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["python/src"]
