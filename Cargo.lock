@@ -16,6 +16,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "akaia-labs_crowd-server"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "spacetimedb",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -439,14 +447,6 @@ name = "smallvec"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8917285742e9f3e1683f0a9c4e6b57960b7314d0b08d30d1ecd426713ee2eee9"
-
-[[package]]
-name = "spacetime-module"
-version = "0.1.0"
-dependencies = [
- "log",
- "spacetimedb",
-]
 
 [[package]]
 name = "spacetimedb"
