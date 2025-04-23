@@ -1,9 +1,6 @@
-[package]
-name = "avatar-rs"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["server"]
+resolver = "3"
 
-[dependencies]
-anyhow = "1.0.95"
-mistralrs = { git = "https://github.com/EricLBuehler/mistral.rs.git" }
-reqwest = "0.12.12"
+[workspace.dependencies]
+# wasm-opt = "0.116.1"
