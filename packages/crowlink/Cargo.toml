@@ -1,0 +1,18 @@
+[package]
+name = "akaia-labs_crowlink"
+description = "Akaia Labs crow.d client library"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "crowlink"
+path = "src/lib.rs"
+
+# Subject to be extracted into a separate package, resides here for the initial prototyping
+[[bin]]
+name = "crowchat"
+path = "src/main.rs"
+
+[dependencies]
+spacetimedb-sdk.workspace = true
+hex.workspace = true

@@ -1,6 +1,10 @@
 [workspace]
-members = ["server"]
+members = ["packages/crowlink", "packages/crownest"]
 resolver = "3"
 
 [workspace.dependencies]
+hex = "0.4"
+log = "0.4"
+spacetimedb = "1.1.0"
+spacetimedb-sdk = "1.0"
 # wasm-opt = "0.116.1"

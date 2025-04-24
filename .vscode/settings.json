@@ -1,9 +1,18 @@
 {
 	"cSpell.words": [
 		"cdylib",
+		"codegen",
+		"creds",
+		"crowchat",
+		"crowlink",
+		"crownest",
+		"crowtocall",
 		"dbcall",
 		"dblogs",
+		"devserver",
+		"libcrowd",
 		"mistralrs",
+		"protocrow",
 		"reqwest",
 		"rustowl",
 		"spacetimedb",

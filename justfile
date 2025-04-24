@@ -13,3 +13,15 @@ local-dbcall:
 
 local-dblogs:
 	(spacetime logs -s localhost crowd)
+
+generate-module_bindings:
+	spacetime generate --lang rust \
+		--project-path packages/crownest \
+		--out-dir packages/crowlink/src/common/clients/crownest/_generated/module_bindings
+
+generate: generate-module_bindings
+	(echo "DONE.")
+
+crowlink-devserver:
+	(cd packages/crowlink)
+	(cargo run)
