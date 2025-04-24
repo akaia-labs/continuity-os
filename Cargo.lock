@@ -1519,6 +1519,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "telecrow-rs"
+version = "0.1.0"
+dependencies = [
+ "crowlink-rs",
+ "hex",
+ "spacetimedb-sdk",
+]
+
+[[package]]
 name = "tempfile"
 version = "3.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

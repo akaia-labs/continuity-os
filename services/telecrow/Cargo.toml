@@ -1,21 +1,20 @@
 [package]
-name = "crowlink-rs"
-description = "Akaia Labs crow.d Rust client library"
+name = "telecrow-rs"
+description = "Akaia Labs crow.d Rust telegram bridge"
 version = "0.1.0"
 edition = "2024"
 
 
-[lib]
-name = "crowlink"
-path = "src/lib.rs"
-
-
 # Subject to be extracted into a separate package, resides here for the initial prototyping
 [[bin]]
-name = "crowchat"
+name = "telecrow"
 path = "src/main.rs"
 
 
 [dependencies]
+# crow.d
+crowlink-rs.workspace = true
+
+# External packages
 spacetimedb-sdk.workspace = true
 hex.workspace = true

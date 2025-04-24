@@ -1,5 +1,5 @@
 [workspace]
-members = ["modules/crownest", "packages/crowlink-rs"]
+members = ["modules/crownest", "packages/crowlink-rs", "services/telecrow"]
 resolver = "3"
 
 
@@ -16,7 +16,7 @@ overflow-checks = true
 
 
 [workspace.dependencies]
-# Akaia Labs
+# crow.d
 crowlink-rs = { path = "packages/crowlink-rs" }
 
 # External packages
