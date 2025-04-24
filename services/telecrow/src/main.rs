@@ -2,7 +2,6 @@ mod common;
 pub mod entities;
 
 use crowlink::clients::crownest::{self, *};
-use log::log;
 use spacetimedb_sdk::{DbContext, Error, Table, TableWithPrimaryKey};
 
 use common::clients::{
@@ -89,7 +88,7 @@ fn telegram_bot_pipeline(ctx: &crownest::DbConnection) {
 
 async fn process_text_message(
 	bot: telegram_bot_client::Bot, tg_user: telegram_bot_client::User, message_text: String,
-) -> Result<(), Error> {
+) -> Result<(), TelecrowError> {
 	log::info!(
 		"@{:#?}: {}",
 		tg_user.username.clone().unwrap_or(tg_user.id.to_string()),
@@ -105,14 +104,17 @@ async fn process_text_message(
 	   - User is provided by the (1)
 	   - String is provided by the (2)
 	*/
-	let _ = bot.send_message(
-		tg_user.id,
-		format!(
-			"@{:#?}: {}",
-			tg_user.username.unwrap_or(tg_user.id.to_string()),
-			message_text
-		),
-	);
+	let _message = bot
+		.send_message(
+			tg_user.id,
+			format!(
+				"@{:#?}: {}",
+				tg_user.username.unwrap_or(tg_user.id.to_string()),
+				message_text
+			),
+		)
+		.await
+		.unwrap();
 
 	Ok(())
 }
