@@ -2,7 +2,7 @@
 name = "crowlink-rs"
 description = "Akaia Labs crow.d Rust client library"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [lib]
 name = "crowlink"

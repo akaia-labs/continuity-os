@@ -6,7 +6,7 @@ setup:
 	(cargo install wasm-opt)
 
 local-publish:
-	(spacetime publish -s localhost --project-path server crowd)
+	(spacetime publish -s localhost --project-path modules/crownest crowd)
 
 local-dbcall:
 	(spacetime call -s localhost crowd)
