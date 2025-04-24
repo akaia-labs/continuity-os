@@ -26,4 +26,7 @@ crowchat-dev:
 	(cd packages/crowlink-rs && cargo run)
 
 telecrow-dev:
+	(cd services/telecrow && cargo run)
+
+telecrow-inspect:
 	(cd services/telecrow && RUST_LOG=trace cargo run)

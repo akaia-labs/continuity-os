@@ -18,13 +18,13 @@ pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 */
 
 /// Sorts all past messages and print them in timestamp order.
-fn on_sub_applied(ctx: &crownest::SubscriptionEventContext) {
-	let mut messages = ctx.db.message().iter().collect::<Vec<_>>();
+fn on_sub_applied(crowctx: &crownest::SubscriptionEventContext) {
+	let mut messages = crowctx.db.message().iter().collect::<Vec<_>>();
 
 	messages.sort_by_key(|m| m.sent);
 
 	for message in messages {
-		message_subscriptions::print_message(ctx, &message);
+		message_subscriptions::print_message(crowctx, &message);
 	}
 
 	println!("Fully connected and all subscriptions applied.");
@@ -32,16 +32,18 @@ fn on_sub_applied(ctx: &crownest::SubscriptionEventContext) {
 }
 
 /// Prints the error, then exits the process.
-fn on_sub_error(_ctx: &crownest::ErrorContext, err: Error) {
+fn on_sub_error(_crowctx: &crownest::ErrorContext, err: Error) {
 	eprintln!("Subscription failed: {}", err);
 	std::process::exit(1);
 }
 
 /// Registers subscriptions for all rows of both tables.
-fn subscribe_to_tables(ctx: &crownest::DbConnection) {
-	ctx.subscription_builder()
+fn subscribe_to_tables(crowctx: &crownest::DbConnection) {
+	crowctx
+		.subscription_builder()
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
+		// Subscribe to SQL queries in order to construct a local partial replica of the database.
 		.subscribe(["SELECT * FROM user", "SELECT * FROM message"]);
 }
 
@@ -50,44 +52,41 @@ fn subscribe_to_tables(ctx: &crownest::DbConnection) {
 */
 
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(ctx: &crownest::DbConnection) {
-	// When a new user joins, print a notification.
-	ctx.db
+fn register_callbacks(crowctx: &crownest::DbConnection, tg_bot: &telegram_bot_client::Bot) {
+	crowctx
+		.db
 		.user()
 		.on_insert(user_subscriptions::on_user_inserted);
 
-	// When a user's status changes, print a notification.
-	ctx.db.user().on_update(user_subscriptions::on_user_updated);
+	crowctx
+		.db
+		.user()
+		.on_update(user_subscriptions::on_user_updated);
 
-	// When a new message is received, print it.
-	ctx.db
+	crowctx
+		.db
 		.message()
-		.on_insert(message_subscriptions::on_message_inserted);
+		.on_insert(message_subscriptions::handle_telegram_forward(
+			tg_bot.clone(),
+		));
 
-	// When we fail to set our name, print a warning.
-	ctx.reducers.on_set_name(user_subscriptions::on_name_set);
+	crowctx
+		.reducers
+		.on_set_name(user_subscriptions::on_name_set);
 
-	// When we fail to send a message, print a warning.
-	ctx.reducers
+	crowctx
+		.reducers
 		.on_send_message(message_subscriptions::on_message_sent);
 }
 
-fn telegram_bot_pipeline(ctx: &crownest::DbConnection) {
-	// for line in std::io::stdin().lines() {
-	// 	let Ok(line) = line else {
-	// 		panic!("Failed to read from stdin.");
-	// 	};
-
-	// 	if let Some(name) = line.strip_prefix("/name ") {
-	// 		ctx.reducers.set_name(name.to_string()).unwrap();
-	// 	} else {
-	// 		ctx.reducers.send_message(line).unwrap();
-	// 	}
-	// }
+fn on_tg_text_message(crowctx: &crownest::DbConnection, tg_message: telegram_bot_client::Message) {
+	if let Some(text) = tg_message.text() {
+		crowctx.reducers.send_message(text.to_owned()).unwrap();
+	}
 }
 
 async fn process_text_message(
-	bot: telegram_bot_client::Bot, tg_user: telegram_bot_client::User, message_text: String,
+	_tg_bot: telegram_bot_client::Bot, tg_user: telegram_bot_client::User, message_text: String,
 ) -> Result<(), TelecrowError> {
 	log::info!(
 		"@{:#?}: {}",
@@ -95,26 +94,17 @@ async fn process_text_message(
 		message_text
 	);
 
-	/*
-	   The id of a chat with a user is the same as his telegram_id
-	   from the bot's perspective.
-
-	   Injected dependencies:
-	   - Bot is provided by the Dispatcher::dispatch
-	   - User is provided by the (1)
-	   - String is provided by the (2)
-	*/
-	let _message = bot
-		.send_message(
-			tg_user.id,
-			format!(
-				"@{:#?}: {}",
-				tg_user.username.unwrap_or(tg_user.id.to_string()),
-				message_text
-			),
-		)
-		.await
-		.unwrap();
+	// let _message = tg_bot
+	// 	.send_message(
+	// 		tg_user.id,
+	// 		format!(
+	// 			"@{:#?}: {}",
+	// 			tg_user.username.unwrap_or(tg_user.id.to_string()),
+	// 			message_text
+	// 		),
+	// 	)
+	// 	.await
+	// 	.unwrap();
 
 	Ok(())
 }
@@ -125,21 +115,17 @@ async fn main() -> Result<(), TelecrowError> {
 	pretty_env_logger::init();
 
 	log::info!("Initializing DB connection...");
-	let crownest_context = crownest_client::connect();
-
-	// Register callbacks to run in response to database events.
-	register_callbacks(&crownest_context);
-
-	// Subscribe to SQL queries in order to construct a local partial replica of the database.
-	subscribe_to_tables(&crownest_context);
-
-	// Spawn a thread, where the connection will process messages and invoke callbacks.
-	crownest_context.run_threaded();
+	let crowctx = crownest_client::connect();
 
 	log::info!("Initializing Telegram bot...");
-	let tlx_bot = telegram_bot_client::Bot::from_env();
+	let telegram_bot = telegram_bot_client::Bot::from_env();
 
-	let tlx_schema = telegram_bot_client::Update::filter_message()
+	register_callbacks(&crowctx, &telegram_bot);
+	subscribe_to_tables(&crowctx);
+	crowctx.run_threaded();
+
+	let teloxide_schema = telegram_bot_client::Update::filter_message()
+	.inspect(move |msg: telegram_bot_client::Message| on_tg_text_message(&crowctx, msg))
 	/*
 	   Inject the `User` object representing the author of an incoming
 	   message into every successive handler function (1)
@@ -153,10 +139,8 @@ async fn main() -> Result<(), TelecrowError> {
 		telegram_bot_client::Message::filter_text().endpoint(process_text_message),
 	);
 
-	// telegram_bot_pipeline(&crownest_context);
-
 	log::info!("Starting Telegram bot...");
-	telegram_bot_client::Dispatcher::builder(tlx_bot, tlx_schema)
+	telegram_bot_client::Dispatcher::builder(telegram_bot, teloxide_schema)
 		.build()
 		.dispatch()
 		.await;
