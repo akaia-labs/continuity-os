@@ -29,6 +29,10 @@ fn register_callbacks(crowctx: &crownest::DbConnection, tx: mpsc::Sender<Telegra
 		.on_insert(user_subscriptions::on_user_inserted);
 
 	crowctx
+		.reducers
+		.on_set_name(user_subscriptions::on_name_set);
+
+	crowctx
 		.db
 		.user()
 		.on_update(user_subscriptions::on_user_updated);
@@ -37,10 +41,6 @@ fn register_callbacks(crowctx: &crownest::DbConnection, tx: mpsc::Sender<Telegra
 		.db
 		.message()
 		.on_insert(message_subscriptions::handle_telegram_forward(tx));
-
-	crowctx
-		.reducers
-		.on_set_name(user_subscriptions::on_name_set);
 
 	crowctx
 		.reducers
@@ -106,6 +106,7 @@ async fn main() -> Result<(), TelecrowError> {
 		}
 	});
 
+	crownest_client::subscribe(&crowctx);
 	register_callbacks(&crowctx, tx);
 	crowctx.run_threaded();
 

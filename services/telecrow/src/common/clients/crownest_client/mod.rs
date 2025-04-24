@@ -1,7 +1,7 @@
 mod config;
 
 use crowlink::clients::crownest;
-use spacetimedb_sdk::{Error, Identity, credentials};
+use spacetimedb_sdk::{DbContext, Error, Identity, credentials};
 use std::process;
 
 fn creds_store() -> credentials::File {
@@ -32,6 +32,17 @@ fn on_disconnected(_ctx: &crownest::ErrorContext, err: Option<Error>) {
 	}
 }
 
+/// Sorts all past messages and print them in timestamp order.
+fn on_sub_applied(_crowctx: &crownest::SubscriptionEventContext) {
+	println!("Fully connected and all subscriptions applied.");
+}
+
+/// Prints the error, then exits the process.
+fn on_sub_error(_crowctx: &crownest::ErrorContext, err: Error) {
+	eprintln!("Subscription failed: {}", err);
+	std::process::exit(1);
+}
+
 /// Load credentials from a file and connect to the database.
 pub fn connect() -> crownest::DbConnection {
 	crownest::DbConnection::builder()
@@ -52,4 +63,14 @@ pub fn connect() -> crownest::DbConnection {
 		// Finalize configuration and connect!
 		.build()
 		.expect("Failed to connect")
+}
+
+/// Registers subscriptions for all rows of both tables.
+pub fn subscribe(crowctx: &crownest::DbConnection) {
+	crowctx
+		.subscription_builder()
+		.on_applied(on_sub_applied)
+		.on_error(on_sub_error)
+		// Subscribe to SQL queries in order to construct a local partial replica of the database.
+		.subscribe(["SELECT * FROM user", "SELECT * FROM message"]);
 }
