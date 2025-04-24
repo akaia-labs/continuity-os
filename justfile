@@ -16,12 +16,12 @@ local-dblogs:
 
 generate-module_bindings:
 	spacetime generate --lang rust \
-		--project-path packages/crownest \
-		--out-dir packages/crowlink/src/common/clients/crownest/_generated/module_bindings
+		--project-path modules/crownest \
+		--out-dir packages/crowlink-rs/src/common/clients/crownest/_generated/module_bindings
 
 generate: generate-module_bindings
 	(echo "DONE.")
 
-crowlink-devserver:
-	(cd packages/crowlink)
+crowchat:
+	(cd packages/crowlink-rs)
 	(cargo run)

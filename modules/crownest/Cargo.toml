@@ -1,5 +1,5 @@
 [package]
-name = "akaia-labs_crownest"
+name = "crownest"
 description = "Akaia Labs crow.d server"
 version = "0.1.0"
 edition = "2021"

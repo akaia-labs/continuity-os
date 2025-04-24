@@ -1,8 +1,25 @@
 [workspace]
-members = ["packages/crowlink", "packages/crownest"]
+members = ["modules/crownest", "packages/crowlink-rs"]
 resolver = "3"
 
+
+[workspace.package]
+authors = ["Carina.Akaia.org <cvo.akaia@gmail.com>"]
+keywords = ["akaia-labs", "communication", "community", "knowledge base"]
+
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+overflow-checks = true
+
+
 [workspace.dependencies]
+# Akaia Labs
+crowlink-rs = { path = "packages/crowlink-rs" }
+
+# External packages
 hex = "0.4"
 log = "0.4"
 spacetimedb = "1.1.0"

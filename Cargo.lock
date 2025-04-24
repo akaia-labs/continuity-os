@@ -31,22 +31,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "akaia-labs_crowlink"
-version = "0.1.0"
-dependencies = [
- "hex",
- "spacetimedb-sdk",
-]
-
-[[package]]
-name = "akaia-labs_crownest"
-version = "0.1.0"
-dependencies = [
- "log",
- "spacetimedb",
-]
-
-[[package]]
 name = "alloc-no-stdlib"
 version = "2.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -291,6 +275,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a97769d94ddab943e4510d138150169a2758b5ef3eb191a9ee688de3e23ef7b3"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "crowlink-rs"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "spacetimedb-sdk",
+]
+
+[[package]]
+name = "crownest"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "spacetimedb",
 ]
 
 [[package]]

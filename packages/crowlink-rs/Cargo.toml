@@ -1,6 +1,6 @@
 [package]
-name = "akaia-labs_crowlink"
-description = "Akaia Labs crow.d client library"
+name = "crowlink-rs"
+description = "Akaia Labs crow.d Rust client library"
 version = "0.1.0"
 edition = "2021"
 
