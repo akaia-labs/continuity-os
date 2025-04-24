@@ -24,14 +24,11 @@ pub fn handle_telegram_forward(
 			.map(|u| user_model::user_name_or_identity(&u))
 			.unwrap_or_else(|| "unknown".to_string());
 
-		// Create the request
-		let request = TelegramForwardRequest {
+		let _ = tx.try_send(TelegramForwardRequest {
 			sender_name,
 			message_text: message.text.clone(),
-			chat_id: -1001544271932, // The hardcoded chat ID
-		};
-
-		// This try_send won't block and doesn't require async
-		let _ = tx.try_send(request);
+			// TODO: The chat id must be derived from the crownest chat id
+			chat_id: -1001544271932,
+		});
 	};
 }

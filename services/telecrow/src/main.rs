@@ -56,7 +56,7 @@ fn on_tg_text_message(crowctx: &crownest::DbConnection, tg_message: telegram_bot
 async fn process_text_message(
 	_tg_bot: telegram_bot_client::Bot, tg_user: telegram_bot_client::User, message_text: String,
 ) -> Result<(), TelecrowError> {
-	log::info!(
+	println!(
 		"@{:#?}: {}",
 		tg_user.username.clone().unwrap_or(tg_user.id.to_string()),
 		message_text
@@ -82,10 +82,10 @@ async fn main() -> Result<(), TelecrowError> {
 	dotenvy::dotenv()?;
 	pretty_env_logger::init();
 
-	log::info!("Initializing DB connection...");
+	println!("Initializing DB connection...");
 	let crowctx = crownest_client::connect();
 
-	log::info!("Initializing Telegram bot...");
+	println!("Initializing Telegram bot...");
 	let telegram_bot = telegram_bot_client::Bot::from_env();
 
 	// Create a channel for forwarding messages to Telegram
@@ -124,7 +124,7 @@ async fn main() -> Result<(), TelecrowError> {
 		telegram_bot_client::Message::filter_text().endpoint(process_text_message),
 	);
 
-	log::info!("Starting Telegram bot...");
+	println!("Starting Telegram bot client...");
 	telegram_bot_client::Dispatcher::builder(telegram_bot, teloxide_schema)
 		.build()
 		.dispatch()
