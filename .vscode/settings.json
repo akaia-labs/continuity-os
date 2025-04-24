@@ -1,5 +1,6 @@
 {
 	"cSpell.words": [
+		"buildlog",
 		"cdylib",
 		"codegen",
 		"creds",
@@ -12,10 +13,15 @@
 		"devserver",
 		"libcrowd",
 		"mistralrs",
+		"MSVC",
+		"onnx",
 		"protocrow",
+		"pycache",
 		"reqwest",
+		"rustc",
 		"rustowl",
 		"spacetimedb",
-		"stdb"
+		"stdb",
+		"tsup"
 	]
 }
