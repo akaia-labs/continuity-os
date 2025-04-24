@@ -5,7 +5,7 @@ use spacetimedb_sdk::{Error, Identity, credentials};
 use std::process;
 
 fn creds_store() -> credentials::File {
-	credentials::File::new(config::DB_NAME)
+	credentials::File::new("Telecrow")
 }
 
 /// Saves client user credentials to a file.

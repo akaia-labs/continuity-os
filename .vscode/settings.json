@@ -11,6 +11,8 @@
 		"dbcall",
 		"dblogs",
 		"devserver",
+		"dotenv",
+		"dotenvy",
 		"libcrowd",
 		"mistralrs",
 		"MSVC",

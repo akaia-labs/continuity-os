@@ -22,6 +22,8 @@ generate-module_bindings:
 generate: generate-module_bindings
 	(echo "DONE.")
 
-crowchat:
-	(cd packages/crowlink-rs)
-	(cargo run)
+crowchat-dev:
+	(cd packages/crowlink-rs && cargo run)
+
+telecrow-dev:
+	(cd services/telecrow && RUST_LOG=trace cargo run)
