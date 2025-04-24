@@ -1,7 +1,9 @@
 use crowlink::clients::crownest::{self, *};
 use spacetimedb_sdk::{DbContext, Event, Status};
+use tokio::sync::mpsc;
 
 use crate::{
+	TelegramForwardRequest,
 	common::clients::telegram_bot_client::{self, *},
 	entities::user_model,
 };
@@ -32,13 +34,11 @@ pub fn on_message_sent(crowctx: &crownest::ReducerEventContext, text: &String) {
 	}
 }
 
-/// Forwards message to Telegram.
+/// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	tg_bot: telegram_bot_client::Bot,
+	tx: mpsc::Sender<TelegramForwardRequest>,
 ) -> impl FnMut(&crownest::EventContext, &crownest::Message) {
 	return move |crowctx: &crownest::EventContext, message: &crownest::Message| {
-		let tg_bot = tg_bot.clone();
-
 		let sender_name = crowctx
 			.db()
 			.user()
@@ -47,15 +47,14 @@ pub fn handle_telegram_forward(
 			.map(|u| user_model::user_name_or_identity(&u))
 			.unwrap_or_else(|| "unknown".to_string());
 
-		let text = message.text.clone();
+		// Create the request
+		let request = TelegramForwardRequest {
+			sender_name,
+			message_text: message.text.clone(),
+			chat_id: -1001544271932, // The hardcoded chat ID
+		};
 
-		tokio::spawn(async move {
-			let _ = tg_bot
-				.send_message(
-					telegram_bot_client::ChatId(-1001544271932),
-					format!("@{}: {}", sender_name, text),
-				)
-				.await;
-		});
+		// This try_send won't block and doesn't require async
+		let _ = tx.try_send(request);
 	};
 }

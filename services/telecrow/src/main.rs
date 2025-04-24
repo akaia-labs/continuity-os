@@ -3,6 +3,7 @@ pub mod entities;
 
 use crowlink::clients::crownest::{self, *};
 use spacetimedb_sdk::{DbContext, Error, Table, TableWithPrimaryKey};
+use tokio::sync::mpsc;
 
 use common::clients::{
 	crownest_client,
@@ -12,6 +13,13 @@ use common::clients::{
 use entities::{message_subscriptions, user_subscriptions};
 
 pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
+
+// Message structure for the channel to forward Telegram messages
+pub struct TelegramForwardRequest {
+	sender_name: String,
+	message_text: String,
+	chat_id: i64,
+}
 
 /*
 !	TABLE SUBSCRIPTIONS
@@ -52,7 +60,10 @@ fn subscribe_to_tables(crowctx: &crownest::DbConnection) {
 */
 
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(crowctx: &crownest::DbConnection, tg_bot: &telegram_bot_client::Bot) {
+fn register_callbacks(
+	crowctx: &crownest::DbConnection, tg_bot: &telegram_bot_client::Bot,
+	tx: mpsc::Sender<TelegramForwardRequest>,
+) {
 	crowctx
 		.db
 		.user()
@@ -66,9 +77,7 @@ fn register_callbacks(crowctx: &crownest::DbConnection, tg_bot: &telegram_bot_cl
 	crowctx
 		.db
 		.message()
-		.on_insert(message_subscriptions::handle_telegram_forward(
-			tg_bot.clone(),
-		));
+		.on_insert(message_subscriptions::handle_telegram_forward(tx));
 
 	crowctx
 		.reducers
@@ -120,7 +129,25 @@ async fn main() -> Result<(), TelecrowError> {
 	log::info!("Initializing Telegram bot...");
 	let telegram_bot = telegram_bot_client::Bot::from_env();
 
-	register_callbacks(&crowctx, &telegram_bot);
+	// Create a channel for forwarding messages to Telegram
+	let (tx, mut rx) = mpsc::channel::<TelegramForwardRequest>(100);
+
+	// Clone the bot for the background task
+	let tg_bot_clone = telegram_bot.clone();
+
+	// Spawn a background task that processes messages from the channel
+	tokio::spawn(async move {
+		while let Some(req) = rx.recv().await {
+			let _ = tg_bot_clone
+				.send_message(
+					telegram_bot_client::ChatId(req.chat_id),
+					format!("@{}: {}", req.sender_name, req.message_text),
+				)
+				.await;
+		}
+	});
+
+	register_callbacks(&crowctx, &telegram_bot, tx);
 	subscribe_to_tables(&crowctx);
 	crowctx.run_threaded();
 
