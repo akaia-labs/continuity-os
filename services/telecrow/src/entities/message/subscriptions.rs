@@ -1,31 +1,8 @@
 use crowlink::clients::crownest::{self, *};
-use spacetimedb_sdk::{DbContext, Event, Status};
+use spacetimedb_sdk::{DbContext, Status};
 use tokio::sync::mpsc;
 
-use crate::{
-	TelegramForwardRequest,
-	common::clients::telegram_bot_client::{self, *},
-	entities::user_model,
-};
-
-pub fn print_message(crowctx: &impl crownest::RemoteDbContext, message: &crownest::Message) {
-	let sender = crowctx
-		.db()
-		.user()
-		.identity()
-		.find(&message.sender.clone())
-		.map(|u| user_model::user_name_or_identity(&u))
-		.unwrap_or_else(|| "unknown".to_string());
-
-	println!("{}: {}", sender, message.text);
-}
-
-/// Prints new messages.
-pub fn on_message_inserted(crowctx: &crownest::EventContext, message: &crownest::Message) {
-	if let Event::Reducer(_) = crowctx.event {
-		print_message(crowctx, message)
-	}
-}
+use crate::{TelegramForwardRequest, entities::user_model};
 
 /// Prints a warning if the reducer failed.
 pub fn on_message_sent(crowctx: &crownest::ReducerEventContext, text: &String) {

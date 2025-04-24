@@ -2,7 +2,7 @@ mod common;
 pub mod entities;
 
 use crowlink::clients::crownest::{self, *};
-use spacetimedb_sdk::{DbContext, Error, Table, TableWithPrimaryKey};
+use spacetimedb_sdk::{Table, TableWithPrimaryKey};
 use tokio::sync::mpsc;
 
 use common::clients::{
@@ -21,49 +21,8 @@ pub struct TelegramForwardRequest {
 	chat_id: i64,
 }
 
-/*
-!	TABLE SUBSCRIPTIONS
-*/
-
-/// Sorts all past messages and print them in timestamp order.
-fn on_sub_applied(crowctx: &crownest::SubscriptionEventContext) {
-	let mut messages = crowctx.db.message().iter().collect::<Vec<_>>();
-
-	messages.sort_by_key(|m| m.sent);
-
-	for message in messages {
-		message_subscriptions::print_message(crowctx, &message);
-	}
-
-	println!("Fully connected and all subscriptions applied.");
-	println!("Use /name to set your name, or type a message!");
-}
-
-/// Prints the error, then exits the process.
-fn on_sub_error(_crowctx: &crownest::ErrorContext, err: Error) {
-	eprintln!("Subscription failed: {}", err);
-	std::process::exit(1);
-}
-
-/// Registers subscriptions for all rows of both tables.
-fn subscribe_to_tables(crowctx: &crownest::DbConnection) {
-	crowctx
-		.subscription_builder()
-		.on_applied(on_sub_applied)
-		.on_error(on_sub_error)
-		// Subscribe to SQL queries in order to construct a local partial replica of the database.
-		.subscribe(["SELECT * FROM user", "SELECT * FROM message"]);
-}
-
-/*
-!	GENERAL
-*/
-
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(
-	crowctx: &crownest::DbConnection, tg_bot: &telegram_bot_client::Bot,
-	tx: mpsc::Sender<TelegramForwardRequest>,
-) {
+fn register_callbacks(crowctx: &crownest::DbConnection, tx: mpsc::Sender<TelegramForwardRequest>) {
 	crowctx
 		.db
 		.user()
@@ -147,8 +106,7 @@ async fn main() -> Result<(), TelecrowError> {
 		}
 	});
 
-	register_callbacks(&crowctx, &telegram_bot, tx);
-	subscribe_to_tables(&crowctx);
+	register_callbacks(&crowctx, tx);
 	crowctx.run_threaded();
 
 	let teloxide_schema = telegram_bot_client::Update::filter_message()
