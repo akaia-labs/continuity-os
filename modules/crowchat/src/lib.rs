@@ -15,7 +15,8 @@ pub fn client_connected(ctx: &ReducerContext) {
 		// If this is a returning user, i.e. we already have a `User` with this `Identity`,
 		// set `online: true`, but leave `name` and `identity` unchanged.
 		ctx.db.user().identity().update(User {
-			online: true,
+			is_online: true,
+			last_seen_at: ctx.timestamp,
 			..user
 		});
 	} else {
@@ -24,7 +25,9 @@ pub fn client_connected(ctx: &ReducerContext) {
 		ctx.db.user().insert(User {
 			name: None,
 			identity: ctx.sender,
-			online: true,
+			is_online: true,
+			updated_at: ctx.timestamp,
+			last_seen_at: ctx.timestamp,
 		});
 	}
 }
@@ -34,7 +37,8 @@ pub fn client_connected(ctx: &ReducerContext) {
 pub fn identity_disconnected(ctx: &ReducerContext) {
 	if let Some(user) = ctx.db.user().identity().find(ctx.sender) {
 		ctx.db.user().identity().update(User {
-			online: false,
+			is_online: false,
+			last_seen_at: ctx.timestamp,
 			..user
 		});
 	} else {

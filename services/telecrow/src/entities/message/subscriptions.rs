@@ -23,25 +23,23 @@ pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, tg_message: tele
 }
 
 pub struct TelegramForwardRequest {
+	pub chat_id: i64,
 	pub sender_name: String,
 	pub message_text: String,
-	pub chat_id: i64,
 }
 
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
 	transmitter: mpsc::Sender<TelegramForwardRequest>, async_handler: Arc<AsyncRuntime>,
 ) -> impl FnMut(&crowchat::EventContext, &crowchat::Message) {
+	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
 	return move |crowctx: &crowchat::EventContext, message: &crowchat::Message| {
 		// Ignore messages inserted by the service itself
 		if message.sender != crowctx.identity() {
-			// Only forward messages that are not older than 5 minutes
-			if Timestamp::now()
-				.duration_since(message.sent)
-				.lt(&Some(Duration::from_secs(5 * 60)))
-			{
+			// Only forward messages sent after handler initialization
+			if subscribed_at.le(&message.sent) {
 				let sender_name = crowctx
 					.db()
 					.user()
@@ -51,10 +49,10 @@ pub fn handle_telegram_forward(
 					.unwrap_or_else(|| "unknown".to_string());
 
 				let request = TelegramForwardRequest {
-					sender_name,
-					message_text: message.text.clone(),
 					// TODO: The chat id must be taken from the crowchat room properties
 					chat_id: -1001544271932,
+					sender_name,
+					message_text: message.text.clone(),
 				};
 
 				// Use the runtime handle to spawn the async task

@@ -1,5 +1,5 @@
 [package]
-name = "telecrow-rs"
+name = "telecrow"
 description = "Akaia Labs crow.d Rust telegram bridge"
 version = "0.1.0"
 edition = "2024"
