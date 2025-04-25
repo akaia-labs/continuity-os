@@ -101,7 +101,7 @@ async fn main() -> Result<(), TelecrowError> {
 	let telegram_transmitter = telegram_bot_client.clone();
 
 	// Spawn a background task that processes messages from the channel
-	tokio::spawn(async move {
+	runtime_service.handle().spawn(async move {
 		while let Some(req) = forward_receiver.recv().await {
 			let _ = telegram_transmitter
 				.send_message(
