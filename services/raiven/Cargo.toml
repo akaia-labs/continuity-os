@@ -1,13 +1,13 @@
 [package]
-name = "telecrow-rs"
-description = "Akaia Labs crow.d Rust telegram bridge"
+name = "raiven"
+description = "Akaia Labs crow.d AI service"
 version = "0.1.0"
 edition = "2024"
-default-run = "telecrow"
+default-run = "raiven"
 
-
+# Subject to be extracted into a separate package, resides here for the initial prototyping
 [[bin]]
-name = "telecrow"
+name = "raiven"
 path = "src/main.rs"
 
 

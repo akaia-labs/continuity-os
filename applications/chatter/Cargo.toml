@@ -5,7 +5,6 @@ version = "0.1.0"
 edition = "2024"
 
 
-# Subject to be extracted into a separate package, resides here for the initial prototyping
 [[bin]]
 name = "chatter"
 path = "src/main.rs"
