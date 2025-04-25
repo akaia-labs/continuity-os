@@ -9,7 +9,9 @@ use tokio::sync::mpsc;
 use common::{
 	bindings::telegram::{self, *},
 	clients::crowchat_client,
+	runtime::{self, RuntimeService},
 };
+use std::sync::Arc;
 
 use entities::{message_subscriptions, user_subscriptions};
 use features::message_forwarding;
@@ -20,6 +22,7 @@ pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 fn register_callbacks(
 	crowctx: &crowchat::DbConnection,
 	forward_transmitter: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
+	runtime: Arc<RuntimeService>,
 ) {
 	crowctx
 		.db
@@ -40,6 +43,7 @@ fn register_callbacks(
 		.message()
 		.on_insert(message_subscriptions::handle_telegram_forward(
 			forward_transmitter,
+			runtime,
 		));
 
 	crowctx
@@ -86,6 +90,9 @@ async fn main() -> Result<(), TelecrowError> {
 	let crowctx = crowchat_client::connect();
 	let telegram_bot_client = telegram::Bot::from_env();
 
+	// Create the runtime service
+	let runtime_service = runtime::create_service();
+
 	// Channel for forwarding messages to Telegram
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<message_forwarding::TelegramForwardRequest>(100);
@@ -107,7 +114,7 @@ async fn main() -> Result<(), TelecrowError> {
 	});
 
 	crowchat_client::subscribe(&crowctx);
-	register_callbacks(&crowctx, forward_transmitter);
+	register_callbacks(&crowctx, forward_transmitter, runtime_service);
 	crowctx.run_threaded();
 
 	let teloxide_schema = telegram::Update::filter_message()
