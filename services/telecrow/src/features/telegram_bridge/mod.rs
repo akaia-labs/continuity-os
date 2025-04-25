@@ -5,17 +5,11 @@ use tokio::sync::mpsc;
 
 use crate::{
 	common::{
-		bindings::telegram::{self, *},
 		async_runtime::AsyncRuntime,
+		bindings::telegram::{self, *},
 	},
 	entities::message_subscriptions,
 };
-
-pub struct TelegramForwardRequest {
-	pub sender_name: String,
-	pub message_text: String,
-	pub chat_id: i64,
-}
 
 /// Sets up message forwarding from crowchat to Telegram.
 ///
@@ -24,11 +18,11 @@ pub struct TelegramForwardRequest {
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
 /// 4. Returns the sender that can be used to send messages to the channel
-pub fn start_forwarding(
+pub fn message_capture_init(
 	telegram_bot: telegram::Bot, runtime: Arc<AsyncRuntime>, crowctx: &crowchat::DbConnection,
-) -> mpsc::Sender<TelegramForwardRequest> {
-	// Create channel for forwarding messages to Telegram
-	let (forward_transmitter, mut forward_receiver) = mpsc::channel::<TelegramForwardRequest>(100);
+) -> mpsc::Sender<message_subscriptions::TelegramForwardRequest> {
+	let (forward_transmitter, mut forward_receiver) =
+		mpsc::channel::<message_subscriptions::TelegramForwardRequest>(100);
 
 	// Clone the sender to return it
 	let sender_to_return = forward_transmitter.clone();

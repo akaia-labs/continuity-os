@@ -50,7 +50,7 @@ async fn main() -> Result<(), TelecrowError> {
 	register_callbacks(&crowchat_connection);
 	crowchat_connection.run_threaded();
 
-	telegram_bridge::start_forwarding(
+	telegram_bridge::message_capture_init(
 		telegram_bot_client.clone(),
 		runtime_service.clone(),
 		&crowchat_connection,

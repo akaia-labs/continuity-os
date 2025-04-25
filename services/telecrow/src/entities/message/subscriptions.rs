@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
@@ -7,9 +7,7 @@ use tokio::sync::mpsc;
 use crate::{
 	common::{async_runtime::AsyncRuntime, bindings::telegram, runtime::*},
 	entities::user_model,
-	features::telegram_bridge,
 };
-use std::sync::Arc;
 
 /// Prints a warning if the reducer failed.
 pub fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
@@ -24,9 +22,15 @@ pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, tg_message: tele
 	}
 }
 
+pub struct TelegramForwardRequest {
+	pub sender_name: String,
+	pub message_text: String,
+	pub chat_id: i64,
+}
+
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	transmitter: mpsc::Sender<telegram_bridge::TelegramForwardRequest>, runtime: Arc<AsyncRuntime>,
+	transmitter: mpsc::Sender<TelegramForwardRequest>, runtime: Arc<AsyncRuntime>,
 ) -> impl FnMut(&crowchat::EventContext, &crowchat::Message) {
 	let handle = runtime.handle();
 
@@ -46,10 +50,10 @@ pub fn handle_telegram_forward(
 					.map(|u| user_model::user_name_or_identity(&u))
 					.unwrap_or_else(|| "unknown".to_string());
 
-				let request = telegram_bridge::TelegramForwardRequest {
+				let request = TelegramForwardRequest {
 					sender_name,
 					message_text: message.text.clone(),
-					// TODO: The chat id must be derived from the crowchat chat id
+					// TODO: The chat id must be taken from the crowchat room properties
 					chat_id: -1001544271932,
 				};
 
