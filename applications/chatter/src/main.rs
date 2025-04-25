@@ -10,21 +10,11 @@ use spacetimedb_sdk::{
 };
 
 /*
-!	CONNECTION CONFIG
-*/
-
-/// The URI of the SpacetimeDB instance hosting the server module.
-const HOST: &str = "http://localhost:3333";
-
-/// The database name under which the module is published.
-const DB_NAME: &str = "crowd";
-
-/*
 !	CONNECTION SETUP
 */
 
 fn creds_store() -> credentials::File {
-	credentials::File::new(DB_NAME)
+	credentials::File::new("console.crowd-credentials")
 }
 
 /// Saves client user credentials to a file.
@@ -202,21 +192,15 @@ fn register_callbacks(ctx: &crowchat::DbConnection) {
 fn connect_to_db() -> crowchat::DbConnection {
 	if let Some(env_config) = get_env_config() {
 		crowchat::DbConnection::builder()
-		// Register our `on_connect` callback, which will save our auth token.
 		.on_connect(on_connected)
-		// Register our `on_connect_error` callback, which will print a message, then exit the process.
 		.on_connect_error(on_connect_error)
-		// Our `on_disconnect` callback, which will print a message, then exit the process.
 		.on_disconnect(on_disconnected)
 		// If the user has previously connected, we'll have saved a token in the `on_connect` callback.
 		// In that case, we'll load it and pass it to `with_token`,
 		// so we can re-authenticate as the same `Identity`.
 		.with_token(creds_store().load().expect("Error loading credentials"))
-		// Set the database name we chose when we called `spacetime publish`.
 		.with_module_name(env_config.modules.chat.name)
-		// Set the URI of the SpacetimeDB host that's running our database.
 		.with_uri(env_config.host)
-		// Finalize configuration and connect!
 		.build()
 		.expect("Failed to connect")
 	} else {
@@ -227,18 +211,13 @@ fn connect_to_db() -> crowchat::DbConnection {
 }
 
 fn main() {
+	let _ = dotenvy::dotenv();
+
 	// Connect to the database
 	let ctx = connect_to_db();
 
-	// Register callbacks to run in response to database events.
 	register_callbacks(&ctx);
-
-	// Subscribe to SQL queries in order to construct a local partial replica of the database.
 	subscribe_to_tables(&ctx);
-
-	// Spawn a thread, where the connection will process messages and invoke callbacks.
 	ctx.run_threaded();
-
-	// Handle CLI input
 	user_input_loop(&ctx);
 }

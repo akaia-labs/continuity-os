@@ -1,6 +1,12 @@
 [workspace]
-members = ["modules/crowchat", "packages/crowtocol_rs", "services/telecrow"]
 resolver = "3"
+
+members = [
+	"applications/chatter",
+	"modules/crowchat",
+	"packages/crowtocol_rs",
+	"services/telecrow",
+]
 
 
 [workspace.package]

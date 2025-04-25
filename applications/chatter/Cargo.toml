@@ -1,0 +1,21 @@
+[package]
+name = "chatter"
+description = "Simple console chat client for crow.d in Rust"
+version = "0.1.0"
+edition = "2024"
+
+
+# Subject to be extracted into a separate package, resides here for the initial prototyping
+[[bin]]
+name = "chatter"
+path = "src/main.rs"
+
+
+[dependencies]
+# crow.d
+crowtocol_rs.workspace = true
+
+# External packages
+dotenvy.workspace = true
+hex.workspace = true
+spacetimedb-sdk.workspace = true

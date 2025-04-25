@@ -10,12 +10,6 @@ name = "crowtocol_rs"
 path = "src/lib.rs"
 
 
-# Subject to be extracted into a separate package, resides here for the initial prototyping
-[[bin]]
-name = "crowtocol_chat"
-path = "src/main.rs"
-
-
 [dependencies]
 spacetimedb-sdk.workspace = true
 hex.workspace = true
