@@ -19,7 +19,7 @@ use crate::{
 /// 3. Registers the message handler
 /// 4. Returns the sender that can be used to send messages to the channel
 pub fn message_capture_init(
-	telegram_bot: telegram::Bot, runtime: Arc<AsyncRuntime>, crowctx: &crowchat::DbConnection,
+	telegram_bot: telegram::Bot, async_handler: Arc<AsyncRuntime>, crowctx: &crowchat::DbConnection,
 ) -> mpsc::Sender<message_subscriptions::TelegramForwardRequest> {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<message_subscriptions::TelegramForwardRequest>(100);
@@ -31,7 +31,7 @@ pub fn message_capture_init(
 	let telegram_transmitter = telegram_bot.clone();
 
 	// Spawn a background task that processes messages from the channel
-	runtime.handle().spawn(async move {
+	async_handler.handle().spawn(async move {
 		while let Some(req) = forward_receiver.recv().await {
 			let _ = telegram_transmitter
 				.send_message(
@@ -49,7 +49,7 @@ pub fn message_capture_init(
 		.message()
 		.on_insert(message_subscriptions::handle_telegram_forward(
 			forward_transmitter,
-			runtime,
+			async_handler,
 		));
 
 	// Return the sender

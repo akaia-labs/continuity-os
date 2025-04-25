@@ -30,9 +30,9 @@ pub struct TelegramForwardRequest {
 
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	transmitter: mpsc::Sender<TelegramForwardRequest>, runtime: Arc<AsyncRuntime>,
+	transmitter: mpsc::Sender<TelegramForwardRequest>, async_handler: Arc<AsyncRuntime>,
 ) -> impl FnMut(&crowchat::EventContext, &crowchat::Message) {
-	let handle = runtime.handle();
+	let handle = async_handler.handle();
 
 	return move |crowctx: &crowchat::EventContext, message: &crowchat::Message| {
 		// Ignore messages inserted by the service itself
@@ -59,6 +59,7 @@ pub fn handle_telegram_forward(
 
 				// Use the runtime handle to spawn the async task
 				let tx = transmitter.clone();
+
 				handle.spawn(async move {
 					let _ = tx.send(request).await;
 				});

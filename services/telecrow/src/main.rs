@@ -42,9 +42,9 @@ async fn main() -> Result<(), TelecrowError> {
 	pretty_env_logger::init();
 	println!("Initializing connections...");
 
+	let async_runtime_instance = async_runtime::new();
 	let crowchat_connection = crowchat_client::connect();
 	let telegram_bot_client = telegram::Bot::from_env();
-	let runtime_service = async_runtime::create_service();
 
 	crowchat_client::subscribe(&crowchat_connection);
 	register_callbacks(&crowchat_connection);
@@ -52,7 +52,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	telegram_bridge::message_capture_init(
 		telegram_bot_client.clone(),
-		runtime_service.clone(),
+		async_runtime_instance.clone(),
 		&crowchat_connection,
 	);
 
