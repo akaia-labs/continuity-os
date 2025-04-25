@@ -4,7 +4,11 @@ use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use tokio::sync::mpsc;
 
-use crate::{common::runtime::RuntimeService, entities::user_model, features::message_forwarding};
+use crate::{
+	common::{async_runtime::AsyncRuntime, bindings::telegram, runtime::*},
+	entities::user_model,
+	features::telegram_bridge,
+};
 use std::sync::Arc;
 
 /// Prints a warning if the reducer failed.
@@ -14,10 +18,15 @@ pub fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
 	}
 }
 
+pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, tg_message: telegram::Message) {
+	if let Some(text) = tg_message.text() {
+		crowctx.reducers.send_message(text.to_owned()).unwrap();
+	}
+}
+
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	transmitter: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
-	runtime: Arc<RuntimeService>,
+	transmitter: mpsc::Sender<telegram_bridge::TelegramForwardRequest>, runtime: Arc<AsyncRuntime>,
 ) -> impl FnMut(&crowchat::EventContext, &crowchat::Message) {
 	let handle = runtime.handle();
 
@@ -37,7 +46,7 @@ pub fn handle_telegram_forward(
 					.map(|u| user_model::user_name_or_identity(&u))
 					.unwrap_or_else(|| "unknown".to_string());
 
-				let request = message_forwarding::TelegramForwardRequest {
+				let request = telegram_bridge::TelegramForwardRequest {
 					sender_name,
 					message_text: message.text.clone(),
 					// TODO: The chat id must be derived from the crowchat chat id
@@ -52,4 +61,28 @@ pub fn handle_telegram_forward(
 			}
 		}
 	};
+}
+
+pub async fn process_text_message(
+	_tg_bot: telegram::Bot, tg_user: telegram::User, message_text: String,
+) -> Result<(), TelecrowError> {
+	println!(
+		"@{}: {}",
+		tg_user.username.clone().unwrap_or(tg_user.id.to_string()),
+		message_text
+	);
+
+	// let _message = tg_bot
+	// 	.send_message(
+	// 		tg_user.id,
+	// 		format!(
+	// 			"@{:#?}: {}",
+	// 			tg_user.username.unwrap_or(tg_user.id.to_string()),
+	// 			message_text
+	// 		),
+	// 	)
+	// 	.await
+	// 	.unwrap();
+
+	Ok(())
 }

@@ -1,1 +1,1 @@
-pub mod message_forwarding;
+pub mod telegram_bridge;
