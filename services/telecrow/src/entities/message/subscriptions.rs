@@ -4,7 +4,7 @@ use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use tokio::sync::mpsc;
 
-use crate::{TelegramForwardRequest, entities::user_model};
+use crate::{entities::user_model, features::message_forwarding};
 
 /// Prints a warning if the reducer failed.
 pub fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
@@ -15,7 +15,7 @@ pub fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
 
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	tx: mpsc::Sender<TelegramForwardRequest>,
+	tx: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
 ) -> impl FnMut(&crowchat::EventContext, &crowchat::Message) {
 	return move |crowctx: &crowchat::EventContext, message: &crowchat::Message| {
 		// Only forward messages that are not older than 5 minutes
@@ -31,7 +31,7 @@ pub fn handle_telegram_forward(
 				.map(|u| user_model::user_name_or_identity(&u))
 				.unwrap_or_else(|| "unknown".to_string());
 
-			let _ = tx.try_send(TelegramForwardRequest {
+			let _ = tx.try_send(message_forwarding::TelegramForwardRequest {
 				sender_name,
 				message_text: message.text.clone(),
 				// TODO: The chat id must be derived from the crowchat chat id

@@ -1,5 +1,6 @@
 mod common;
 pub mod entities;
+pub mod features;
 
 use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::{Table, TableWithPrimaryKey};
@@ -11,18 +12,14 @@ use common::{
 };
 
 use entities::{message_subscriptions, user_subscriptions};
+use features::message_forwarding;
 
 pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 
-// Message structure for the channel to forward Telegram messages
-pub struct TelegramForwardRequest {
-	sender_name: String,
-	message_text: String,
-	chat_id: i64,
-}
-
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(crowctx: &crowchat::DbConnection, tx: mpsc::Sender<TelegramForwardRequest>) {
+fn register_callbacks(
+	crowctx: &crowchat::DbConnection, tx: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
+) {
 	crowctx
 		.db
 		.user()
@@ -88,8 +85,8 @@ async fn main() -> Result<(), TelecrowError> {
 	println!("Initializing Telegram bot...");
 	let telegram_bot = telegram::Bot::from_env();
 
-	// Create a channel for forwarding messages to Telegram
-	let (tx, mut rx) = mpsc::channel::<TelegramForwardRequest>(100);
+	// Channel for forwarding messages to Telegram
+	let (tx, mut rx) = mpsc::channel::<message_forwarding::TelegramForwardRequest>(100);
 
 	// Clone the bot for the background task
 	let tg_bot_clone = telegram_bot.clone();
