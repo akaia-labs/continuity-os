@@ -301,19 +301,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "crowlink-rs"
-version = "0.1.0"
-dependencies = [
- "hex",
- "spacetimedb-sdk",
-]
-
-[[package]]
-name = "crownest"
+name = "crowchat"
 version = "0.1.0"
 dependencies = [
  "log",
  "spacetimedb",
+]
+
+[[package]]
+name = "crowtocol_rs"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "spacetimedb-sdk",
 ]
 
 [[package]]
@@ -2148,7 +2148,7 @@ checksum = "20f34339676cdcab560c9a82300c4c2581f68b9369aedf0fae86f2ff9565ff3e"
 name = "telecrow-rs"
 version = "0.1.0"
 dependencies = [
- "crowlink-rs",
+ "crowtocol_rs",
  "dotenvy",
  "hex",
  "log",

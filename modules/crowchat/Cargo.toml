@@ -1,6 +1,6 @@
 [package]
-name = "crownest"
-description = "Akaia Labs crow.d server"
+name = "crowchat"
+description = "Akaia Labs crow.d chat server"
 version = "0.1.0"
 edition = "2024"
 

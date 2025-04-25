@@ -1,13 +1,13 @@
 mod common;
 pub mod entities;
 
-use crowlink::clients::crownest::{self, *};
+use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::{Table, TableWithPrimaryKey};
 use tokio::sync::mpsc;
 
-use common::clients::{
-	crownest_client,
-	telegram_bot_client::{self, *},
+use common::{
+	bindings::telegram::{self, *},
+	clients::crowchat_client,
 };
 
 use entities::{message_subscriptions, user_subscriptions};
@@ -22,7 +22,7 @@ pub struct TelegramForwardRequest {
 }
 
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(crowctx: &crownest::DbConnection, tx: mpsc::Sender<TelegramForwardRequest>) {
+fn register_callbacks(crowctx: &crowchat::DbConnection, tx: mpsc::Sender<TelegramForwardRequest>) {
 	crowctx
 		.db
 		.user()
@@ -47,14 +47,14 @@ fn register_callbacks(crowctx: &crownest::DbConnection, tx: mpsc::Sender<Telegra
 		.on_send_message(message_subscriptions::on_message_sent);
 }
 
-fn on_tg_text_message(crowctx: &crownest::DbConnection, tg_message: telegram_bot_client::Message) {
+fn on_tg_text_message(crowctx: &crowchat::DbConnection, tg_message: telegram::Message) {
 	if let Some(text) = tg_message.text() {
 		crowctx.reducers.send_message(text.to_owned()).unwrap();
 	}
 }
 
 async fn process_text_message(
-	_tg_bot: telegram_bot_client::Bot, tg_user: telegram_bot_client::User, message_text: String,
+	_tg_bot: telegram::Bot, tg_user: telegram::User, message_text: String,
 ) -> Result<(), TelecrowError> {
 	println!(
 		"@{:#?}: {}",
@@ -83,10 +83,10 @@ async fn main() -> Result<(), TelecrowError> {
 	pretty_env_logger::init();
 
 	println!("Initializing DB connection...");
-	let crowctx = crownest_client::connect();
+	let crowctx = crowchat_client::connect();
 
 	println!("Initializing Telegram bot...");
-	let telegram_bot = telegram_bot_client::Bot::from_env();
+	let telegram_bot = telegram::Bot::from_env();
 
 	// Create a channel for forwarding messages to Telegram
 	let (tx, mut rx) = mpsc::channel::<TelegramForwardRequest>(100);
@@ -99,34 +99,34 @@ async fn main() -> Result<(), TelecrowError> {
 		while let Some(req) = rx.recv().await {
 			let _ = tg_bot_clone
 				.send_message(
-					telegram_bot_client::ChatId(req.chat_id),
+					telegram::ChatId(req.chat_id),
 					format!("@{}: {}", req.sender_name, req.message_text),
 				)
 				.await;
 		}
 	});
 
-	crownest_client::subscribe(&crowctx);
+	crowchat_client::subscribe(&crowctx);
 	register_callbacks(&crowctx, tx);
 	crowctx.run_threaded();
 
-	let teloxide_schema = telegram_bot_client::Update::filter_message()
-	.inspect(move |msg: telegram_bot_client::Message| on_tg_text_message(&crowctx, msg))
+	let teloxide_schema = telegram::Update::filter_message()
+	.inspect(move |msg: telegram::Message| on_tg_text_message(&crowctx, msg))
 	/*
 	   Inject the `User` object representing the author of an incoming
 	   message into every successive handler function (1)
 	*/
-	.filter_map(|update: telegram_bot_client::Update| update.from().cloned())
+	.filter_map(|update: telegram::Update| update.from().cloned())
 	.branch(
 		/*
 		   Use filter_text method of MessageFilterExt to accept
 		   only textual messages. Others will be ignored by this handler (2)
 		*/
-		telegram_bot_client::Message::filter_text().endpoint(process_text_message),
+		telegram::Message::filter_text().endpoint(process_text_message),
 	);
 
 	println!("Starting Telegram bot client...");
-	telegram_bot_client::Dispatcher::builder(telegram_bot, teloxide_schema)
+	telegram::Dispatcher::builder(telegram_bot, teloxide_schema)
 		.build()
 		.dispatch()
 		.await;

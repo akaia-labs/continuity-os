@@ -1,7 +1,8 @@
 use std::process;
 
-use crowlink::clients::crownest::{
-	self, MessageTableAccess, UserTableAccess, send_message, set_name,
+use crowtocol_rs::{
+	crowchat::{self, MessageTableAccess, UserTableAccess, send_message, set_name},
+	get_env_config,
 };
 
 use spacetimedb_sdk::{
@@ -27,20 +28,20 @@ fn creds_store() -> credentials::File {
 }
 
 /// Saves client user credentials to a file.
-fn on_connected(_ctx: &crownest::DbConnection, _identity: Identity, token: &str) {
+fn on_connected(_ctx: &crowchat::DbConnection, _identity: Identity, token: &str) {
 	if let Err(e) = creds_store().save(token) {
 		eprintln!("Failed to save credentials: {:?}", e);
 	}
 }
 
 /// Prints the error, then exits the process.
-fn on_connect_error(_ctx: &crownest::ErrorContext, err: Error) {
+fn on_connect_error(_ctx: &crowchat::ErrorContext, err: Error) {
 	eprintln!("Connection error: {:?}", err);
 	process::exit(1);
 }
 
 /// Prints a note, then exits the process.
-fn on_disconnected(_ctx: &crownest::ErrorContext, err: Option<Error>) {
+fn on_disconnected(_ctx: &crowchat::ErrorContext, err: Option<Error>) {
 	if let Some(err) = err {
 		eprintln!("Disconnected: {}", err);
 		process::exit(1);
@@ -55,21 +56,21 @@ fn on_disconnected(_ctx: &crownest::ErrorContext, err: Option<Error>) {
 */
 
 /// Returns the user's name, or their identity if they have no name.
-fn user_name_or_identity(user: &crownest::User) -> String {
+fn user_name_or_identity(user: &crowchat::User) -> String {
 	user.name
 		.clone()
 		.unwrap_or_else(|| user.identity.to_hex().to_string())
 }
 
 /// If the user is online, prints a notification.
-fn on_user_inserted(_ctx: &crownest::EventContext, user: &crownest::User) {
+fn on_user_inserted(_ctx: &crowchat::EventContext, user: &crowchat::User) {
 	if user.online {
 		println!("User {} connected.", user_name_or_identity(user));
 	}
 }
 
 /// Prints a notification about name and status changes.
-fn on_user_updated(_ctx: &crownest::EventContext, old: &crownest::User, new: &crownest::User) {
+fn on_user_updated(_ctx: &crowchat::EventContext, old: &crowchat::User, new: &crowchat::User) {
 	if old.name != new.name {
 		println!(
 			"User {} renamed to {}.",
@@ -88,7 +89,7 @@ fn on_user_updated(_ctx: &crownest::EventContext, old: &crownest::User, new: &cr
 }
 
 /// Prints a warning if the reducer failed.
-fn on_name_set(ctx: &crownest::ReducerEventContext, name: &String) {
+fn on_name_set(ctx: &crowchat::ReducerEventContext, name: &String) {
 	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to change name to {:?}: {}", name, err);
 	}
@@ -98,7 +99,7 @@ fn on_name_set(ctx: &crownest::ReducerEventContext, name: &String) {
 !	MESSAGE SUBSCRIPTIONS
 */
 
-fn print_message(ctx: &impl crownest::RemoteDbContext, message: &crownest::Message) {
+fn print_message(ctx: &impl crowchat::RemoteDbContext, message: &crowchat::Message) {
 	let sender = ctx
 		.db()
 		.user()
@@ -111,14 +112,14 @@ fn print_message(ctx: &impl crownest::RemoteDbContext, message: &crownest::Messa
 }
 
 /// Prints new messages.
-fn on_message_inserted(ctx: &crownest::EventContext, message: &crownest::Message) {
+fn on_message_inserted(ctx: &crowchat::EventContext, message: &crowchat::Message) {
 	if let Event::Reducer(_) = ctx.event {
 		print_message(ctx, message)
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_message_sent(ctx: &crownest::ReducerEventContext, text: &String) {
+fn on_message_sent(ctx: &crowchat::ReducerEventContext, text: &String) {
 	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to send message {:?}: {}", text, err);
 	}
@@ -129,7 +130,7 @@ fn on_message_sent(ctx: &crownest::ReducerEventContext, text: &String) {
 */
 
 /// Sorts all past messages and print them in timestamp order.
-fn on_sub_applied(ctx: &crownest::SubscriptionEventContext) {
+fn on_sub_applied(ctx: &crowchat::SubscriptionEventContext) {
 	let mut messages = ctx.db.message().iter().collect::<Vec<_>>();
 
 	messages.sort_by_key(|m| m.sent);
@@ -143,13 +144,13 @@ fn on_sub_applied(ctx: &crownest::SubscriptionEventContext) {
 }
 
 /// Prints the error, then exits the process.
-fn on_sub_error(_ctx: &crownest::ErrorContext, err: Error) {
+fn on_sub_error(_ctx: &crowchat::ErrorContext, err: Error) {
 	eprintln!("Subscription failed: {}", err);
 	std::process::exit(1);
 }
 
 /// Registers subscriptions for all rows of both tables.
-fn subscribe_to_tables(ctx: &crownest::DbConnection) {
+fn subscribe_to_tables(ctx: &crowchat::DbConnection) {
 	ctx.subscription_builder()
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
@@ -161,7 +162,7 @@ fn subscribe_to_tables(ctx: &crownest::DbConnection) {
 */
 
 /// Reads each line of standard input, and either executes a command or sends a message as appropriate.
-fn user_input_loop(ctx: &crownest::DbConnection) {
+fn user_input_loop(ctx: &crowchat::DbConnection) {
 	for line in std::io::stdin().lines() {
 		let Ok(line) = line else {
 			panic!("Failed to read from stdin.");
@@ -180,7 +181,7 @@ fn user_input_loop(ctx: &crownest::DbConnection) {
 */
 
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(ctx: &crownest::DbConnection) {
+fn register_callbacks(ctx: &crowchat::DbConnection) {
 	// When a new user joins, print a notification.
 	ctx.db.user().on_insert(on_user_inserted);
 
@@ -198,8 +199,9 @@ fn register_callbacks(ctx: &crownest::DbConnection) {
 }
 
 /// Load credentials from a file and connect to the database.
-fn connect_to_db() -> crownest::DbConnection {
-	crownest::DbConnection::builder()
+fn connect_to_db() -> crowchat::DbConnection {
+	if let Some(env_config) = get_env_config() {
+		crowchat::DbConnection::builder()
 		// Register our `on_connect` callback, which will save our auth token.
 		.on_connect(on_connected)
 		// Register our `on_connect_error` callback, which will print a message, then exit the process.
@@ -211,12 +213,17 @@ fn connect_to_db() -> crownest::DbConnection {
 		// so we can re-authenticate as the same `Identity`.
 		.with_token(creds_store().load().expect("Error loading credentials"))
 		// Set the database name we chose when we called `spacetime publish`.
-		.with_module_name(DB_NAME)
+		.with_module_name(env_config.modules.chat.name)
 		// Set the URI of the SpacetimeDB host that's running our database.
-		.with_uri(HOST)
+		.with_uri(env_config.host)
 		// Finalize configuration and connect!
 		.build()
 		.expect("Failed to connect")
+	} else {
+		panic!(
+			"❌ Missing environment variables! Check your .env file and .env.example reference."
+		);
+	}
 }
 
 fn main() {

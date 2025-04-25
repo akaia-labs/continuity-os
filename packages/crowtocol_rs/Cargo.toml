@@ -1,18 +1,18 @@
 [package]
-name = "crowlink-rs"
-description = "Akaia Labs crow.d Rust client library"
+name = "crowtocol_rs"
+description = "Akaia Labs crow.d protocol client library in Rust"
 version = "0.1.0"
 edition = "2024"
 
 
 [lib]
-name = "crowlink"
+name = "crowtocol_rs"
 path = "src/lib.rs"
 
 
 # Subject to be extracted into a separate package, resides here for the initial prototyping
 [[bin]]
-name = "crowchat"
+name = "crowtocol_chat"
 path = "src/main.rs"
 
 
