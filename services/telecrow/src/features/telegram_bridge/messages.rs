@@ -26,7 +26,7 @@ pub fn message_capture_init(
 	// Telegram bot instance for the background task
 	let telegram_transmitter = telegram_bot.clone();
 
-	// Spawn a background task that processes messages from the channel
+	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(req) = forward_receiver.recv().await {
 			let _ = telegram_transmitter
@@ -39,7 +39,7 @@ pub fn message_capture_init(
 		}
 	});
 
-	// Register the message handler directly
+	// Registering the message handler
 	crowctx
 		.db
 		.message()

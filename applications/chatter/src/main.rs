@@ -54,7 +54,7 @@ fn user_name_or_identity(user: &crowchat::User) -> String {
 
 /// If the user is online, prints a notification.
 fn on_user_inserted(_ctx: &crowchat::EventContext, user: &crowchat::User) {
-	if user.online {
+	if user.is_online {
 		println!("User {} connected.", user_name_or_identity(user));
 	}
 }
@@ -69,11 +69,11 @@ fn on_user_updated(_ctx: &crowchat::EventContext, old: &crowchat::User, new: &cr
 		);
 	}
 
-	if old.online && !new.online {
+	if old.is_online && !new.is_online {
 		println!("User {} disconnected.", user_name_or_identity(new));
 	}
 
-	if !old.online && new.online {
+	if !old.is_online && new.is_online {
 		println!("User {} connected.", user_name_or_identity(new));
 	}
 }
