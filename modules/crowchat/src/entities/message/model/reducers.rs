@@ -9,6 +9,7 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 	log::info!("{}", text);
 
 	ctx.db.message().insert(Message {
+		id: 0,
 		sender: ctx.sender,
 		text,
 		sent: ctx.timestamp,

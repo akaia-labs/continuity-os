@@ -18,7 +18,8 @@ pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 
 /// Registers all the callbacks the app will use to respond to database events.
 fn register_callbacks(
-	crowctx: &crowchat::DbConnection, tx: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
+	crowctx: &crowchat::DbConnection,
+	forward_transmitter: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
 ) {
 	crowctx
 		.db
@@ -37,7 +38,9 @@ fn register_callbacks(
 	crowctx
 		.db
 		.message()
-		.on_insert(message_subscriptions::handle_telegram_forward(tx));
+		.on_insert(message_subscriptions::handle_telegram_forward(
+			forward_transmitter,
+		));
 
 	crowctx
 		.reducers
@@ -54,7 +57,7 @@ async fn process_text_message(
 	_tg_bot: telegram::Bot, tg_user: telegram::User, message_text: String,
 ) -> Result<(), TelecrowError> {
 	println!(
-		"@{:#?}: {}",
+		"@{}: {}",
 		tg_user.username.clone().unwrap_or(tg_user.id.to_string()),
 		message_text
 	);
@@ -78,33 +81,33 @@ async fn process_text_message(
 async fn main() -> Result<(), TelecrowError> {
 	dotenvy::dotenv()?;
 	pretty_env_logger::init();
+	println!("Initializing connections...");
 
-	println!("Initializing DB connection...");
 	let crowctx = crowchat_client::connect();
-
-	println!("Initializing Telegram bot...");
-	let telegram_bot = telegram::Bot::from_env();
+	let telegram_bot_client = telegram::Bot::from_env();
 
 	// Channel for forwarding messages to Telegram
-	let (tx, mut rx) = mpsc::channel::<message_forwarding::TelegramForwardRequest>(100);
+	let (forward_transmitter, mut forward_receiver) =
+		mpsc::channel::<message_forwarding::TelegramForwardRequest>(100);
 
-	// Clone the bot for the background task
-	let tg_bot_clone = telegram_bot.clone();
+	// Telegram bot instance for the background task
+	let telegram_transmitter = telegram_bot_client.clone();
 
 	// Spawn a background task that processes messages from the channel
 	tokio::spawn(async move {
-		while let Some(req) = rx.recv().await {
-			let _ = tg_bot_clone
+		while let Some(req) = forward_receiver.recv().await {
+			let _ = telegram_transmitter
 				.send_message(
 					telegram::ChatId(req.chat_id),
-					format!("@{}: {}", req.sender_name, req.message_text),
+					format!("💬 {}: {}", req.sender_name, req.message_text),
 				)
+				.message_thread_id(ThreadId(telegram::MessageId(3315)))
 				.await;
 		}
 	});
 
 	crowchat_client::subscribe(&crowctx);
-	register_callbacks(&crowctx, tx);
+	register_callbacks(&crowctx, forward_transmitter);
 	crowctx.run_threaded();
 
 	let teloxide_schema = telegram::Update::filter_message()
@@ -123,7 +126,8 @@ async fn main() -> Result<(), TelecrowError> {
 	);
 
 	println!("Starting Telegram bot client...");
-	telegram::Dispatcher::builder(telegram_bot, teloxide_schema)
+
+	telegram::Dispatcher::builder(telegram_bot_client, teloxide_schema)
 		.build()
 		.dispatch()
 		.await;

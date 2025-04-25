@@ -15,28 +15,31 @@ pub fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
 
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	tx: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
+	transmitter: mpsc::Sender<message_forwarding::TelegramForwardRequest>,
 ) -> impl FnMut(&crowchat::EventContext, &crowchat::Message) {
 	return move |crowctx: &crowchat::EventContext, message: &crowchat::Message| {
-		// Only forward messages that are not older than 5 minutes
-		if Timestamp::now()
-			.duration_since(message.sent)
-			.lt(&Some(Duration::from_secs(5 * 60)))
-		{
-			let sender_name = crowctx
-				.db()
-				.user()
-				.identity()
-				.find(&message.sender.clone())
-				.map(|u| user_model::user_name_or_identity(&u))
-				.unwrap_or_else(|| "unknown".to_string());
+		// Ignore messages inserted by the service itself
+		if message.sender != crowctx.identity() {
+			// Only forward messages that are not older than 5 minutes
+			if Timestamp::now()
+				.duration_since(message.sent)
+				.lt(&Some(Duration::from_secs(5 * 60)))
+			{
+				let sender_name = crowctx
+					.db()
+					.user()
+					.identity()
+					.find(&message.sender.clone())
+					.map(|u| user_model::user_name_or_identity(&u))
+					.unwrap_or_else(|| "unknown".to_string());
 
-			let _ = tx.try_send(message_forwarding::TelegramForwardRequest {
-				sender_name,
-				message_text: message.text.clone(),
-				// TODO: The chat id must be derived from the crowchat chat id
-				chat_id: -1001544271932,
-			});
+				let _ = transmitter.try_send(message_forwarding::TelegramForwardRequest {
+					sender_name,
+					message_text: message.text.clone(),
+					// TODO: The chat id must be derived from the crowchat chat id
+					chat_id: -1001544271932,
+				});
+			}
 		}
 	};
 }
