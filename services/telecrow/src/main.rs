@@ -2,9 +2,6 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
-use crowtocol_rs::crowchat::{self, *};
-use spacetimedb_sdk::Table;
-
 use crate::{
 	common::{
 		async_runtime,
@@ -15,21 +12,6 @@ use crate::{
 	entities::{message_subscriptions, user_subscriptions},
 	features::telegram_bridge,
 };
-
-fn register_callbacks(crowctx: &crowchat::DbConnection) {
-	crowctx
-		.db
-		.user()
-		.on_insert(user_subscriptions::on_user_inserted);
-
-	crowctx
-		.reducers
-		.on_set_name(user_subscriptions::on_name_set);
-
-	crowctx
-		.reducers
-		.on_send_message(message_subscriptions::on_message_sent);
-}
 
 #[tokio::main]
 async fn main() -> Result<(), TelecrowError> {
@@ -42,7 +24,8 @@ async fn main() -> Result<(), TelecrowError> {
 	let telegram_bot_client = telegram::Bot::from_env();
 
 	crowchat_client::subscribe(&crowchat_connection);
-	register_callbacks(&crowchat_connection);
+	user_subscriptions::register_internal_callbacks(&crowchat_connection);
+	message_subscriptions::register_internal_callbacks(&crowchat_connection);
 	crowchat_connection.run_threaded();
 
 	telegram_bridge::event_capture_init(

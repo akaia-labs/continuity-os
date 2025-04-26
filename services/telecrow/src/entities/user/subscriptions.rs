@@ -4,28 +4,11 @@ use std::sync::Arc;
 
 #[allow(unused_imports)]
 use crowtocol_rs::crowchat::{self, *};
-use spacetimedb_sdk::{Status, Timestamp};
+use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
 
 #[allow(unused_imports)]
 use crate::common::{async_runtime::AsyncRuntime, bindings::telegram, runtime::*};
-
-/// If the user is online, prints a notification.
-pub fn on_user_inserted(_ctx: &crowchat::EventContext, user: &crowchat::User) {
-	if user.is_online {
-		println!(
-			"User {} connected.",
-			user_model::user_name_or_identity(user)
-		);
-	}
-}
-
-/// Prints a warning if the reducer failed.
-pub fn on_name_set(ctx: &crowchat::ReducerEventContext, name: &String) {
-	if let Status::Failed(err) = &ctx.event.status {
-		eprintln!("Failed to change name to {:?}: {}", name, err);
-	}
-}
 
 pub struct StatusTelegramForwardRequest {
 	pub chat_id: i64,
@@ -82,4 +65,27 @@ fn _on_user_updated(_ctx: &crowchat::EventContext, old: &crowchat::User, new: &c
 	if !old.is_online && new.is_online {
 		println!("User {} connected.", user_model::user_name_or_identity(new));
 	}
+}
+
+/// If the user is online, prints a notification.
+fn on_user_inserted(_ctx: &crowchat::EventContext, user: &crowchat::User) {
+	if user.is_online {
+		println!(
+			"User {} connected.",
+			user_model::user_name_or_identity(user)
+		);
+	}
+}
+
+/// Prints a warning if the reducer failed.
+fn on_name_set(ctx: &crowchat::ReducerEventContext, name: &String) {
+	if let Status::Failed(err) = &ctx.event.status {
+		eprintln!("Failed to change name to {:?}: {}", name, err);
+	}
+}
+
+pub fn register_internal_callbacks(crowctx: &crowchat::DbConnection) {
+	crowctx.db.user().on_insert(on_user_inserted);
+
+	crowctx.reducers.on_set_name(on_name_set);
 }

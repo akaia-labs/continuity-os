@@ -9,19 +9,6 @@ use crate::{
 	entities::user_model,
 };
 
-/// Prints a warning if the reducer failed.
-pub fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
-	if let Status::Failed(err) = &crowctx.event.status {
-		eprintln!("Failed to send message {:?}: {}", text, err);
-	}
-}
-
-pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, tg_message: telegram::Message) {
-	if let Some(text) = tg_message.text() {
-		crowctx.reducers.send_message(text.to_owned()).unwrap();
-	}
-}
-
 pub struct TelegramForwardRequest {
 	pub chat_id: i64,
 	pub sender_name: String,
@@ -66,6 +53,12 @@ pub fn handle_telegram_forward(
 	};
 }
 
+pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, tg_message: telegram::Message) {
+	if let Some(text) = tg_message.text() {
+		crowctx.reducers.send_message(text.to_owned()).unwrap();
+	}
+}
+
 pub async fn process_text_message(
 	_tg_bot: telegram::Bot, tg_user: telegram::User, message_text: String,
 ) -> Result<(), TelecrowError> {
@@ -88,4 +81,15 @@ pub async fn process_text_message(
 	// 	.unwrap();
 
 	Ok(())
+}
+
+/// Prints a warning if the reducer failed.
+fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
+	if let Status::Failed(err) = &crowctx.event.status {
+		eprintln!("Failed to send message {:?}: {}", text, err);
+	}
+}
+
+pub fn register_internal_callbacks(crowctx: &crowchat::DbConnection) {
+	crowctx.reducers.on_send_message(on_message_sent);
 }
