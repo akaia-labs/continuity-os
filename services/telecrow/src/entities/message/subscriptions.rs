@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
@@ -57,30 +57,6 @@ pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, tg_message: tele
 	if let Some(text) = tg_message.text() {
 		crowctx.reducers.send_message(text.to_owned()).unwrap();
 	}
-}
-
-pub async fn process_text_message(
-	_tg_bot: telegram::Bot, tg_user: telegram::User, message_text: String,
-) -> Result<(), TelecrowError> {
-	println!(
-		"@{}: {}",
-		tg_user.username.clone().unwrap_or(tg_user.id.to_string()),
-		message_text
-	);
-
-	// let _message = tg_bot
-	// 	.send_message(
-	// 		tg_user.id,
-	// 		format!(
-	// 			"@{:#?}: {}",
-	// 			tg_user.username.unwrap_or(tg_user.id.to_string()),
-	// 			message_text
-	// 		),
-	// 	)
-	// 	.await
-	// 	.unwrap();
-
-	Ok(())
 }
 
 /// Prints a warning if the reducer failed.
