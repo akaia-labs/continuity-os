@@ -1,13 +1,11 @@
 use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::TableWithPrimaryKey;
 use std::sync::Arc;
+use teloxide::{Bot, payloads::SendMessageSetters, prelude::Requester};
 use tokio::sync::mpsc;
 
 use crate::{
-	common::{
-		async_runtime::AsyncRuntime,
-		bindings::telegram::{self, *},
-	},
+	common::{async_runtime::AsyncRuntime, bindings::telegram},
 	entities::crowchat_user,
 };
 
@@ -18,7 +16,7 @@ use crate::{
 /// 2. Spawns a background task that processes events from the channel
 /// 3. Registers the event handler
 pub fn subscribe(
-	crowctx: &crowchat::DbConnection, async_handler: Arc<AsyncRuntime>, telegram_bot: telegram::Bot,
+	crowctx: &crowchat::DbConnection, async_handler: Arc<AsyncRuntime>, telegram_bot: Bot,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<crowchat_user::StatusTelegramForwardRequest>(100);

@@ -2,30 +2,31 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
-use crowtocol_rs::crowchat::*;
 use dotenvy::dotenv;
 use std::sync::Arc;
 
+use teloxide::{
+	Bot,
+	dispatching::{HandlerExt, UpdateFilterExt},
+	dptree,
+	prelude::Dispatcher,
+};
+
 use crate::{
-	common::{
-		async_runtime,
-		bindings::telegram::{self, *},
-		clients::crowchat_client,
-		runtime,
-	},
+	common::{async_runtime, bindings::telegram, clients::crowchat_client, runtime::TelecrowError},
 	entities::{crowchat_message, crowchat_user},
 	features::telegram_relay,
 };
 
 #[tokio::main]
-async fn main() -> Result<(), runtime::TelecrowError> {
+async fn main() -> Result<(), TelecrowError> {
 	dotenv()?;
 	pretty_env_logger::init();
 	println!("\n⏳ Initializing clients...\n");
 
 	let async_runtime_instance = async_runtime::new();
 	let crowchat_connection = Arc::new(crowchat_client::connect());
-	let telegram_bot_client = telegram::Bot::from_env();
+	let telegram_bot_client = Bot::from_env();
 
 	println!("⏳ Initializing subscriptions...\n");
 	crowchat_client::subscribe(&crowchat_connection);
@@ -39,34 +40,21 @@ async fn main() -> Result<(), runtime::TelecrowError> {
 		telegram_bot_client.clone(),
 	);
 
-	let message_handler = move |msg: telegram::Message, _bot: telegram::Bot| {
-		let connection = crowchat_connection.clone();
-		async move {
-			if let Some(text) = msg.text() {
-				let _ = connection.reducers.send_message(text.to_owned());
-			}
-			respond(())
-		}
-	};
-
-	let telegram_connection_handler = telegram::Update::filter_message()
+	let telegram_relay_handler = telegram::Update::filter_message()
 		.branch(
 			dptree::entry()
 			.filter_command::<telegram_relay::BasicCommand>()
 			.endpoint(telegram_relay::on_basic_command),
 		)
-		/*
-		   Inject the `User` object representing the author of an incoming
-		   message into every successive handler function (1)
-		*/
+		// Injecting the `User` object representing the author of an incoming message
 		.filter_map(|update: telegram::Update| update.from().cloned())
 		.branch(
-			dptree::endpoint(message_handler),
+			dptree::endpoint(telegram_relay::handle_message(crowchat_connection.clone())),
 		);
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");
 
-	telegram::Dispatcher::builder(telegram_bot_client, telegram_connection_handler)
+	Dispatcher::builder(telegram_bot_client, telegram_relay_handler)
 		.build()
 		.dispatch()
 		.await;

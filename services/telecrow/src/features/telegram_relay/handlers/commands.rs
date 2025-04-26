@@ -1,4 +1,11 @@
-use crate::common::bindings::telegram::{self, command::BotCommands, *};
+use teloxide::{
+	Bot,
+	payloads::SendMessageSetters,
+	prelude::{Requester, ResponseResult},
+	utils::command::BotCommands,
+};
+
+use crate::common::bindings::telegram;
 
 #[derive(BotCommands, Clone)]
 #[command(rename_rule = "lowercase")]
@@ -9,7 +16,7 @@ pub enum BasicCommand {
 }
 
 pub async fn on_basic_command(
-	bot: telegram::Bot, msg: telegram::Message, cmd: BasicCommand,
+	bot: Bot, msg: telegram::Message, cmd: BasicCommand,
 ) -> ResponseResult<()> {
 	match cmd {
 		| BasicCommand::Help => {

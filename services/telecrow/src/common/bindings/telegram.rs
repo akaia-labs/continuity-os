@@ -1,1 +1,1 @@
-pub use teloxide::{dispatching::Dispatcher, prelude::*, types::*, utils::*};
+pub use teloxide::types::{Chat, ChatId, Message, MessageId, ThreadId, Update, User};

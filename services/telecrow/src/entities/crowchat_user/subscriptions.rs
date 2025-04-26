@@ -2,13 +2,11 @@ use super::model;
 
 use std::sync::Arc;
 
-#[allow(unused_imports)]
 use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
 
-#[allow(unused_imports)]
-use crate::common::{async_runtime::AsyncRuntime, bindings::telegram, runtime::*};
+use crate::common::async_runtime::AsyncRuntime;
 
 pub struct StatusTelegramForwardRequest {
 	pub chat_id: i64,
