@@ -8,7 +8,7 @@ use crate::{
 		async_runtime::AsyncRuntime,
 		bindings::telegram::{self, *},
 	},
-	entities::message_subscriptions,
+	entities::crowchat_message,
 };
 
 /// Sets up message forwarding from crowchat to Telegram.
@@ -17,11 +17,11 @@ use crate::{
 /// 1. Creates the channel for forwarding messages
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
-pub fn message_capture_init(
+pub fn capture_crowchat_messages(
 	telegram_bot: telegram::Bot, async_handler: Arc<AsyncRuntime>, crowctx: &crowchat::DbConnection,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
-		mpsc::channel::<message_subscriptions::TelegramForwardRequest>(100);
+		mpsc::channel::<crowchat_message::TelegramForwardRequest>(100);
 
 	// Telegram bot instance for the background task
 	let telegram_transmitter = telegram_bot.clone();
@@ -43,7 +43,7 @@ pub fn message_capture_init(
 	crowctx
 		.db
 		.message()
-		.on_insert(message_subscriptions::handle_telegram_forward(
+		.on_insert(crowchat_message::handle_telegram_forward(
 			forward_transmitter,
 			async_handler,
 		));

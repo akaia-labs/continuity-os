@@ -1,4 +1,4 @@
-use super::user_model;
+use super::model;
 
 use std::sync::Arc;
 
@@ -17,7 +17,7 @@ pub struct StatusTelegramForwardRequest {
 }
 
 /// Logs event on Telegram using a channel.
-pub fn handle_user_status_telegram_sync(
+pub fn handle_status_telegram_forward(
 	transmitter: mpsc::Sender<StatusTelegramForwardRequest>, async_handler: Arc<AsyncRuntime>,
 ) -> impl FnMut(&crowchat::EventContext, &crowchat::User, &crowchat::User) {
 	let subscribed_at = Timestamp::now();
@@ -36,8 +36,8 @@ pub fn handle_user_status_telegram_sync(
 
 					message_text: format!(
 						"User {} changed name to {}",
-						user_model::user_name_or_identity(outdated_user_data),
-						user_model::user_name_or_identity(updated_user_data)
+						model::name_or_identity(outdated_user_data),
+						model::name_or_identity(updated_user_data)
 					),
 				};
 
@@ -56,24 +56,18 @@ pub fn handle_user_status_telegram_sync(
 /// Prints a notification about name and status changes.
 fn _on_user_updated(_ctx: &crowchat::EventContext, old: &crowchat::User, new: &crowchat::User) {
 	if old.is_online && !new.is_online {
-		println!(
-			"User {} disconnected.",
-			user_model::user_name_or_identity(new)
-		);
+		println!("User {} disconnected.", model::name_or_identity(new));
 	}
 
 	if !old.is_online && new.is_online {
-		println!("User {} connected.", user_model::user_name_or_identity(new));
+		println!("User {} connected.", model::name_or_identity(new));
 	}
 }
 
 /// If the user is online, prints a notification.
 fn on_user_inserted(_ctx: &crowchat::EventContext, user: &crowchat::User) {
 	if user.is_online {
-		println!(
-			"User {} connected.",
-			user_model::user_name_or_identity(user)
-		);
+		println!("User {} connected.", model::name_or_identity(user));
 	}
 }
 
@@ -84,8 +78,7 @@ fn on_name_set(ctx: &crowchat::ReducerEventContext, name: &String) {
 	}
 }
 
-pub fn register_internal_callbacks(crowctx: &crowchat::DbConnection) {
+pub fn subscribe(crowctx: &crowchat::DbConnection) {
 	crowctx.db.user().on_insert(on_user_inserted);
-
 	crowctx.reducers.on_set_name(on_name_set);
 }

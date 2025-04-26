@@ -5,8 +5,8 @@ use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use tokio::sync::mpsc;
 
 use crate::{
-	common::{async_runtime::AsyncRuntime, bindings::telegram, runtime::*},
-	entities::user_model,
+	common::{async_runtime::AsyncRuntime, bindings::telegram},
+	entities::crowchat_user,
 };
 
 pub struct TelegramForwardRequest {
@@ -32,7 +32,7 @@ pub fn handle_telegram_forward(
 					.user()
 					.identity()
 					.find(&message.sender.clone())
-					.map(|u| user_model::user_name_or_identity(&u))
+					.map(|u| crowchat_user::name_or_identity(&u))
 					.unwrap_or_else(|| "unknown".to_string());
 
 				let request = TelegramForwardRequest {
@@ -53,8 +53,8 @@ pub fn handle_telegram_forward(
 	};
 }
 
-pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, tg_message: telegram::Message) {
-	if let Some(text) = tg_message.text() {
+pub fn on_tg_message_received(crowctx: &crowchat::DbConnection, msg: telegram::Message) {
+	if let Some(text) = msg.text() {
 		crowctx.reducers.send_message(text.to_owned()).unwrap();
 	}
 }
@@ -66,6 +66,6 @@ fn on_message_sent(crowctx: &crowchat::ReducerEventContext, text: &String) {
 	}
 }
 
-pub fn register_internal_callbacks(crowctx: &crowchat::DbConnection) {
+pub fn subscribe(crowctx: &crowchat::DbConnection) {
 	crowctx.reducers.on_send_message(on_message_sent);
 }

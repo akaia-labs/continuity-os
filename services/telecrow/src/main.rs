@@ -2,7 +2,9 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
-use crowtocol_rs::crowchat::{self, *};
+use crowtocol_rs::crowchat::*;
+use dotenvy::dotenv;
+use std::sync::Arc;
 
 use crate::{
 	common::{
@@ -11,44 +13,40 @@ use crate::{
 		clients::crowchat_client,
 		runtime,
 	},
-	entities::{message_subscriptions, user_subscriptions},
+	entities::{crowchat_message, crowchat_user},
 	features::telegram_bridge,
 };
 
 #[tokio::main]
 async fn main() -> Result<(), runtime::TelecrowError> {
-	dotenvy::dotenv()?;
+	dotenv()?;
 	pretty_env_logger::init();
 	println!("Initializing connections...");
 
 	let async_runtime_instance = async_runtime::new();
 	let crowchat_connection = crowchat_client::connect();
-	// Create a static reference to the crowchat connection that can be shared
-	let connection_arc = std::sync::Arc::new(crowchat_connection);
+	let crowchat_connection_pointer = Arc::new(crowchat_connection);
 	let telegram_bot_client = telegram::Bot::from_env();
 
-	// Use direct reference for initial setup
-	crowchat_client::subscribe(&connection_arc);
-	user_subscriptions::register_internal_callbacks(&connection_arc);
-	message_subscriptions::register_internal_callbacks(&connection_arc);
-	connection_arc.run_threaded();
+	crowchat_client::subscribe(&crowchat_connection_pointer);
+	crowchat_user::subscribe(&crowchat_connection_pointer);
+	crowchat_message::subscribe(&crowchat_connection_pointer);
+	crowchat_connection_pointer.run_threaded();
 
-	// telegram_bridge::Command::repl(telegram_bot_client.clone(), telegram_bridge::on_command).await;
-
-	telegram_bridge::event_capture_init(
+	telegram_bridge::capture_crowchat_events(
 		telegram_bot_client.clone(),
 		async_runtime_instance.clone(),
-		&connection_arc,
+		&crowchat_connection_pointer,
 	);
 
-	telegram_bridge::message_capture_init(
+	telegram_bridge::capture_crowchat_messages(
 		telegram_bot_client.clone(),
 		async_runtime_instance.clone(),
-		&connection_arc,
+		&crowchat_connection_pointer,
 	);
 
 	let message_handler = move |msg: telegram::Message, _bot: telegram::Bot| {
-		let connection = connection_arc.clone();
+		let connection = crowchat_connection_pointer.clone();
 		async move {
 			if let Some(text) = msg.text() {
 				let _ = connection.reducers.send_message(text.to_owned());
