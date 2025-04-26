@@ -1,4 +1,4 @@
-pub mod common;
+mod common;
 pub mod entities;
 pub mod features;
 
@@ -27,6 +27,8 @@ async fn main() -> Result<(), TelecrowError> {
 	user_subscriptions::register_internal_callbacks(&crowchat_connection);
 	message_subscriptions::register_internal_callbacks(&crowchat_connection);
 	crowchat_connection.run_threaded();
+
+	// telegram_bridge::Command::repl(telegram_bot_client.clone(), telegram_bridge::on_command).await;
 
 	telegram_bridge::event_capture_init(
 		telegram_bot_client.clone(),

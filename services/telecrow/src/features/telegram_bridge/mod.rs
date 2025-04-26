@@ -1,4 +1,5 @@
+mod commands;
 mod events;
 mod messages;
 
-pub use {events::*, messages::*};
+pub use {commands::*, events::*, messages::*};
