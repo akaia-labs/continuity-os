@@ -19,6 +19,6 @@ impl AsyncRuntime {
 }
 
 // Create a wrapper to easily create and share a runtime service
-pub fn create_service() -> Arc<AsyncRuntime> {
+pub fn new() -> Arc<AsyncRuntime> {
 	Arc::new(AsyncRuntime::new())
 }

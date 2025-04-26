@@ -9,6 +9,7 @@ pub fn set_name(ctx: &ReducerContext, name: String) -> Result<(), String> {
 	if let Some(user) = ctx.db.user().identity().find(ctx.sender) {
 		ctx.db.user().identity().update(User {
 			name: Some(name),
+			updated_at: ctx.timestamp,
 			..user
 		});
 

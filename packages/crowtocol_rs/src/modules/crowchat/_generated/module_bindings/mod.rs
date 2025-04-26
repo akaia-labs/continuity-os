@@ -126,7 +126,9 @@ impl __sdk::DbUpdate for DbUpdate {
 	) -> AppliedDiff<'_> {
 		let mut diff = AppliedDiff::default();
 
-		diff.message = cache.apply_diff_to_table::<Message>("message", &self.message);
+		diff.message = cache
+			.apply_diff_to_table::<Message>("message", &self.message)
+			.with_updates_by_pk(|row| &row.id);
 		diff.user = cache
 			.apply_diff_to_table::<User>("user", &self.user)
 			.with_updates_by_pk(|row| &row.identity);

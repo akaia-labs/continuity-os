@@ -6,6 +6,10 @@ setup:
 	(cargo install wasm-opt)
 
 
+unsafe-local-drop:
+	(spacetime delete -s localhost crowchat)
+
+
 local-publish-crowchat:
 	(spacetime publish -s localhost --project-path modules/crowchat crowchat)
 

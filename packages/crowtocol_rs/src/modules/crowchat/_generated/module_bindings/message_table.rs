@@ -79,6 +79,22 @@ impl<'ctx> __sdk::Table for MessageTableHandle<'ctx> {
 #[doc(hidden)]
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
 	let _table = client_cache.get_or_make_table::<Message>("message");
+	_table.add_unique_constraint::<u64>("id", |row| &row.id);
+}
+pub struct MessageUpdateCallbackId(__sdk::CallbackId);
+
+impl<'ctx> __sdk::TableWithPrimaryKey for MessageTableHandle<'ctx> {
+	type UpdateCallbackId = MessageUpdateCallbackId;
+
+	fn on_update(
+		&self, callback: impl FnMut(&Self::EventContext, &Self::Row, &Self::Row) + Send + 'static,
+	) -> MessageUpdateCallbackId {
+		MessageUpdateCallbackId(self.imp.on_update(Box::new(callback)))
+	}
+
+	fn remove_on_update(&self, callback: MessageUpdateCallbackId) {
+		self.imp.remove_on_update(callback.0)
+	}
 }
 
 #[doc(hidden)]
@@ -90,4 +106,34 @@ pub(super) fn parse_table_update(
 			.with_cause(e)
 			.into()
 	})
+}
+
+/// Access to the `id` unique index on the table `message`,
+/// which allows point queries on the field of the same name
+/// via the [`MessageIdUnique::find`] method.
+///
+/// Users are encouraged not to explicitly reference this type,
+/// but to directly chain method calls,
+/// like `ctx.db.message().id().find(...)`.
+pub struct MessageIdUnique<'ctx> {
+	imp: __sdk::UniqueConstraintHandle<Message, u64>,
+	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
+}
+
+impl<'ctx> MessageTableHandle<'ctx> {
+	/// Get a handle on the `id` unique index on the table `message`.
+	pub fn id(&self) -> MessageIdUnique<'ctx> {
+		MessageIdUnique {
+			imp: self.imp.get_unique_constraint::<u64>("id"),
+			phantom: std::marker::PhantomData,
+		}
+	}
+}
+
+impl<'ctx> MessageIdUnique<'ctx> {
+	/// Find the subscribed row whose `id` column value is equal to `col_val`,
+	/// if such a row is present in the client cache.
+	pub fn find(&self, col_val: &u64) -> Option<Message> {
+		self.imp.find(col_val)
+	}
 }

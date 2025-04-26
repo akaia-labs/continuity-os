@@ -3,7 +3,7 @@ pub mod entities;
 pub mod features;
 
 use crowtocol_rs::crowchat::{self, *};
-use spacetimedb_sdk::{Table, TableWithPrimaryKey};
+use spacetimedb_sdk::Table;
 
 use crate::{
 	common::{
@@ -27,11 +27,6 @@ fn register_callbacks(crowctx: &crowchat::DbConnection) {
 		.on_set_name(user_subscriptions::on_name_set);
 
 	crowctx
-		.db
-		.user()
-		.on_update(user_subscriptions::on_user_updated);
-
-	crowctx
 		.reducers
 		.on_send_message(message_subscriptions::on_message_sent);
 }
@@ -42,17 +37,23 @@ async fn main() -> Result<(), TelecrowError> {
 	pretty_env_logger::init();
 	println!("Initializing connections...");
 
+	let async_runtime_instance = async_runtime::new();
 	let crowchat_connection = crowchat_client::connect();
 	let telegram_bot_client = telegram::Bot::from_env();
-	let runtime_service = async_runtime::create_service();
 
 	crowchat_client::subscribe(&crowchat_connection);
 	register_callbacks(&crowchat_connection);
 	crowchat_connection.run_threaded();
 
-	telegram_bridge::start_forwarding(
+	telegram_bridge::event_capture_init(
 		telegram_bot_client.clone(),
-		runtime_service.clone(),
+		async_runtime_instance.clone(),
+		&crowchat_connection,
+	);
+
+	telegram_bridge::message_capture_init(
+		telegram_bot_client.clone(),
+		async_runtime_instance.clone(),
 		&crowchat_connection,
 	);
 

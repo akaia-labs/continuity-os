@@ -9,7 +9,9 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 pub struct User {
 	pub identity: __sdk::Identity,
 	pub name: Option<String>,
-	pub online: bool,
+	pub is_online: bool,
+	pub updated_at: __sdk::Timestamp,
+	pub last_seen_at: __sdk::Timestamp,
 }
 
 impl __sdk::InModule for User {
