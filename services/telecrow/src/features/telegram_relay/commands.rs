@@ -1,7 +1,4 @@
-use crate::common::{
-	bindings::telegram::{self, command::BotCommands, *},
-	runtime,
-};
+use crate::common::bindings::telegram::{self, command::BotCommands, *};
 
 #[derive(BotCommands, Clone)]
 #[command(rename_rule = "lowercase")]

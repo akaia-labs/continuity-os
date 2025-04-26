@@ -1,1 +1,1 @@
-pub mod telegram_bridge;
+pub mod telegram_relay;
