@@ -26,7 +26,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let async_runtime_instance = async_runtime::new();
 	let crowchat_connection = Arc::new(crowchat_client::connect());
-	let telegram_bot_client = Bot::from_env();
+	let telegram_relay_bot = Bot::from_env();
 
 	println!("⏳ Initializing subscriptions...\n");
 	crowchat_client::subscribe(&crowchat_connection);
@@ -37,7 +37,7 @@ async fn main() -> Result<(), TelecrowError> {
 	telegram_relay::subscribe(
 		&crowchat_connection,
 		async_runtime_instance.clone(),
-		telegram_bot_client.clone(),
+		telegram_relay_bot.clone(),
 	);
 
 	let telegram_relay_handler = telegram::Update::filter_message()
@@ -54,7 +54,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");
 
-	Dispatcher::builder(telegram_bot_client, telegram_relay_handler)
+	Dispatcher::builder(telegram_relay_bot, telegram_relay_handler)
 		.build()
 		.dispatch()
 		.await;
