@@ -18,7 +18,7 @@ use crate::{
 /// 2. Spawns a background task that processes events from the channel
 /// 3. Registers the event handler
 pub fn capture_crowchat_events(
-	telegram_bot: telegram::Bot, async_handler: Arc<AsyncRuntime>, crowctx: &crowchat::DbConnection,
+	crowctx: &crowchat::DbConnection, async_handler: Arc<AsyncRuntime>, telegram_bot: telegram::Bot,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<crowchat_user::StatusTelegramForwardRequest>(100);

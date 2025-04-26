@@ -33,16 +33,10 @@ async fn main() -> Result<(), runtime::TelecrowError> {
 	crowchat_message::subscribe(&crowchat_connection);
 	crowchat_connection.run_threaded();
 
-	telegram_relay::capture_crowchat_events(
-		telegram_bot_client.clone(),
-		async_runtime_instance.clone(),
+	telegram_relay::subscribe(
 		&crowchat_connection,
-	);
-
-	telegram_relay::capture_crowchat_messages(
-		telegram_bot_client.clone(),
 		async_runtime_instance.clone(),
-		&crowchat_connection,
+		telegram_bot_client.clone(),
 	);
 
 	let message_handler = move |msg: telegram::Message, _bot: telegram::Bot| {
@@ -55,7 +49,7 @@ async fn main() -> Result<(), runtime::TelecrowError> {
 		}
 	};
 
-	let telegram_traffic_handler = telegram::Update::filter_message()
+	let telegram_connection_handler = telegram::Update::filter_message()
 		.branch(
 			dptree::entry()
 			.filter_command::<telegram_relay::BasicCommand>()
@@ -72,7 +66,7 @@ async fn main() -> Result<(), runtime::TelecrowError> {
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");
 
-	telegram::Dispatcher::builder(telegram_bot_client, telegram_traffic_handler)
+	telegram::Dispatcher::builder(telegram_bot_client, telegram_connection_handler)
 		.build()
 		.dispatch()
 		.await;
