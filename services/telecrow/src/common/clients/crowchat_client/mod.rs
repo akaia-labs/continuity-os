@@ -31,9 +31,9 @@ fn on_disconnected(_ctx: &crowchat::ErrorContext, err: Option<Error>) {
 	}
 }
 
-/// Sorts all past messages and print them in timestamp order.
 fn on_sub_applied(_crowctx: &crowchat::SubscriptionEventContext) {
-	println!("✅ Fully connected and all subscriptions applied.");
+	println!("✅ Fully connected and all subscriptions applied.\n");
+	println!("🚀 ONLINE!\n");
 }
 
 /// Prints the error, then exits the process.

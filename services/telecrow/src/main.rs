@@ -2,81 +2,59 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
-use crowtocol_rs::crowchat::{self, *};
-use spacetimedb_sdk::Table;
+use dotenvy::dotenv;
+use std::sync::Arc;
 
-use crate::{
-	common::{
-		async_runtime,
-		bindings::telegram::{self, *},
-		clients::crowchat_client,
-		runtime::*,
-	},
-	entities::{message_subscriptions, user_subscriptions},
-	features::telegram_bridge,
+use teloxide::{
+	Bot,
+	dispatching::{HandlerExt, UpdateFilterExt},
+	dptree,
+	prelude::Dispatcher,
 };
 
-fn register_callbacks(crowctx: &crowchat::DbConnection) {
-	crowctx
-		.db
-		.user()
-		.on_insert(user_subscriptions::on_user_inserted);
-
-	crowctx
-		.reducers
-		.on_set_name(user_subscriptions::on_name_set);
-
-	crowctx
-		.reducers
-		.on_send_message(message_subscriptions::on_message_sent);
-}
+use crate::{
+	common::{async_runtime, bindings::telegram, clients::crowchat_client, runtime::TelecrowError},
+	entities::{crowchat_message, crowchat_user},
+	features::telegram_relay,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), TelecrowError> {
-	dotenvy::dotenv()?;
+	dotenv()?;
 	pretty_env_logger::init();
-	println!("Initializing connections...");
+	println!("\n⏳ Initializing clients...\n");
 
 	let async_runtime_instance = async_runtime::new();
-	let crowchat_connection = crowchat_client::connect();
-	let telegram_bot_client = telegram::Bot::from_env();
+	let crowchat_connection = Arc::new(crowchat_client::connect());
+	let telegram_relay_bot = Bot::from_env();
 
+	println!("⏳ Initializing subscriptions...\n");
 	crowchat_client::subscribe(&crowchat_connection);
-	register_callbacks(&crowchat_connection);
+	crowchat_user::subscribe(&crowchat_connection);
+	crowchat_message::subscribe(&crowchat_connection);
 	crowchat_connection.run_threaded();
 
-	telegram_bridge::event_capture_init(
-		telegram_bot_client.clone(),
-		async_runtime_instance.clone(),
+	telegram_relay::subscribe(
 		&crowchat_connection,
+		async_runtime_instance.clone(),
+		telegram_relay_bot.clone(),
 	);
 
-	telegram_bridge::message_capture_init(
-		telegram_bot_client.clone(),
-		async_runtime_instance.clone(),
-		&crowchat_connection,
-	);
-
-	let teloxide_schema = telegram::Update::filter_message()
-		.inspect(move |msg: telegram::Message| message_subscriptions::on_tg_message_received(
-			&crowchat_connection, msg
-		))
-		/*
-		   Inject the `User` object representing the author of an incoming
-		   message into every successive handler function (1)
-		*/
+	let telegram_relay_handler = telegram::Update::filter_message()
+		.branch(
+			dptree::entry()
+			.filter_command::<telegram_relay::BasicCommand>()
+			.endpoint(telegram_relay::on_basic_command),
+		)
+		// Injecting the `User` object representing the author of an incoming message
 		.filter_map(|update: telegram::Update| update.from().cloned())
 		.branch(
-			/*
-			   Use filter_text method of MessageFilterExt to accept
-			   only textual messages. Others will be ignored by this handler (2)
-			*/
-			telegram::Message::filter_text().endpoint(message_subscriptions::process_text_message),
+			dptree::endpoint(telegram_relay::handle_message(crowchat_connection.clone())),
 		);
 
-	println!("Starting Telegram bot client...");
+	println!("⌛ Starting Telegram bot dispatcher...\n");
 
-	telegram::Dispatcher::builder(telegram_bot_client, teloxide_schema)
+	Dispatcher::builder(telegram_relay_bot, telegram_relay_handler)
 		.build()
 		.dispatch()
 		.await;

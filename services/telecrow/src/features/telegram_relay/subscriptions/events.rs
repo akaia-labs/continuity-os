@@ -1,14 +1,12 @@
 use crowtocol_rs::crowchat::{self, *};
 use spacetimedb_sdk::TableWithPrimaryKey;
 use std::sync::Arc;
+use teloxide::{Bot, payloads::SendMessageSetters, prelude::Requester};
 use tokio::sync::mpsc;
 
 use crate::{
-	common::{
-		async_runtime::AsyncRuntime,
-		bindings::telegram::{self, *},
-	},
-	entities::user_subscriptions,
+	common::{async_runtime::AsyncRuntime, bindings::telegram},
+	entities::crowchat_user,
 };
 
 /// Sets up event forwarding from crowchat to Telegram.
@@ -17,11 +15,11 @@ use crate::{
 /// 1. Creates the channel for sending event messages
 /// 2. Spawns a background task that processes events from the channel
 /// 3. Registers the event handler
-pub fn event_capture_init(
-	telegram_bot: telegram::Bot, async_handler: Arc<AsyncRuntime>, crowctx: &crowchat::DbConnection,
+pub fn subscribe(
+	crowctx: &crowchat::DbConnection, async_handler: Arc<AsyncRuntime>, telegram_bot: Bot,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
-		mpsc::channel::<user_subscriptions::StatusTelegramForwardRequest>(100);
+		mpsc::channel::<crowchat_user::StatusTelegramForwardRequest>(100);
 
 	// Telegram bot instance for the background task
 	let telegram_transmitter = telegram_bot.clone();
@@ -43,7 +41,7 @@ pub fn event_capture_init(
 	crowctx
 		.db
 		.user()
-		.on_update(user_subscriptions::handle_user_status_telegram_sync(
+		.on_update(crowchat_user::handle_status_telegram_forward(
 			forward_transmitter,
 			async_handler,
 		));
