@@ -1,5 +1,4 @@
-mod commands;
-mod events;
-mod messages;
+mod handlers;
+mod subscriptions;
 
-pub use {commands::*, events::*, messages::*};
+pub use {handlers::*, subscriptions::*};
