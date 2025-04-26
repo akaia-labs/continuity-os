@@ -11,6 +11,6 @@ pub fn subscribe(
 	crowctx: &crowchat::DbConnection, async_handler: Arc<async_runtime::AsyncRuntime>,
 	telegram_bot: telegram::Bot,
 ) {
-	events::capture_crowchat_events(&crowctx, async_handler.clone(), telegram_bot.clone());
-	messages::capture_crowchat_messages(&crowctx, async_handler.clone(), telegram_bot.clone());
+	events::subscribe(&crowctx, async_handler.clone(), telegram_bot.clone());
+	messages::subscribe(&crowctx, async_handler.clone(), telegram_bot.clone());
 }

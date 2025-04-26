@@ -17,7 +17,7 @@ use crate::{
 /// 1. Creates the channel for forwarding messages
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
-pub fn capture_crowchat_messages(
+pub fn subscribe(
 	crowctx: &crowchat::DbConnection, async_handler: Arc<AsyncRuntime>, telegram_bot: telegram::Bot,
 ) {
 	let (forward_transmitter, mut forward_receiver) =

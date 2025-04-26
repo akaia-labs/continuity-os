@@ -1,4 +1,4 @@
 mod commands;
-mod connection;
+mod messages;
 
 pub use commands::*;
