@@ -8,15 +8,15 @@ use teloxide::{Bot, RequestError, respond};
 use crate::common::bindings::telegram;
 
 pub fn handle_message(
-	crowchat_connection: Arc<crowchat::DbConnection>,
+	crowctx: Arc<crowchat::DbConnection>,
 ) -> impl Fn(telegram::Message, Bot) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
 {
 	move |msg: telegram::Message, _bot: Bot| {
-		let connection = crowchat_connection.clone();
+		let crowchat_connection = crowctx.clone();
 
 		Box::pin(async move {
 			if let Some(text) = msg.text() {
-				let _ = connection.reducers.send_message(text.to_owned());
+				let _result = crowchat_connection.reducers.send_message(text.to_owned());
 			}
 
 			respond(())
