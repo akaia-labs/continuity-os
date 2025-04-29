@@ -1,3 +1,4 @@
+pub mod model;
 pub mod subscriptions;
 
-pub use subscriptions::*;
+pub use {model::*, subscriptions::*};
