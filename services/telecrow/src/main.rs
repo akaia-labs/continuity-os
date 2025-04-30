@@ -2,6 +2,7 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
+use common::runtime::TelecrowError;
 use dotenvy::dotenv;
 use std::sync::Arc;
 
@@ -13,8 +14,8 @@ use teloxide::{
 };
 
 use crate::{
-	common::{async_runtime, bindings::telegram, clients::crowchat_client, runtime::TelecrowError},
-	entities::{crowchat_message, crowchat_user},
+	common::{bindings::telegram, clients::crowspace_client, runtime},
+	entities::{crowspace_account, crowspace_message},
 	features::telegram_relay,
 };
 
@@ -24,19 +25,19 @@ async fn main() -> Result<(), TelecrowError> {
 	pretty_env_logger::init();
 	println!("\n⏳ Initializing clients...\n");
 
-	let async_runtime_instance = async_runtime::new();
-	let crowchat_connection = Arc::new(crowchat_client::connect());
+	let async_handler = runtime::new_async_handler();
+	let crowspace = Arc::new(crowspace_client::connect());
 	let telegram_relay_bot = Bot::from_env();
 
 	println!("⏳ Initializing subscriptions...\n");
-	crowchat_client::subscribe(&crowchat_connection);
-	crowchat_user::subscribe(&crowchat_connection);
-	crowchat_message::subscribe(&crowchat_connection);
-	crowchat_connection.run_threaded();
+	crowspace_client::subscribe(&crowspace);
+	crowspace_account::subscribe(&crowspace);
+	crowspace_message::subscribe(&crowspace);
+	crowspace.run_threaded();
 
 	telegram_relay::subscribe(
-		&crowchat_connection,
-		async_runtime_instance.clone(),
+		&crowspace,
+		async_handler.clone(),
 		telegram_relay_bot.clone(),
 	);
 
@@ -49,7 +50,7 @@ async fn main() -> Result<(), TelecrowError> {
 		// Injecting the `User` object representing the author of an incoming message
 		.filter_map(|update: telegram::Update| update.from().cloned())
 		.branch(
-			dptree::endpoint(telegram_relay::handle_message(crowchat_connection.clone())),
+			dptree::endpoint(telegram_relay::handle_message(crowspace.clone())),
 		);
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");

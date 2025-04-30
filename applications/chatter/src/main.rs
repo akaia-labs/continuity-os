@@ -1,7 +1,7 @@
 use std::process;
 
-use crowtocol_rs::{
-	crowchat::{self, MessageTableAccess, UserTableAccess, send_message, set_name},
+use crowcomm::{
+	crowspace::{self, *},
 	get_env_config,
 };
 
@@ -17,21 +17,21 @@ fn creds_store() -> credentials::File {
 	credentials::File::new("console.crowd-credentials")
 }
 
-/// Saves client user credentials to a file.
-fn on_connected(_ctx: &crowchat::DbConnection, _identity: Identity, token: &str) {
+/// Saves client account credentials to a file.
+fn on_connected(_ctx: &crowspace::DbConnection, _identity: Identity, token: &str) {
 	if let Err(e) = creds_store().save(token) {
 		eprintln!("Failed to save credentials: {:?}", e);
 	}
 }
 
 /// Prints the error, then exits the process.
-fn on_connect_error(_ctx: &crowchat::ErrorContext, err: Error) {
+fn on_connect_error(_ctx: &crowspace::ErrorContext, err: Error) {
 	eprintln!("Connection error: {:?}", err);
 	process::exit(1);
 }
 
 /// Prints a note, then exits the process.
-fn on_disconnected(_ctx: &crowchat::ErrorContext, err: Option<Error>) {
+fn on_disconnected(_ctx: &crowspace::ErrorContext, err: Option<Error>) {
 	if let Some(err) = err {
 		eprintln!("Disconnected: {}", err);
 		process::exit(1);
@@ -45,43 +45,46 @@ fn on_disconnected(_ctx: &crowchat::ErrorContext, err: Option<Error>) {
 !	USER SUBSCRIPTIONS
 */
 
-/// Returns the user's name, or their identity if they have no name.
-fn user_name_or_identity(user: &crowchat::User) -> String {
-	user.name
+/// Returns the account's callsign, or their identity if they have no callsign.
+fn account_name_or_identity(account: &crowspace::Account) -> String {
+	account
+		.callsign
 		.clone()
-		.unwrap_or_else(|| user.identity.to_hex().to_string())
+		.unwrap_or_else(|| account.identity.to_hex().to_string())
 }
 
-/// If the user is online, prints a notification.
-fn on_user_inserted(_ctx: &crowchat::EventContext, user: &crowchat::User) {
-	if user.is_online {
-		println!("User {} connected.", user_name_or_identity(user));
+/// If the account is online, prints a notification.
+fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Account) {
+	if account.is_online {
+		println!("Account {} connected.", account_name_or_identity(account));
 	}
 }
 
-/// Prints a notification about name and status changes.
-fn on_user_updated(_ctx: &crowchat::EventContext, old: &crowchat::User, new: &crowchat::User) {
-	if old.name != new.name {
+/// Prints a notification about callsign and status changes.
+fn on_account_updated(
+	_ctx: &crowspace::EventContext, old: &crowspace::Account, new: &crowspace::Account,
+) {
+	if old.callsign != new.callsign {
 		println!(
-			"User {} renamed to {}.",
-			user_name_or_identity(old),
-			user_name_or_identity(new)
+			"Account {} renamed to {}.",
+			account_name_or_identity(old),
+			account_name_or_identity(new)
 		);
 	}
 
 	if old.is_online && !new.is_online {
-		println!("User {} disconnected.", user_name_or_identity(new));
+		println!("Account {} disconnected.", account_name_or_identity(new));
 	}
 
 	if !old.is_online && new.is_online {
-		println!("User {} connected.", user_name_or_identity(new));
+		println!("Account {} connected.", account_name_or_identity(new));
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_name_set(ctx: &crowchat::ReducerEventContext, name: &String) {
+fn on_callsign_set(ctx: &crowspace::ReducerEventContext, callsign: &String) {
 	if let Status::Failed(err) = &ctx.event.status {
-		eprintln!("Failed to change name to {:?}: {}", name, err);
+		eprintln!("Failed to change callsign to {:?}: {}", callsign, err);
 	}
 }
 
@@ -89,27 +92,27 @@ fn on_name_set(ctx: &crowchat::ReducerEventContext, name: &String) {
 !	MESSAGE SUBSCRIPTIONS
 */
 
-fn print_message(ctx: &impl crowchat::RemoteDbContext, message: &crowchat::Message) {
+fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Message) {
 	let sender = ctx
 		.db()
-		.user()
+		.account()
 		.identity()
 		.find(&message.sender.clone())
-		.map(|u| user_name_or_identity(&u))
+		.map(|u| account_name_or_identity(&u))
 		.unwrap_or_else(|| "unknown".to_string());
 
 	println!("{}: {}", sender, message.text);
 }
 
 /// Prints new messages.
-fn on_message_inserted(ctx: &crowchat::EventContext, message: &crowchat::Message) {
+fn on_message_inserted(ctx: &crowspace::EventContext, message: &crowspace::Message) {
 	if let Event::Reducer(_) = ctx.event {
 		print_message(ctx, message)
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_message_sent(ctx: &crowchat::ReducerEventContext, text: &String) {
+fn on_message_sent(ctx: &crowspace::ReducerEventContext, text: &String) {
 	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to send message {:?}: {}", text, err);
 	}
@@ -120,7 +123,7 @@ fn on_message_sent(ctx: &crowchat::ReducerEventContext, text: &String) {
 */
 
 /// Sorts all past messages and print them in timestamp order.
-fn on_sub_applied(ctx: &crowchat::SubscriptionEventContext) {
+fn on_sub_applied(ctx: &crowspace::SubscriptionEventContext) {
 	let mut messages = ctx.db.message().iter().collect::<Vec<_>>();
 
 	messages.sort_by_key(|m| m.sent);
@@ -130,21 +133,21 @@ fn on_sub_applied(ctx: &crowchat::SubscriptionEventContext) {
 	}
 
 	println!("Fully connected and all subscriptions applied.");
-	println!("Use /name to set your name, or type a message!");
+	println!("Use /callsign to set your callsign, or type a message!");
 }
 
 /// Prints the error, then exits the process.
-fn on_sub_error(_ctx: &crowchat::ErrorContext, err: Error) {
+fn on_sub_error(_ctx: &crowspace::ErrorContext, err: Error) {
 	eprintln!("Subscription failed: {}", err);
 	std::process::exit(1);
 }
 
 /// Registers subscriptions for all rows of both tables.
-fn subscribe_to_tables(ctx: &crowchat::DbConnection) {
+fn subscribe_to_tables(ctx: &crowspace::DbConnection) {
 	ctx.subscription_builder()
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
-		.subscribe(["SELECT * FROM user", "SELECT * FROM message"]);
+		.subscribe(["SELECT * FROM account", "SELECT * FROM message"]);
 }
 
 /*
@@ -152,14 +155,14 @@ fn subscribe_to_tables(ctx: &crowchat::DbConnection) {
 */
 
 /// Reads each line of standard input, and either executes a command or sends a message as appropriate.
-fn user_input_loop(ctx: &crowchat::DbConnection) {
+fn account_input_loop(ctx: &crowspace::DbConnection) {
 	for line in std::io::stdin().lines() {
 		let Ok(line) = line else {
 			panic!("Failed to read from stdin.");
 		};
 
-		if let Some(name) = line.strip_prefix("/name ") {
-			ctx.reducers.set_name(name.to_string()).unwrap();
+		if let Some(callsign) = line.strip_prefix("/callsign ") {
+			ctx.reducers.set_callsign(callsign.to_string()).unwrap();
 		} else {
 			ctx.reducers.send_message(line).unwrap();
 		}
@@ -171,35 +174,35 @@ fn user_input_loop(ctx: &crowchat::DbConnection) {
 */
 
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(ctx: &crowchat::DbConnection) {
-	// When a new user joins, print a notification.
-	ctx.db.user().on_insert(on_user_inserted);
+fn register_callbacks(ctx: &crowspace::DbConnection) {
+	// When a new account joins, print a notification.
+	ctx.db.account().on_insert(on_account_inserted);
 
-	// When a user's status changes, print a notification.
-	ctx.db.user().on_update(on_user_updated);
+	// When a account's status changes, print a notification.
+	ctx.db.account().on_update(on_account_updated);
 
 	// When a new message is received, print it.
 	ctx.db.message().on_insert(on_message_inserted);
 
-	// When we fail to set our name, print a warning.
-	ctx.reducers.on_set_name(on_name_set);
+	// When we fail to set our callsign, print a warning.
+	ctx.reducers.on_set_callsign(on_callsign_set);
 
 	// When we fail to send a message, print a warning.
 	ctx.reducers.on_send_message(on_message_sent);
 }
 
 /// Load credentials from a file and connect to the database.
-fn connect_to_db() -> crowchat::DbConnection {
+fn connect_to_db() -> crowspace::DbConnection {
 	if let Some(env_config) = get_env_config() {
-		crowchat::DbConnection::builder()
+		crowspace::DbConnection::builder()
 		.on_connect(on_connected)
 		.on_connect_error(on_connect_error)
 		.on_disconnect(on_disconnected)
-		// If the user has previously connected, we'll have saved a token in the `on_connect` callback.
+		// If the account has previously connected, we'll have saved a token in the `on_connect` callback.
 		// In that case, we'll load it and pass it to `with_token`,
 		// so we can re-authenticate as the same `Identity`.
 		.with_token(creds_store().load().expect("Error loading credentials"))
-		.with_module_name(env_config.modules.chat.name)
+		.with_module_name(env_config.modules.crowspace.name)
 		.with_uri(env_config.host)
 		.build()
 		.expect("Failed to connect")
@@ -219,5 +222,5 @@ fn main() {
 	register_callbacks(&ctx);
 	subscribe_to_tables(&ctx);
 	ctx.run_threaded();
-	user_input_loop(&ctx);
+	account_input_loop(&ctx);
 }

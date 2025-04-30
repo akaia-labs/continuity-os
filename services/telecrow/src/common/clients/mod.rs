@@ -1,1 +1,1 @@
-pub mod crowchat_client;
+pub mod crowspace_client;
