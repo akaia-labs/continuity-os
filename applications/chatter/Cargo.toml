@@ -12,7 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 # crow.d
-crowtocol_rs.workspace = true
+crowcomm.workspace = true
 
 # External packages
 dotenvy.workspace = true

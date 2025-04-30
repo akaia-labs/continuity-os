@@ -245,7 +245,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 name = "chatter"
 version = "0.1.0"
 dependencies = [
- "crowtocol_rs",
+ "crowcomm",
  "dotenvy",
  "hex",
  "spacetimedb-sdk",
@@ -311,19 +311,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "crowchat"
-version = "0.1.0"
-dependencies = [
- "log",
- "spacetimedb",
-]
-
-[[package]]
-name = "crowtocol_rs"
+name = "crowcomm"
 version = "0.1.0"
 dependencies = [
  "hex",
  "spacetimedb-sdk",
+]
+
+[[package]]
+name = "crowspace"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "spacetimedb",
 ]
 
 [[package]]
@@ -2158,7 +2158,7 @@ checksum = "20f34339676cdcab560c9a82300c4c2581f68b9369aedf0fae86f2ff9565ff3e"
 name = "telecrow"
 version = "0.1.0"
 dependencies = [
- "crowtocol_rs",
+ "crowcomm",
  "dotenvy",
  "hex",
  "log",

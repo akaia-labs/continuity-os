@@ -3,8 +3,8 @@ resolver = "3"
 
 members = [
 	"applications/chatter",
-	"modules/crowchat",
-	"packages/crowtocol_rs",
+	"modules/crowspace",
+	"packages/crowcomm",
 	"services/telecrow",
 ]
 
@@ -23,7 +23,7 @@ overflow-checks = true
 
 [workspace.dependencies]
 # crow.d
-crowtocol_rs = { path = "packages/crowtocol_rs" }
+crowcomm = { path = "packages/crowcomm" }
 
 # External packages
 dotenvy = "0.15.7"

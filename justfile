@@ -7,28 +7,25 @@ setup:
 
 
 unsafe-local-drop:
-	(spacetime delete -s localhost crowchat)
+	(spacetime delete -s localhost crowspace)
 
+local-publish-crowspace:
+	(spacetime publish -s localhost --project-path modules/crowspace crowspace)
 
-local-publish-crowchat:
-	(spacetime publish -s localhost --project-path modules/crowchat crowchat)
+local-dbcall-crowspace:
+	(spacetime call -s localhost crowspace)
 
-
-local-dbcall-crowchat:
-	(spacetime call -s localhost crowchat)
-
-
-local-dblogs-crowchat:
-	(spacetime logs -s localhost crowchat)
+local-dblogs-crowspace:
+	(spacetime logs -s localhost crowspace)
 
 
 generate-module_bindings:
 	spacetime generate --lang rust \
-		--project-path modules/crowchat \
-		--out-dir packages/crowtocol_rs/src/modules/crowchat/_generated/module_bindings
+		--project-path modules/crowspace \
+		--out-dir packages/crowcomm/src/modules/crowspace/_generated/module_bindings
 
 
-local-publish: local-publish-crowchat
+local-publish: local-publish-crowspace
 	(echo "DONE.")
 
 

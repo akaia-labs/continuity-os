@@ -1,2 +1,2 @@
-pub mod crowchat_message;
-pub mod crowchat_user;
+pub mod crowspace_account;
+pub mod crowspace_message;
