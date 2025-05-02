@@ -6,6 +6,7 @@ pub struct Account {
 	pub identity: Identity,
 	pub callsign: Option<String>,
 	pub is_online: bool,
+	pub created_at: Timestamp,
 	pub updated_at: Timestamp,
 	pub last_seen_at: Timestamp,
 }

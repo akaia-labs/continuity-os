@@ -26,6 +26,7 @@ pub fn client_connected(ctx: &ReducerContext) {
 			callsign: Some(format!("0x{}", ctx.sender.to_hex().to_string())),
 			identity: ctx.sender,
 			is_online: true,
+			created_at: ctx.timestamp,
 			updated_at: ctx.timestamp,
 			last_seen_at: ctx.timestamp,
 		});
