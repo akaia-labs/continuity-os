@@ -29,34 +29,39 @@ pub struct LinkExternalAccountCallbackId(__sdk::CallbackId);
 ///
 /// Implemented for [`super::RemoteReducers`].
 pub trait link_external_account {
-	/// Request that the remote module invoke the reducer `link_external_account` to run as soon as possible.
+	/// Request that the remote module invoke the reducer
+	/// `link_external_account` to run as soon as possible.
 	///
-	/// This method returns immediately, and errors only if we are unable to send the request.
-	/// The reducer will run asynchronously in the future,
-	///  and its status can be observed by listening for [`Self::on_link_external_account`] callbacks.
+	/// This method returns immediately, and errors only if we are unable to
+	/// send the request. The reducer will run asynchronously in the future,
+	///  and its status can be observed by listening for
+	/// [`Self::on_link_external_account`] callbacks.
 	fn link_external_account(&self, ext_account_id: String) -> __sdk::Result<()>;
-	/// Register a callback to run whenever we are notified of an invocation of the reducer `link_external_account`.
+	/// Register a callback to run whenever we are notified of an invocation of
+	/// the reducer `link_external_account`.
 	///
-	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the [`super::ReducerEventContext`]
-	/// to determine the reducer's status.
+	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
+	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`LinkExternalAccountCallbackId`] can be passed to [`Self::remove_on_link_external_account`]
-	/// to cancel the callback.
+	/// The returned [`LinkExternalAccountCallbackId`] can be passed to
+	/// [`Self::remove_on_link_external_account`] to cancel the callback.
 	fn on_link_external_account(
 		&self, callback: impl FnMut(&super::ReducerEventContext, &String) + Send + 'static,
 	) -> LinkExternalAccountCallbackId;
-	/// Cancel a callback previously registered by [`Self::on_link_external_account`],
-	/// causing it not to run in the future.
+	/// Cancel a callback previously registered by
+	/// [`Self::on_link_external_account`], causing it not to run in the
+	/// future.
 	fn remove_on_link_external_account(&self, callback: LinkExternalAccountCallbackId);
 }
 
 impl link_external_account for super::RemoteReducers {
 	fn link_external_account(&self, ext_account_id: String) -> __sdk::Result<()> {
-		self.imp.call_reducer(
-			"link_external_account",
-			LinkExternalAccountArgs { ext_account_id },
-		)
+		self.imp
+			.call_reducer("link_external_account", LinkExternalAccountArgs {
+				ext_account_id,
+			})
 	}
+
 	fn on_link_external_account(
 		&self, mut callback: impl FnMut(&super::ReducerEventContext, &String) + Send + 'static,
 	) -> LinkExternalAccountCallbackId {
@@ -78,6 +83,7 @@ impl link_external_account for super::RemoteReducers {
 			}),
 		))
 	}
+
 	fn remove_on_link_external_account(&self, callback: LinkExternalAccountCallbackId) {
 		self.imp
 			.remove_on_reducer("link_external_account", callback.0)
@@ -86,15 +92,19 @@ impl link_external_account for super::RemoteReducers {
 
 #[allow(non_camel_case_types)]
 #[doc(hidden)]
-/// Extension trait for setting the call-flags for the reducer `link_external_account`.
+/// Extension trait for setting the call-flags for the reducer
+/// `link_external_account`.
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
-/// This type is currently unstable and may be removed without a major version bump.
+/// This type is currently unstable and may be removed without a major version
+/// bump.
 pub trait set_flags_for_link_external_account {
-	/// Set the call-reducer flags for the reducer `link_external_account` to `flags`.
+	/// Set the call-reducer flags for the reducer `link_external_account` to
+	/// `flags`.
 	///
-	/// This type is currently unstable and may be removed without a major version bump.
+	/// This type is currently unstable and may be removed without a major
+	/// version bump.
 	fn link_external_account(&self, flags: __ws::CallReducerFlags);
 }
 

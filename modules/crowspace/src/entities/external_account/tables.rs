@@ -14,14 +14,14 @@ pub type ExternalAccountId = String;
 pub struct ExternalAccount {
 	#[primary_key]
 	/// "{String}@{ExternalPlatformName}"
-	pub id: ExternalAccountId,
+	pub id:    ExternalAccountId,
 	#[index(btree)]
 	pub owner: Option<Identity>,
 }
 
 #[derive(SpacetimeType)]
 pub struct ExternalAccountReference {
-	pub id: String,
+	pub id:            String,
 	pub platform_name: ExternalPlatformName,
 }
 

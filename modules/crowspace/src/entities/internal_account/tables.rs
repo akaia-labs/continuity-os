@@ -11,13 +11,13 @@ pub enum AccountRole {
 #[table(name = account, public)]
 pub struct Account {
 	#[primary_key]
-	pub id: AccountId,
+	pub id:           AccountId,
 	#[unique]
 	#[index(btree)]
-	pub callsign: Option<String>,
-	pub role: AccountRole,
-	pub is_online: bool,
-	pub created_at: Timestamp,
-	pub updated_at: Timestamp,
+	pub callsign:     Option<String>,
+	pub role:         AccountRole,
+	pub is_online:    bool,
+	pub created_at:   Timestamp,
+	pub updated_at:   Timestamp,
 	pub last_seen_at: Timestamp,
 }

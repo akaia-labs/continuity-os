@@ -7,14 +7,14 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct AdminLinkExternalAccountArgs {
-	pub account_id: __sdk::Identity,
+	pub account_id:     __sdk::Identity,
 	pub ext_account_id: String,
 }
 
 impl From<AdminLinkExternalAccountArgs> for super::Reducer {
 	fn from(args: AdminLinkExternalAccountArgs) -> Self {
 		Self::AdminLinkExternalAccount {
-			account_id: args.account_id,
+			account_id:     args.account_id,
 			ext_account_id: args.ext_account_id,
 		}
 	}
@@ -31,27 +31,31 @@ pub struct AdminLinkExternalAccountCallbackId(__sdk::CallbackId);
 ///
 /// Implemented for [`super::RemoteReducers`].
 pub trait admin_link_external_account {
-	/// Request that the remote module invoke the reducer `admin_link_external_account` to run as soon as possible.
+	/// Request that the remote module invoke the reducer
+	/// `admin_link_external_account` to run as soon as possible.
 	///
-	/// This method returns immediately, and errors only if we are unable to send the request.
-	/// The reducer will run asynchronously in the future,
-	///  and its status can be observed by listening for [`Self::on_admin_link_external_account`] callbacks.
+	/// This method returns immediately, and errors only if we are unable to
+	/// send the request. The reducer will run asynchronously in the future,
+	///  and its status can be observed by listening for
+	/// [`Self::on_admin_link_external_account`] callbacks.
 	fn admin_link_external_account(
 		&self, account_id: __sdk::Identity, ext_account_id: String,
 	) -> __sdk::Result<()>;
-	/// Register a callback to run whenever we are notified of an invocation of the reducer `admin_link_external_account`.
+	/// Register a callback to run whenever we are notified of an invocation of
+	/// the reducer `admin_link_external_account`.
 	///
-	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the [`super::ReducerEventContext`]
-	/// to determine the reducer's status.
+	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
+	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`AdminLinkExternalAccountCallbackId`] can be passed to [`Self::remove_on_admin_link_external_account`]
-	/// to cancel the callback.
+	/// The returned [`AdminLinkExternalAccountCallbackId`] can be passed to
+	/// [`Self::remove_on_admin_link_external_account`] to cancel the callback.
 	fn on_admin_link_external_account(
 		&self,
 		callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &String) + Send + 'static,
 	) -> AdminLinkExternalAccountCallbackId;
-	/// Cancel a callback previously registered by [`Self::on_admin_link_external_account`],
-	/// causing it not to run in the future.
+	/// Cancel a callback previously registered by
+	/// [`Self::on_admin_link_external_account`], causing it not to run in the
+	/// future.
 	fn remove_on_admin_link_external_account(&self, callback: AdminLinkExternalAccountCallbackId);
 }
 
@@ -67,6 +71,7 @@ impl admin_link_external_account for super::RemoteReducers {
 			},
 		)
 	}
+
 	fn on_admin_link_external_account(
 		&self,
 		mut callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &String)
@@ -95,6 +100,7 @@ impl admin_link_external_account for super::RemoteReducers {
 			}),
 		))
 	}
+
 	fn remove_on_admin_link_external_account(&self, callback: AdminLinkExternalAccountCallbackId) {
 		self.imp
 			.remove_on_reducer("admin_link_external_account", callback.0)
@@ -103,15 +109,19 @@ impl admin_link_external_account for super::RemoteReducers {
 
 #[allow(non_camel_case_types)]
 #[doc(hidden)]
-/// Extension trait for setting the call-flags for the reducer `admin_link_external_account`.
+/// Extension trait for setting the call-flags for the reducer
+/// `admin_link_external_account`.
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
-/// This type is currently unstable and may be removed without a major version bump.
+/// This type is currently unstable and may be removed without a major version
+/// bump.
 pub trait set_flags_for_admin_link_external_account {
-	/// Set the call-reducer flags for the reducer `admin_link_external_account` to `flags`.
+	/// Set the call-reducer flags for the reducer `admin_link_external_account`
+	/// to `flags`.
 	///
-	/// This type is currently unstable and may be removed without a major version bump.
+	/// This type is currently unstable and may be removed without a major
+	/// version bump.
 	fn admin_link_external_account(&self, flags: __ws::CallReducerFlags);
 }
 

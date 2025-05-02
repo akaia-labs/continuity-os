@@ -1,5 +1,4 @@
 use spacetimedb::SpacetimeType;
-
 use strum_macros::{Display, EnumString};
 
 #[derive(SpacetimeType, Debug, Clone, PartialEq, Display, EnumString)]

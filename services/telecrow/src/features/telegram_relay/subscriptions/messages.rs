@@ -1,11 +1,12 @@
+use std::sync::Arc;
+
 use crowcomm::crowspace::{self, *};
 use spacetimedb_sdk::Table;
-use std::sync::Arc;
 use teloxide::{Bot, payloads::SendMessageSetters, prelude::Requester};
 use tokio::sync::mpsc;
 
 use crate::{
-	common::{runtime::AsyncHandler, bindings::telegram},
+	common::{bindings::telegram, runtime::AsyncHandler},
 	entities::crowspace_message,
 };
 

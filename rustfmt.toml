@@ -1,4 +1,4 @@
-edition = "2024"
+style_edition = "2024"
 
 # Stable features
 fn_params_layout = "Compressed"
@@ -12,10 +12,9 @@ use_try_shorthand = true
 
 # Unstable features
 unstable_features = true
-version = "Two"
 format_strings = true
 group_imports = "StdExternalCrate"
-imports_granularity = "One"
+imports_granularity = "Crate"
 normalize_comments = true
 normalize_doc_attributes = true
 overflow_delimited_expr = true

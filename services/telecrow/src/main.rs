@@ -2,10 +2,10 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
-use common::runtime::TelecrowError;
-use dotenvy::dotenv;
 use std::sync::Arc;
 
+use common::runtime::TelecrowError;
+use dotenvy::dotenv;
 use teloxide::{
 	Bot,
 	dispatching::{HandlerExt, UpdateFilterExt},

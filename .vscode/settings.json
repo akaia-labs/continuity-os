@@ -30,6 +30,7 @@
 		"rsplitn",
 		"rustc",
 		"rustowl",
+		"serde",
 		"spacetimedb",
 		"stdb",
 		"telecrow",

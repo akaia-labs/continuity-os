@@ -1,7 +1,8 @@
 use core::panic;
+use std::process;
+
 use crowcomm::{crowspace, get_env_config};
 use spacetimedb_sdk::{DbContext, Error, Identity, credentials};
-use std::process;
 
 fn creds_store() -> credentials::File {
 	credentials::File::new("telecrow.credentials")

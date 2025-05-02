@@ -9,7 +9,7 @@ pub struct CrowcommModules {
 }
 
 pub struct CrowcommEnvConfig {
-	pub host: String,
+	pub host:    String,
 	pub modules: CrowcommModules,
 }
 

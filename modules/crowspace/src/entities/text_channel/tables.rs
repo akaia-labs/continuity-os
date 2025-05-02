@@ -6,6 +6,6 @@ pub type TextChannelId = u64;
 pub struct TextChannel {
 	#[auto_inc]
 	#[primary_key]
-	id: TextChannelId,
+	id:   TextChannelId,
 	name: String,
 }

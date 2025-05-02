@@ -2,13 +2,14 @@
 // WILL NOT BE SAVED. MODIFY TABLES IN YOUR MODULE SOURCE CODE INSTEAD.
 
 #![allow(unused, clippy::all)]
-use super::service_type::Service;
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
+
+use super::service_type::Service;
 
 /// Table handle for the table `service`.
 ///
-/// Obtain a handle from the [`ServiceTableAccess::service`] method on [`super::RemoteTables`],
-/// like `ctx.db.service()`.
+/// Obtain a handle from the [`ServiceTableAccess::service`] method on
+/// [`super::RemoteTables`], like `ctx.db.service()`.
 ///
 /// Users are encouraged not to explicitly reference this type,
 /// but to directly chain method calls,
@@ -24,7 +25,8 @@ pub struct ServiceTableHandle<'ctx> {
 /// Implemented for [`super::RemoteTables`].
 pub trait ServiceTableAccess {
 	#[allow(non_snake_case)]
-	/// Obtain a [`ServiceTableHandle`], which mediates access to the table `service`.
+	/// Obtain a [`ServiceTableHandle`], which mediates access to the table
+	/// `service`.
 	fn service(&self) -> ServiceTableHandle<'_>;
 }
 
@@ -41,17 +43,18 @@ pub struct ServiceInsertCallbackId(__sdk::CallbackId);
 pub struct ServiceDeleteCallbackId(__sdk::CallbackId);
 
 impl<'ctx> __sdk::Table for ServiceTableHandle<'ctx> {
-	type Row = Service;
+	type DeleteCallbackId = ServiceDeleteCallbackId;
 	type EventContext = super::EventContext;
+	type InsertCallbackId = ServiceInsertCallbackId;
+	type Row = Service;
 
 	fn count(&self) -> u64 {
 		self.imp.count()
 	}
+
 	fn iter(&self) -> impl Iterator<Item = Service> + '_ {
 		self.imp.iter()
 	}
-
-	type InsertCallbackId = ServiceInsertCallbackId;
 
 	fn on_insert(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
@@ -62,8 +65,6 @@ impl<'ctx> __sdk::Table for ServiceTableHandle<'ctx> {
 	fn remove_on_insert(&self, callback: ServiceInsertCallbackId) {
 		self.imp.remove_on_insert(callback.0)
 	}
-
-	type DeleteCallbackId = ServiceDeleteCallbackId;
 
 	fn on_delete(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,

@@ -1,16 +1,15 @@
-use super::model;
-
 use std::sync::Arc;
 
 use crowcomm::crowspace::{self, *};
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
 
+use super::model;
 use crate::common::runtime::AsyncHandler;
 
 pub struct StatusTelegramForwardRequest {
-	pub chat_id: i64,
-	pub sender_name: String,
+	pub chat_id:      i64,
+	pub sender_name:  String,
 	pub message_text: String,
 }
 
@@ -29,7 +28,7 @@ pub fn handle_status_telegram_forward(
 			if outdated_account_data.callsign != updated_account_data.callsign {
 				let request = StatusTelegramForwardRequest {
 					// TODO: The chat id must be taken from the crowchat room properties
-					chat_id: -1001544271932,
+					chat_id:     -1001544271932,
 					sender_name: "system".to_string(),
 
 					message_text: format!(

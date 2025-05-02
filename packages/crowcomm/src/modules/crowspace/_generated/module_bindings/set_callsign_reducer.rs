@@ -29,19 +29,22 @@ pub struct SetCallsignCallbackId(__sdk::CallbackId);
 ///
 /// Implemented for [`super::RemoteReducers`].
 pub trait set_callsign {
-	/// Request that the remote module invoke the reducer `set_callsign` to run as soon as possible.
+	/// Request that the remote module invoke the reducer `set_callsign` to run
+	/// as soon as possible.
 	///
-	/// This method returns immediately, and errors only if we are unable to send the request.
-	/// The reducer will run asynchronously in the future,
-	///  and its status can be observed by listening for [`Self::on_set_callsign`] callbacks.
+	/// This method returns immediately, and errors only if we are unable to
+	/// send the request. The reducer will run asynchronously in the future,
+	///  and its status can be observed by listening for
+	/// [`Self::on_set_callsign`] callbacks.
 	fn set_callsign(&self, callsign: String) -> __sdk::Result<()>;
-	/// Register a callback to run whenever we are notified of an invocation of the reducer `set_callsign`.
+	/// Register a callback to run whenever we are notified of an invocation of
+	/// the reducer `set_callsign`.
 	///
-	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the [`super::ReducerEventContext`]
-	/// to determine the reducer's status.
+	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
+	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`SetCallsignCallbackId`] can be passed to [`Self::remove_on_set_callsign`]
-	/// to cancel the callback.
+	/// The returned [`SetCallsignCallbackId`] can be passed to
+	/// [`Self::remove_on_set_callsign`] to cancel the callback.
 	fn on_set_callsign(
 		&self, callback: impl FnMut(&super::ReducerEventContext, &String) + Send + 'static,
 	) -> SetCallsignCallbackId;
@@ -55,6 +58,7 @@ impl set_callsign for super::RemoteReducers {
 		self.imp
 			.call_reducer("set_callsign", SetCallsignArgs { callsign })
 	}
+
 	fn on_set_callsign(
 		&self, mut callback: impl FnMut(&super::ReducerEventContext, &String) + Send + 'static,
 	) -> SetCallsignCallbackId {
@@ -76,6 +80,7 @@ impl set_callsign for super::RemoteReducers {
 			}),
 		))
 	}
+
 	fn remove_on_set_callsign(&self, callback: SetCallsignCallbackId) {
 		self.imp.remove_on_reducer("set_callsign", callback.0)
 	}
@@ -87,11 +92,13 @@ impl set_callsign for super::RemoteReducers {
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
-/// This type is currently unstable and may be removed without a major version bump.
+/// This type is currently unstable and may be removed without a major version
+/// bump.
 pub trait set_flags_for_set_callsign {
 	/// Set the call-reducer flags for the reducer `set_callsign` to `flags`.
 	///
-	/// This type is currently unstable and may be removed without a major version bump.
+	/// This type is currently unstable and may be removed without a major
+	/// version bump.
 	fn set_callsign(&self, flags: __ws::CallReducerFlags);
 }
 

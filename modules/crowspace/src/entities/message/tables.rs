@@ -16,10 +16,10 @@ pub enum MessageAuthorId {
 pub struct Message {
 	#[auto_inc]
 	#[primary_key]
-	pub id: u64,
-	pub sent_at: Timestamp,
-	pub sender: Identity,
+	pub id:        u64,
+	pub sent_at:   Timestamp,
+	pub sender:    Identity,
 	#[index(btree)]
 	pub author_id: MessageAuthorId,
-	pub text: String,
+	pub text:      String,
 }

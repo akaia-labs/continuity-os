@@ -1,10 +1,10 @@
+use spacetimedb::{ReducerContext, Table, reducer};
+
+use super::{tables::*, validation::*};
 use crate::entities::{
 	external_account::{ExternalAccountReference, external_account},
 	internal_account::account,
 };
-
-use super::{tables::*, validators::*};
-use spacetimedb::{ReducerContext, Table, reducer};
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality

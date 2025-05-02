@@ -8,7 +8,7 @@ pub fn add_external_account(
 	ctx: &ReducerContext, reference: ExternalAccountReference,
 ) -> Result<(), String> {
 	ctx.db.external_account().insert(ExternalAccount {
-		id: reference.to_string(),
+		id:    reference.to_string(),
 		owner: None,
 	});
 

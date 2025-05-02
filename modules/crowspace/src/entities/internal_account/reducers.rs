@@ -1,7 +1,7 @@
-use crate::entities::external_account::{ExternalAccount, ExternalAccountId, external_account};
-
-use super::{tables::*, validators::*};
 use spacetimedb::{ReducerContext, reducer};
+
+use super::{tables::*, validation::*};
+use crate::entities::external_account::{ExternalAccount, ExternalAccountId, external_account};
 
 #[reducer]
 /// Clients invoke this reducer to set their account names.

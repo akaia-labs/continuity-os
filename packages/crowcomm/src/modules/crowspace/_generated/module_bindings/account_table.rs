@@ -2,14 +2,14 @@
 // WILL NOT BE SAVED. MODIFY TABLES IN YOUR MODULE SOURCE CODE INSTEAD.
 
 #![allow(unused, clippy::all)]
-use super::account_role_type::AccountRole;
-use super::account_type::Account;
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
+
+use super::{account_role_type::AccountRole, account_type::Account};
 
 /// Table handle for the table `account`.
 ///
-/// Obtain a handle from the [`AccountTableAccess::account`] method on [`super::RemoteTables`],
-/// like `ctx.db.account()`.
+/// Obtain a handle from the [`AccountTableAccess::account`] method on
+/// [`super::RemoteTables`], like `ctx.db.account()`.
 ///
 /// Users are encouraged not to explicitly reference this type,
 /// but to directly chain method calls,
@@ -25,7 +25,8 @@ pub struct AccountTableHandle<'ctx> {
 /// Implemented for [`super::RemoteTables`].
 pub trait AccountTableAccess {
 	#[allow(non_snake_case)]
-	/// Obtain a [`AccountTableHandle`], which mediates access to the table `account`.
+	/// Obtain a [`AccountTableHandle`], which mediates access to the table
+	/// `account`.
 	fn account(&self) -> AccountTableHandle<'_>;
 }
 
@@ -42,17 +43,18 @@ pub struct AccountInsertCallbackId(__sdk::CallbackId);
 pub struct AccountDeleteCallbackId(__sdk::CallbackId);
 
 impl<'ctx> __sdk::Table for AccountTableHandle<'ctx> {
-	type Row = Account;
+	type DeleteCallbackId = AccountDeleteCallbackId;
 	type EventContext = super::EventContext;
+	type InsertCallbackId = AccountInsertCallbackId;
+	type Row = Account;
 
 	fn count(&self) -> u64 {
 		self.imp.count()
 	}
+
 	fn iter(&self) -> impl Iterator<Item = Account> + '_ {
 		self.imp.iter()
 	}
-
-	type InsertCallbackId = AccountInsertCallbackId;
 
 	fn on_insert(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
@@ -63,8 +65,6 @@ impl<'ctx> __sdk::Table for AccountTableHandle<'ctx> {
 	fn remove_on_insert(&self, callback: AccountInsertCallbackId) {
 		self.imp.remove_on_insert(callback.0)
 	}
-
-	type DeleteCallbackId = AccountDeleteCallbackId;
 
 	fn on_delete(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
@@ -117,7 +117,7 @@ pub(super) fn parse_table_update(
 /// but to directly chain method calls,
 /// like `ctx.db.account().id().find(...)`.
 pub struct AccountIdUnique<'ctx> {
-	imp: __sdk::UniqueConstraintHandle<Account, __sdk::Identity>,
+	imp:     __sdk::UniqueConstraintHandle<Account, __sdk::Identity>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -125,7 +125,7 @@ impl<'ctx> AccountTableHandle<'ctx> {
 	/// Get a handle on the `id` unique index on the table `account`.
 	pub fn id(&self) -> AccountIdUnique<'ctx> {
 		AccountIdUnique {
-			imp: self.imp.get_unique_constraint::<__sdk::Identity>("id"),
+			imp:     self.imp.get_unique_constraint::<__sdk::Identity>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}

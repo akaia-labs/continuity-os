@@ -31,25 +31,28 @@ pub struct AddExternalAccountCallbackId(__sdk::CallbackId);
 ///
 /// Implemented for [`super::RemoteReducers`].
 pub trait add_external_account {
-	/// Request that the remote module invoke the reducer `add_external_account` to run as soon as possible.
+	/// Request that the remote module invoke the reducer `add_external_account`
+	/// to run as soon as possible.
 	///
-	/// This method returns immediately, and errors only if we are unable to send the request.
-	/// The reducer will run asynchronously in the future,
-	///  and its status can be observed by listening for [`Self::on_add_external_account`] callbacks.
+	/// This method returns immediately, and errors only if we are unable to
+	/// send the request. The reducer will run asynchronously in the future,
+	///  and its status can be observed by listening for
+	/// [`Self::on_add_external_account`] callbacks.
 	fn add_external_account(&self, reference: ExternalAccountReference) -> __sdk::Result<()>;
-	/// Register a callback to run whenever we are notified of an invocation of the reducer `add_external_account`.
+	/// Register a callback to run whenever we are notified of an invocation of
+	/// the reducer `add_external_account`.
 	///
-	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the [`super::ReducerEventContext`]
-	/// to determine the reducer's status.
+	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
+	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`AddExternalAccountCallbackId`] can be passed to [`Self::remove_on_add_external_account`]
-	/// to cancel the callback.
+	/// The returned [`AddExternalAccountCallbackId`] can be passed to
+	/// [`Self::remove_on_add_external_account`] to cancel the callback.
 	fn on_add_external_account(
 		&self,
 		callback: impl FnMut(&super::ReducerEventContext, &ExternalAccountReference) + Send + 'static,
 	) -> AddExternalAccountCallbackId;
-	/// Cancel a callback previously registered by [`Self::on_add_external_account`],
-	/// causing it not to run in the future.
+	/// Cancel a callback previously registered by
+	/// [`Self::on_add_external_account`], causing it not to run in the future.
 	fn remove_on_add_external_account(&self, callback: AddExternalAccountCallbackId);
 }
 
@@ -58,6 +61,7 @@ impl add_external_account for super::RemoteReducers {
 		self.imp
 			.call_reducer("add_external_account", AddExternalAccountArgs { reference })
 	}
+
 	fn on_add_external_account(
 		&self,
 		mut callback: impl FnMut(&super::ReducerEventContext, &ExternalAccountReference)
@@ -82,6 +86,7 @@ impl add_external_account for super::RemoteReducers {
 			}),
 		))
 	}
+
 	fn remove_on_add_external_account(&self, callback: AddExternalAccountCallbackId) {
 		self.imp
 			.remove_on_reducer("add_external_account", callback.0)
@@ -90,15 +95,19 @@ impl add_external_account for super::RemoteReducers {
 
 #[allow(non_camel_case_types)]
 #[doc(hidden)]
-/// Extension trait for setting the call-flags for the reducer `add_external_account`.
+/// Extension trait for setting the call-flags for the reducer
+/// `add_external_account`.
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
-/// This type is currently unstable and may be removed without a major version bump.
+/// This type is currently unstable and may be removed without a major version
+/// bump.
 pub trait set_flags_for_add_external_account {
-	/// Set the call-reducer flags for the reducer `add_external_account` to `flags`.
+	/// Set the call-reducer flags for the reducer `add_external_account` to
+	/// `flags`.
 	///
-	/// This type is currently unstable and may be removed without a major version bump.
+	/// This type is currently unstable and may be removed without a major
+	/// version bump.
 	fn add_external_account(&self, flags: __ws::CallReducerFlags);
 }
 

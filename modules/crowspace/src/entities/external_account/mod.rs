@@ -1,5 +1,5 @@
 mod reducers;
 mod tables;
-mod validators;
+mod validation;
 
 pub use tables::*;

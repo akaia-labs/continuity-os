@@ -3,9 +3,10 @@ mod messages;
 
 use std::sync::Arc;
 
-use crate::common::runtime::AsyncHandler;
 use crowcomm::crowspace;
 use teloxide::Bot;
+
+use crate::common::runtime::AsyncHandler;
 
 /// Aggregates all crowchat subscriptions
 pub fn subscribe(

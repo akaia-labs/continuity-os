@@ -10,14 +10,14 @@ use super::account_role_type::AccountRole;
 #[sats(crate = __lib)]
 pub(super) struct AdminSetAccountRoleArgs {
 	pub account_id: __sdk::Identity,
-	pub role: AccountRole,
+	pub role:       AccountRole,
 }
 
 impl From<AdminSetAccountRoleArgs> for super::Reducer {
 	fn from(args: AdminSetAccountRoleArgs) -> Self {
 		Self::AdminSetAccountRole {
 			account_id: args.account_id,
-			role: args.role,
+			role:       args.role,
 		}
 	}
 }
@@ -33,29 +33,33 @@ pub struct AdminSetAccountRoleCallbackId(__sdk::CallbackId);
 ///
 /// Implemented for [`super::RemoteReducers`].
 pub trait admin_set_account_role {
-	/// Request that the remote module invoke the reducer `admin_set_account_role` to run as soon as possible.
+	/// Request that the remote module invoke the reducer
+	/// `admin_set_account_role` to run as soon as possible.
 	///
-	/// This method returns immediately, and errors only if we are unable to send the request.
-	/// The reducer will run asynchronously in the future,
-	///  and its status can be observed by listening for [`Self::on_admin_set_account_role`] callbacks.
+	/// This method returns immediately, and errors only if we are unable to
+	/// send the request. The reducer will run asynchronously in the future,
+	///  and its status can be observed by listening for
+	/// [`Self::on_admin_set_account_role`] callbacks.
 	fn admin_set_account_role(
 		&self, account_id: __sdk::Identity, role: AccountRole,
 	) -> __sdk::Result<()>;
-	/// Register a callback to run whenever we are notified of an invocation of the reducer `admin_set_account_role`.
+	/// Register a callback to run whenever we are notified of an invocation of
+	/// the reducer `admin_set_account_role`.
 	///
-	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the [`super::ReducerEventContext`]
-	/// to determine the reducer's status.
+	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
+	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`AdminSetAccountRoleCallbackId`] can be passed to [`Self::remove_on_admin_set_account_role`]
-	/// to cancel the callback.
+	/// The returned [`AdminSetAccountRoleCallbackId`] can be passed to
+	/// [`Self::remove_on_admin_set_account_role`] to cancel the callback.
 	fn on_admin_set_account_role(
 		&self,
 		callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &AccountRole)
 		+ Send
 		+ 'static,
 	) -> AdminSetAccountRoleCallbackId;
-	/// Cancel a callback previously registered by [`Self::on_admin_set_account_role`],
-	/// causing it not to run in the future.
+	/// Cancel a callback previously registered by
+	/// [`Self::on_admin_set_account_role`], causing it not to run in the
+	/// future.
 	fn remove_on_admin_set_account_role(&self, callback: AdminSetAccountRoleCallbackId);
 }
 
@@ -63,11 +67,13 @@ impl admin_set_account_role for super::RemoteReducers {
 	fn admin_set_account_role(
 		&self, account_id: __sdk::Identity, role: AccountRole,
 	) -> __sdk::Result<()> {
-		self.imp.call_reducer(
-			"admin_set_account_role",
-			AdminSetAccountRoleArgs { account_id, role },
-		)
+		self.imp
+			.call_reducer("admin_set_account_role", AdminSetAccountRoleArgs {
+				account_id,
+				role,
+			})
 	}
+
 	fn on_admin_set_account_role(
 		&self,
 		mut callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &AccountRole)
@@ -92,6 +98,7 @@ impl admin_set_account_role for super::RemoteReducers {
 			}),
 		))
 	}
+
 	fn remove_on_admin_set_account_role(&self, callback: AdminSetAccountRoleCallbackId) {
 		self.imp
 			.remove_on_reducer("admin_set_account_role", callback.0)
@@ -100,15 +107,19 @@ impl admin_set_account_role for super::RemoteReducers {
 
 #[allow(non_camel_case_types)]
 #[doc(hidden)]
-/// Extension trait for setting the call-flags for the reducer `admin_set_account_role`.
+/// Extension trait for setting the call-flags for the reducer
+/// `admin_set_account_role`.
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
-/// This type is currently unstable and may be removed without a major version bump.
+/// This type is currently unstable and may be removed without a major version
+/// bump.
 pub trait set_flags_for_admin_set_account_role {
-	/// Set the call-reducer flags for the reducer `admin_set_account_role` to `flags`.
+	/// Set the call-reducer flags for the reducer `admin_set_account_role` to
+	/// `flags`.
 	///
-	/// This type is currently unstable and may be removed without a major version bump.
+	/// This type is currently unstable and may be removed without a major
+	/// version bump.
 	fn admin_set_account_role(&self, flags: __ws::CallReducerFlags);
 }
 

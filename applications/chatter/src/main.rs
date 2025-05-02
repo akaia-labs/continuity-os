@@ -4,14 +4,11 @@ use crowcomm::{
 	crowspace::{self, *},
 	get_env_config,
 };
-
 use spacetimedb_sdk::{
 	DbContext, Error, Event, Identity, Status, Table, TableWithPrimaryKey, credentials,
 };
 
-/*
-!	CONNECTION SETUP
-*/
+// !	CONNECTION SETUP
 
 fn creds_store() -> credentials::File {
 	credentials::File::new("console.crowd-credentials")
@@ -41,9 +38,7 @@ fn on_disconnected(_ctx: &crowspace::ErrorContext, err: Option<Error>) {
 	}
 }
 
-/*
-!	USER SUBSCRIPTIONS
-*/
+// !	USER SUBSCRIPTIONS
 
 /// Returns the account's callsign, or their identity if they have no callsign.
 fn account_name_or_identity(account: &crowspace::Account) -> String {
@@ -88,9 +83,7 @@ fn on_callsign_set(ctx: &crowspace::ReducerEventContext, callsign: &String) {
 	}
 }
 
-/*
-!	MESSAGE SUBSCRIPTIONS
-*/
+// !	MESSAGE SUBSCRIPTIONS
 
 fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Message) {
 	let sender = ctx
@@ -118,9 +111,7 @@ fn on_message_sent(ctx: &crowspace::ReducerEventContext, text: &String) {
 	}
 }
 
-/*
-!	TABLE SUBSCRIPTIONS
-*/
+// !	TABLE SUBSCRIPTIONS
 
 /// Sorts all past messages and print them in timestamp order.
 fn on_sub_applied(ctx: &crowspace::SubscriptionEventContext) {
@@ -150,11 +141,10 @@ fn subscribe_to_tables(ctx: &crowspace::DbConnection) {
 		.subscribe(["SELECT * FROM account", "SELECT * FROM message"]);
 }
 
-/*
-!	USER INPUT
-*/
+// !	USER INPUT
 
-/// Reads each line of standard input, and either executes a command or sends a message as appropriate.
+/// Reads each line of standard input, and either executes a command or sends a
+/// message as appropriate.
 fn account_input_loop(ctx: &crowspace::DbConnection) {
 	for line in std::io::stdin().lines() {
 		let Ok(line) = line else {
@@ -169,9 +159,7 @@ fn account_input_loop(ctx: &crowspace::DbConnection) {
 	}
 }
 
-/*
-!	GENERAL
-*/
+// !	GENERAL
 
 /// Registers all the callbacks the app will use to respond to database events.
 fn register_callbacks(ctx: &crowspace::DbConnection) {

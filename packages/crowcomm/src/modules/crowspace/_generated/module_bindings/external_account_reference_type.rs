@@ -9,7 +9,7 @@ use super::external_platform_name_type::ExternalPlatformName;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct ExternalAccountReference {
-	pub id: String,
+	pub id:            String,
 	pub platform_name: ExternalPlatformName,
 }
 

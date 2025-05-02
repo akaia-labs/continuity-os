@@ -323,6 +323,7 @@ name = "crowspace"
 version = "0.2.0"
 dependencies = [
  "log",
+ "serde",
  "spacetimedb",
  "strum",
  "strum_macros",

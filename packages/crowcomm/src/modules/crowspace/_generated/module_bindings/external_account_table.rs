@@ -2,13 +2,14 @@
 // WILL NOT BE SAVED. MODIFY TABLES IN YOUR MODULE SOURCE CODE INSTEAD.
 
 #![allow(unused, clippy::all)]
-use super::external_account_type::ExternalAccount;
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
+
+use super::external_account_type::ExternalAccount;
 
 /// Table handle for the table `external_account`.
 ///
-/// Obtain a handle from the [`ExternalAccountTableAccess::external_account`] method on [`super::RemoteTables`],
-/// like `ctx.db.external_account()`.
+/// Obtain a handle from the [`ExternalAccountTableAccess::external_account`]
+/// method on [`super::RemoteTables`], like `ctx.db.external_account()`.
 ///
 /// Users are encouraged not to explicitly reference this type,
 /// but to directly chain method calls,
@@ -24,7 +25,8 @@ pub struct ExternalAccountTableHandle<'ctx> {
 /// Implemented for [`super::RemoteTables`].
 pub trait ExternalAccountTableAccess {
 	#[allow(non_snake_case)]
-	/// Obtain a [`ExternalAccountTableHandle`], which mediates access to the table `external_account`.
+	/// Obtain a [`ExternalAccountTableHandle`], which mediates access to the
+	/// table `external_account`.
 	fn external_account(&self) -> ExternalAccountTableHandle<'_>;
 }
 
@@ -41,17 +43,18 @@ pub struct ExternalAccountInsertCallbackId(__sdk::CallbackId);
 pub struct ExternalAccountDeleteCallbackId(__sdk::CallbackId);
 
 impl<'ctx> __sdk::Table for ExternalAccountTableHandle<'ctx> {
-	type Row = ExternalAccount;
+	type DeleteCallbackId = ExternalAccountDeleteCallbackId;
 	type EventContext = super::EventContext;
+	type InsertCallbackId = ExternalAccountInsertCallbackId;
+	type Row = ExternalAccount;
 
 	fn count(&self) -> u64 {
 		self.imp.count()
 	}
+
 	fn iter(&self) -> impl Iterator<Item = ExternalAccount> + '_ {
 		self.imp.iter()
 	}
-
-	type InsertCallbackId = ExternalAccountInsertCallbackId;
 
 	fn on_insert(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
@@ -62,8 +65,6 @@ impl<'ctx> __sdk::Table for ExternalAccountTableHandle<'ctx> {
 	fn remove_on_insert(&self, callback: ExternalAccountInsertCallbackId) {
 		self.imp.remove_on_insert(callback.0)
 	}
-
-	type DeleteCallbackId = ExternalAccountDeleteCallbackId;
 
 	fn on_delete(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
@@ -116,7 +117,7 @@ pub(super) fn parse_table_update(
 /// but to directly chain method calls,
 /// like `ctx.db.external_account().id().find(...)`.
 pub struct ExternalAccountIdUnique<'ctx> {
-	imp: __sdk::UniqueConstraintHandle<ExternalAccount, String>,
+	imp:     __sdk::UniqueConstraintHandle<ExternalAccount, String>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -124,7 +125,7 @@ impl<'ctx> ExternalAccountTableHandle<'ctx> {
 	/// Get a handle on the `id` unique index on the table `external_account`.
 	pub fn id(&self) -> ExternalAccountIdUnique<'ctx> {
 		ExternalAccountIdUnique {
-			imp: self.imp.get_unique_constraint::<String>("id"),
+			imp:     self.imp.get_unique_constraint::<String>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}

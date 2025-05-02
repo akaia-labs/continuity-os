@@ -8,11 +8,10 @@ use crate::{
 	features::internal::assert_admin,
 };
 
-/**
- ** Administration
- *
- *! HEADS UP! Don't forget to call `assert_admin(ctx);` in the first line of every admin reducer!
- */
+/// Administration
+///
+/// ! HEADS UP! Don't forget to call `assert_admin(ctx);` in the first line of
+/// every admin reducer!
 
 #[reducer]
 /// Sets role for the specified account.

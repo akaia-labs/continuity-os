@@ -25,24 +25,27 @@ pub struct ClientDisconnectedCallbackId(__sdk::CallbackId);
 ///
 /// Implemented for [`super::RemoteReducers`].
 pub trait client_disconnected {
-	/// Request that the remote module invoke the reducer `client_disconnected` to run as soon as possible.
+	/// Request that the remote module invoke the reducer `client_disconnected`
+	/// to run as soon as possible.
 	///
-	/// This method returns immediately, and errors only if we are unable to send the request.
-	/// The reducer will run asynchronously in the future,
-	///  and its status can be observed by listening for [`Self::on_client_disconnected`] callbacks.
+	/// This method returns immediately, and errors only if we are unable to
+	/// send the request. The reducer will run asynchronously in the future,
+	///  and its status can be observed by listening for
+	/// [`Self::on_client_disconnected`] callbacks.
 	fn client_disconnected(&self) -> __sdk::Result<()>;
-	/// Register a callback to run whenever we are notified of an invocation of the reducer `client_disconnected`.
+	/// Register a callback to run whenever we are notified of an invocation of
+	/// the reducer `client_disconnected`.
 	///
-	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the [`super::ReducerEventContext`]
-	/// to determine the reducer's status.
+	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
+	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`ClientDisconnectedCallbackId`] can be passed to [`Self::remove_on_client_disconnected`]
-	/// to cancel the callback.
+	/// The returned [`ClientDisconnectedCallbackId`] can be passed to
+	/// [`Self::remove_on_client_disconnected`] to cancel the callback.
 	fn on_client_disconnected(
 		&self, callback: impl FnMut(&super::ReducerEventContext) + Send + 'static,
 	) -> ClientDisconnectedCallbackId;
-	/// Cancel a callback previously registered by [`Self::on_client_disconnected`],
-	/// causing it not to run in the future.
+	/// Cancel a callback previously registered by
+	/// [`Self::on_client_disconnected`], causing it not to run in the future.
 	fn remove_on_client_disconnected(&self, callback: ClientDisconnectedCallbackId);
 }
 
@@ -51,6 +54,7 @@ impl client_disconnected for super::RemoteReducers {
 		self.imp
 			.call_reducer("client_disconnected", ClientDisconnectedArgs {})
 	}
+
 	fn on_client_disconnected(
 		&self, mut callback: impl FnMut(&super::ReducerEventContext) + Send + 'static,
 	) -> ClientDisconnectedCallbackId {
@@ -72,6 +76,7 @@ impl client_disconnected for super::RemoteReducers {
 			}),
 		))
 	}
+
 	fn remove_on_client_disconnected(&self, callback: ClientDisconnectedCallbackId) {
 		self.imp
 			.remove_on_reducer("client_disconnected", callback.0)
@@ -80,15 +85,19 @@ impl client_disconnected for super::RemoteReducers {
 
 #[allow(non_camel_case_types)]
 #[doc(hidden)]
-/// Extension trait for setting the call-flags for the reducer `client_disconnected`.
+/// Extension trait for setting the call-flags for the reducer
+/// `client_disconnected`.
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
-/// This type is currently unstable and may be removed without a major version bump.
+/// This type is currently unstable and may be removed without a major version
+/// bump.
 pub trait set_flags_for_client_disconnected {
-	/// Set the call-reducer flags for the reducer `client_disconnected` to `flags`.
+	/// Set the call-reducer flags for the reducer `client_disconnected` to
+	/// `flags`.
 	///
-	/// This type is currently unstable and may be removed without a major version bump.
+	/// This type is currently unstable and may be removed without a major
+	/// version bump.
 	fn client_disconnected(&self, flags: __ws::CallReducerFlags);
 }
 

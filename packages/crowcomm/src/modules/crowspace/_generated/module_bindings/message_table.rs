@@ -2,14 +2,14 @@
 // WILL NOT BE SAVED. MODIFY TABLES IN YOUR MODULE SOURCE CODE INSTEAD.
 
 #![allow(unused, clippy::all)]
-use super::message_author_id_type::MessageAuthorId;
-use super::message_type::Message;
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
+
+use super::{message_author_id_type::MessageAuthorId, message_type::Message};
 
 /// Table handle for the table `message`.
 ///
-/// Obtain a handle from the [`MessageTableAccess::message`] method on [`super::RemoteTables`],
-/// like `ctx.db.message()`.
+/// Obtain a handle from the [`MessageTableAccess::message`] method on
+/// [`super::RemoteTables`], like `ctx.db.message()`.
 ///
 /// Users are encouraged not to explicitly reference this type,
 /// but to directly chain method calls,
@@ -25,7 +25,8 @@ pub struct MessageTableHandle<'ctx> {
 /// Implemented for [`super::RemoteTables`].
 pub trait MessageTableAccess {
 	#[allow(non_snake_case)]
-	/// Obtain a [`MessageTableHandle`], which mediates access to the table `message`.
+	/// Obtain a [`MessageTableHandle`], which mediates access to the table
+	/// `message`.
 	fn message(&self) -> MessageTableHandle<'_>;
 }
 
@@ -42,17 +43,18 @@ pub struct MessageInsertCallbackId(__sdk::CallbackId);
 pub struct MessageDeleteCallbackId(__sdk::CallbackId);
 
 impl<'ctx> __sdk::Table for MessageTableHandle<'ctx> {
-	type Row = Message;
+	type DeleteCallbackId = MessageDeleteCallbackId;
 	type EventContext = super::EventContext;
+	type InsertCallbackId = MessageInsertCallbackId;
+	type Row = Message;
 
 	fn count(&self) -> u64 {
 		self.imp.count()
 	}
+
 	fn iter(&self) -> impl Iterator<Item = Message> + '_ {
 		self.imp.iter()
 	}
-
-	type InsertCallbackId = MessageInsertCallbackId;
 
 	fn on_insert(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
@@ -63,8 +65,6 @@ impl<'ctx> __sdk::Table for MessageTableHandle<'ctx> {
 	fn remove_on_insert(&self, callback: MessageInsertCallbackId) {
 		self.imp.remove_on_insert(callback.0)
 	}
-
-	type DeleteCallbackId = MessageDeleteCallbackId;
 
 	fn on_delete(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
@@ -117,7 +117,7 @@ pub(super) fn parse_table_update(
 /// but to directly chain method calls,
 /// like `ctx.db.message().id().find(...)`.
 pub struct MessageIdUnique<'ctx> {
-	imp: __sdk::UniqueConstraintHandle<Message, u64>,
+	imp:     __sdk::UniqueConstraintHandle<Message, u64>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -125,7 +125,7 @@ impl<'ctx> MessageTableHandle<'ctx> {
 	/// Get a handle on the `id` unique index on the table `message`.
 	pub fn id(&self) -> MessageIdUnique<'ctx> {
 		MessageIdUnique {
-			imp: self.imp.get_unique_constraint::<u64>("id"),
+			imp:     self.imp.get_unique_constraint::<u64>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}
