@@ -12,6 +12,8 @@ pub enum AccountRole {
 pub struct Account {
 	#[primary_key]
 	pub id: AccountId,
+	#[unique]
+	#[index(btree)]
 	pub callsign: Option<String>,
 	pub role: AccountRole,
 	pub is_online: bool,
