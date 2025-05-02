@@ -4,7 +4,6 @@ use crowcomm::crowspace::{self, *};
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
 
-use super::model;
 use crate::common::runtime::AsyncHandler;
 
 pub struct StatusTelegramForwardRequest {
@@ -32,9 +31,10 @@ pub fn handle_status_telegram_forward(
 					sender_name: "system".to_string(),
 
 					message_text: format!(
-						"Account {} changed callsign to {}",
-						model::identifier(outdated_account_data),
-						model::identifier(updated_account_data)
+						"Account {} changed callsign from {} to {}",
+						outdated_account_data.id,
+						outdated_account_data.callsign,
+						updated_account_data.callsign,
 					),
 				};
 
@@ -55,18 +55,18 @@ fn _on_account_updated(
 	_ctx: &crowspace::EventContext, old: &crowspace::Account, new: &crowspace::Account,
 ) {
 	if old.is_online && !new.is_online {
-		println!("Account {} disconnected.", model::identifier(new));
+		println!("Account {} disconnected.", old.callsign);
 	}
 
 	if !old.is_online && new.is_online {
-		println!("Account {} connected.", model::identifier(new));
+		println!("Account {} connected.", old.callsign);
 	}
 }
 
 /// If the account is online, prints a notification.
 fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Account) {
 	if account.is_online {
-		println!("Account {} connected.", model::identifier(account));
+		println!("Account {} connected.", account.callsign);
 	}
 }
 

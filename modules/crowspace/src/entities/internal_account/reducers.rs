@@ -10,7 +10,7 @@ pub fn set_callsign(ctx: &ReducerContext, callsign: String) -> Result<(), String
 
 	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
 		ctx.db.account().id().update(Account {
-			callsign: Some(callsign),
+			callsign,
 			updated_at: ctx.timestamp,
 			..account
 		});

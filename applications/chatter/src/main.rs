@@ -38,20 +38,33 @@ fn on_disconnected(_ctx: &crowspace::ErrorContext, err: Option<Error>) {
 	}
 }
 
-// !	USER SUBSCRIPTIONS
+// TODO: Extract to Account entity
 
-/// Returns the account's callsign, or their identity if they have no callsign.
-fn account_name_or_identity(account: &crowspace::Account) -> String {
-	account
-		.callsign
-		.clone()
-		.unwrap_or_else(|| account.id.to_hex().to_string())
+fn account_display_name(
+	ctx: &impl crowspace::RemoteDbContext, account: &crowspace::Account,
+) -> String {
+	ctx.db()
+		.public_profile()
+		.id()
+		.find(&account.profile_id)
+		.map(|p| {
+			if p.metadata.name
+				== (crowspace::PublicProfileName {
+					short_name:     "Anonymous".to_string(),
+					name_extension: None,
+				}) {
+				account.callsign.clone()
+			} else {
+				p.metadata.name.to_string()
+			}
+		})
+		.unwrap_or_else(|| account.callsign.clone())
 }
 
 /// If the account is online, prints a notification.
 fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Account) {
 	if account.is_online {
-		println!("Account {} connected.", account_name_or_identity(account));
+		println!("Account {} connected.", account.callsign);
 	}
 }
 
@@ -61,18 +74,17 @@ fn on_account_updated(
 ) {
 	if old.callsign != new.callsign {
 		println!(
-			"Account {} renamed to {}.",
-			account_name_or_identity(old),
-			account_name_or_identity(new)
+			"Account {} changed callsign from {} to {}.",
+			old.id, old.callsign, new.callsign,
 		);
 	}
 
 	if old.is_online && !new.is_online {
-		println!("Account {} disconnected.", account_name_or_identity(new));
+		println!("Account {} disconnected.", old.callsign);
 	}
 
 	if !old.is_online && new.is_online {
-		println!("Account {} connected.", account_name_or_identity(new));
+		println!("Account {} connected.", old.callsign);
 	}
 }
 
@@ -91,7 +103,7 @@ fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Mes
 		.account()
 		.id()
 		.find(&message.sender.clone())
-		.map(|u| account_name_or_identity(&u))
+		.map(|account| account_display_name(ctx, &account))
 		.unwrap_or_else(|| "unknown".to_string());
 
 	println!("{}: {}", sender, message.text);

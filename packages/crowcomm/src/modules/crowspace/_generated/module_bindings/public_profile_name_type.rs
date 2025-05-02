@@ -6,12 +6,11 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub enum AccountProfileOwnerId {
-	InternalAccountId(__sdk::Identity),
-
-	ExternalAccountId(String),
+pub struct PublicProfileName {
+	pub short_name:     String,
+	pub name_extension: Option<String>,
 }
 
-impl __sdk::InModule for AccountProfileOwnerId {
+impl __sdk::InModule for PublicProfileName {
 	type Module = super::RemoteModule;
 }

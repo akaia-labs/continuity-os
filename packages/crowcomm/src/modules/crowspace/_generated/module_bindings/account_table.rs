@@ -4,9 +4,7 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::{
-	account_profile_type::AccountProfile, account_role_type::AccountRole, account_type::Account,
-};
+use super::{account_role_type::AccountRole, account_type::Account};
 
 /// Table handle for the table `account`.
 ///
@@ -83,6 +81,8 @@ impl<'ctx> __sdk::Table for AccountTableHandle<'ctx> {
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
 	let _table = client_cache.get_or_make_table::<Account>("account");
 	_table.add_unique_constraint::<__sdk::Identity>("id", |row| &row.id);
+	_table.add_unique_constraint::<String>("callsign", |row| &row.callsign);
+	_table.add_unique_constraint::<u64>("profile_id", |row| &row.profile_id);
 }
 pub struct AccountUpdateCallbackId(__sdk::CallbackId);
 
@@ -137,6 +137,66 @@ impl<'ctx> AccountIdUnique<'ctx> {
 	/// Find the subscribed row whose `id` column value is equal to `col_val`,
 	/// if such a row is present in the client cache.
 	pub fn find(&self, col_val: &__sdk::Identity) -> Option<Account> {
+		self.imp.find(col_val)
+	}
+}
+
+/// Access to the `callsign` unique index on the table `account`,
+/// which allows point queries on the field of the same name
+/// via the [`AccountCallsignUnique::find`] method.
+///
+/// Users are encouraged not to explicitly reference this type,
+/// but to directly chain method calls,
+/// like `ctx.db.account().callsign().find(...)`.
+pub struct AccountCallsignUnique<'ctx> {
+	imp:     __sdk::UniqueConstraintHandle<Account, String>,
+	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
+}
+
+impl<'ctx> AccountTableHandle<'ctx> {
+	/// Get a handle on the `callsign` unique index on the table `account`.
+	pub fn callsign(&self) -> AccountCallsignUnique<'ctx> {
+		AccountCallsignUnique {
+			imp:     self.imp.get_unique_constraint::<String>("callsign"),
+			phantom: std::marker::PhantomData,
+		}
+	}
+}
+
+impl<'ctx> AccountCallsignUnique<'ctx> {
+	/// Find the subscribed row whose `callsign` column value is equal to
+	/// `col_val`, if such a row is present in the client cache.
+	pub fn find(&self, col_val: &String) -> Option<Account> {
+		self.imp.find(col_val)
+	}
+}
+
+/// Access to the `profile_id` unique index on the table `account`,
+/// which allows point queries on the field of the same name
+/// via the [`AccountProfileIdUnique::find`] method.
+///
+/// Users are encouraged not to explicitly reference this type,
+/// but to directly chain method calls,
+/// like `ctx.db.account().profile_id().find(...)`.
+pub struct AccountProfileIdUnique<'ctx> {
+	imp:     __sdk::UniqueConstraintHandle<Account, u64>,
+	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
+}
+
+impl<'ctx> AccountTableHandle<'ctx> {
+	/// Get a handle on the `profile_id` unique index on the table `account`.
+	pub fn profile_id(&self) -> AccountProfileIdUnique<'ctx> {
+		AccountProfileIdUnique {
+			imp:     self.imp.get_unique_constraint::<u64>("profile_id"),
+			phantom: std::marker::PhantomData,
+		}
+	}
+}
+
+impl<'ctx> AccountProfileIdUnique<'ctx> {
+	/// Find the subscribed row whose `profile_id` column value is equal to
+	/// `col_val`, if such a row is present in the client cache.
+	pub fn find(&self, col_val: &u64) -> Option<Account> {
 		self.imp.find(col_val)
 	}
 }

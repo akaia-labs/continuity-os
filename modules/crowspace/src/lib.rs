@@ -2,10 +2,8 @@ mod entities;
 mod features;
 
 use entities::{
-	account_profile::{
-		AccountProfile, AccountProfileMetadata, AccountProfileOwnerId, account_profile,
-	},
 	internal_account::*,
+	public_profile::{PublicProfile, PublicProfileMetadata, PublicProfileOwnerId, public_profile},
 };
 use spacetimedb::{ReducerContext, Table, reducer};
 
@@ -24,21 +22,21 @@ pub fn client_connected(ctx: &ReducerContext) {
 			..account
 		});
 	} else {
-		let account_profile = ctx.db.account_profile().insert(AccountProfile {
+		let account_profile = ctx.db.public_profile().insert(PublicProfile {
 			id:       0,
-			owner_id: AccountProfileOwnerId::InternalAccountId(ctx.sender),
-			metadata: AccountProfileMetadata::default(),
+			owner_id: PublicProfileOwnerId::InternalAccountId(ctx.sender),
+			metadata: PublicProfileMetadata::default(),
 		});
 
 		ctx.db.account().insert(Account {
 			id:           ctx.sender,
-			callsign:     Some(format!("0x{}", ctx.sender.to_hex().to_string())),
+			callsign:     format!("0x{}", ctx.sender.to_hex().to_string()),
 			role:         AccountRole::Interactor,
 			is_online:    true,
 			created_at:   ctx.timestamp,
 			updated_at:   ctx.timestamp,
 			last_seen_at: ctx.timestamp,
-			profile:      account_profile,
+			profile_id:   account_profile.id,
 		});
 	}
 }
