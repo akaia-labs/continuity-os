@@ -13,6 +13,7 @@ pub type ExternalAccountId = String;
 #[table(name = external_account, public)]
 pub struct ExternalAccount {
 	#[primary_key]
+	/// "{String}@{ExternalPlatformName}"
 	pub id: ExternalAccountId,
 	#[index(btree)]
 	pub owner: Option<Identity>,

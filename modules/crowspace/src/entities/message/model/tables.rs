@@ -6,7 +6,7 @@ use crate::entities::{account::AccountId, external_account::ExternalAccountId};
 /// The original message author.
 pub enum MessageAuthorId {
 	System,
-	AccountId(AccountId),
+	InternalAccountId(AccountId),
 	ExternalAccountId(ExternalAccountId),
 	/// Fallback value, use with caution.
 	Unknown,

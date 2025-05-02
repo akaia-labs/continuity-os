@@ -2,7 +2,7 @@ use spacetimedb::{Identity, SpacetimeType, Timestamp, table};
 
 pub type AccountId = Identity;
 
-#[derive(SpacetimeType)]
+#[derive(PartialEq, SpacetimeType)]
 pub enum AccountRole {
 	Admin,
 	Interactor,

@@ -7,11 +7,11 @@ use super::{tables::*, validators::*};
 use spacetimedb::{ReducerContext, Table, reducer};
 
 #[reducer]
-/// Clients invoke this reducer to send messages.
+/// Facilitates the basic internal messaging functionality
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 	let author_id: MessageAuthorId =
 		if let Some(author_account) = ctx.db.account().id().find(ctx.sender) {
-			MessageAuthorId::AccountId(author_account.id)
+			MessageAuthorId::InternalAccountId(author_account.id)
 		} else {
 			MessageAuthorId::System
 		};
@@ -43,12 +43,17 @@ pub fn import_message(
 		.find(author_reference.to_string())
 	{
 		if let Some(author_account_id) = author_external_account.owner {
-			MessageAuthorId::AccountId(author_account_id)
+			MessageAuthorId::InternalAccountId(author_account_id)
 		} else {
 			MessageAuthorId::ExternalAccountId(author_external_account.id)
 		}
 	} else {
 		MessageAuthorId::Unknown
+	};
+
+	let sender = match author_id {
+		| MessageAuthorId::InternalAccountId(identity) => identity,
+		| _ => ctx.sender,
 	};
 
 	let text = validate_message(text)?;
@@ -57,7 +62,7 @@ pub fn import_message(
 
 	ctx.db.message().insert(Message {
 		id: 0,
-		sender: ctx.sender,
+		sender,
 		sent_at: ctx.timestamp,
 		author_id,
 		text,
