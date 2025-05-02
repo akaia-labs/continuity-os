@@ -1,10 +1,19 @@
-use spacetimedb::{Identity, Timestamp, table};
+use spacetimedb::{Identity, SpacetimeType, Timestamp, table};
+
+pub type AccountId = Identity;
+
+#[derive(SpacetimeType)]
+pub enum AccountRole {
+	Admin,
+	Interactor,
+}
 
 #[table(name = account, public)]
 pub struct Account {
 	#[primary_key]
-	pub identity: Identity,
+	pub id: AccountId,
 	pub callsign: Option<String>,
+	pub role: AccountRole,
 	pub is_online: bool,
 	pub created_at: Timestamp,
 	pub updated_at: Timestamp,

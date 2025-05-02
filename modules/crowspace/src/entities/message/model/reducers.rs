@@ -1,9 +1,21 @@
+use crate::entities::{
+	account::account,
+	external_account::{ExternalAccountReference, external_account},
+};
+
 use super::{tables::*, validators::*};
 use spacetimedb::{ReducerContext, Table, reducer};
 
 #[reducer]
 /// Clients invoke this reducer to send messages.
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
+	let author_id: MessageAuthorId =
+		if let Some(author_account) = ctx.db.account().id().find(ctx.sender) {
+			MessageAuthorId::AccountId(author_account.id)
+		} else {
+			MessageAuthorId::System
+		};
+
 	let text = validate_message(text)?;
 
 	log::info!("{}", text);
@@ -11,8 +23,44 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 	ctx.db.message().insert(Message {
 		id: 0,
 		sender: ctx.sender,
+		sent_at: ctx.timestamp,
+		author_id,
 		text,
-		sent: ctx.timestamp,
+	});
+
+	Ok(())
+}
+
+#[reducer]
+// Registers a message relayed from an external platform
+pub fn import_message(
+	ctx: &ReducerContext, author_reference: ExternalAccountReference, text: String,
+) -> Result<(), String> {
+	let author_id: MessageAuthorId = if let Some(author_external_account) = ctx
+		.db
+		.external_account()
+		.id()
+		.find(author_reference.to_string())
+	{
+		if let Some(author_account_id) = author_external_account.owner {
+			MessageAuthorId::AccountId(author_account_id)
+		} else {
+			MessageAuthorId::ExternalAccountId(author_external_account.id)
+		}
+	} else {
+		MessageAuthorId::Unknown
+	};
+
+	let text = validate_message(text)?;
+
+	log::info!("{}", text);
+
+	ctx.db.message().insert(Message {
+		id: 0,
+		sender: ctx.sender,
+		sent_at: ctx.timestamp,
+		author_id,
+		text,
 	});
 
 	Ok(())
