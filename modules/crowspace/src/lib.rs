@@ -1,7 +1,12 @@
 mod entities;
 mod features;
 
-use entities::internal_account::*;
+use entities::{
+	account_profile::{
+		AccountProfile, AccountProfileMetadata, AccountProfileOwnerId, account_profile,
+	},
+	internal_account::*,
+};
 use spacetimedb::{ReducerContext, Table, reducer};
 
 #[reducer(init)]
@@ -13,16 +18,18 @@ pub fn init(_ctx: &ReducerContext) {
 #[reducer(client_connected)]
 pub fn client_connected(ctx: &ReducerContext) {
 	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
-		// If this is a returning account, i.e. we already have a `Account` with this
-		// `Identity`, set `online: true`, but leave `callsign` and `id` unchanged.
 		ctx.db.account().id().update(Account {
 			is_online: true,
 			last_seen_at: ctx.timestamp,
 			..account
 		});
 	} else {
-		// If this is a new account, create a `Account` row for the `Identity`,
-		// which is online, but hasn't set a callsign.
+		let account_profile = ctx.db.account_profile().insert(AccountProfile {
+			id:       0,
+			owner_id: AccountProfileOwnerId::InternalAccountId(ctx.sender),
+			metadata: AccountProfileMetadata::default(),
+		});
+
 		ctx.db.account().insert(Account {
 			id:           ctx.sender,
 			callsign:     Some(format!("0x{}", ctx.sender.to_hex().to_string())),
@@ -31,6 +38,7 @@ pub fn client_connected(ctx: &ReducerContext) {
 			created_at:   ctx.timestamp,
 			updated_at:   ctx.timestamp,
 			last_seen_at: ctx.timestamp,
+			profile:      account_profile,
 		});
 	}
 }

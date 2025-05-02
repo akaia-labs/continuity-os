@@ -4,6 +4,11 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+pub mod account_profile_metadata_type;
+pub mod account_profile_name_type;
+pub mod account_profile_owner_id_type;
+pub mod account_profile_table;
+pub mod account_profile_type;
 pub mod account_role_type;
 pub mod account_table;
 pub mod account_type;
@@ -25,14 +30,15 @@ pub mod send_message_reducer;
 pub mod service_table;
 pub mod service_type;
 pub mod set_callsign_reducer;
-pub mod social_profile_metadata_type;
-pub mod social_profile_name_type;
-pub mod social_profile_table;
-pub mod social_profile_type;
 pub mod text_channel_table;
 pub mod text_channel_type;
 pub mod unlink_external_account_reducer;
 
+pub use account_profile_metadata_type::AccountProfileMetadata;
+pub use account_profile_name_type::AccountProfileName;
+pub use account_profile_owner_id_type::AccountProfileOwnerId;
+pub use account_profile_table::*;
+pub use account_profile_type::AccountProfile;
 pub use account_role_type::AccountRole;
 pub use account_table::*;
 pub use account_type::Account;
@@ -69,10 +75,6 @@ pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_fo
 pub use service_table::*;
 pub use service_type::Service;
 pub use set_callsign_reducer::{SetCallsignCallbackId, set_callsign, set_flags_for_set_callsign};
-pub use social_profile_metadata_type::SocialProfileMetadata;
-pub use social_profile_name_type::SocialProfileName;
-pub use social_profile_table::*;
-pub use social_profile_type::SocialProfile;
 pub use text_channel_table::*;
 pub use text_channel_type::TextChannel;
 pub use unlink_external_account_reducer::{
@@ -198,10 +200,10 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 #[doc(hidden)]
 pub struct DbUpdate {
 	account:          __sdk::TableUpdate<Account>,
+	account_profile:  __sdk::TableUpdate<AccountProfile>,
 	external_account: __sdk::TableUpdate<ExternalAccount>,
 	message:          __sdk::TableUpdate<Message>,
 	service:          __sdk::TableUpdate<Service>,
-	social_profile:   __sdk::TableUpdate<SocialProfile>,
 	text_channel:     __sdk::TableUpdate<TextChannel>,
 }
 
@@ -213,16 +215,16 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 		for table_update in raw.tables {
 			match &table_update.table_name[..] {
 				| "account" => db_update.account = account_table::parse_table_update(table_update)?,
+				| "account_profile" => {
+					db_update.account_profile =
+						account_profile_table::parse_table_update(table_update)?
+				},
 				| "external_account" => {
 					db_update.external_account =
 						external_account_table::parse_table_update(table_update)?
 				},
 				| "message" => db_update.message = message_table::parse_table_update(table_update)?,
 				| "service" => db_update.service = service_table::parse_table_update(table_update)?,
-				| "social_profile" => {
-					db_update.social_profile =
-						social_profile_table::parse_table_update(table_update)?
-				},
 				| "text_channel" => {
 					db_update.text_channel = text_channel_table::parse_table_update(table_update)?
 				},
@@ -254,6 +256,9 @@ impl __sdk::DbUpdate for DbUpdate {
 		diff.account = cache
 			.apply_diff_to_table::<Account>("account", &self.account)
 			.with_updates_by_pk(|row| &row.id);
+		diff.account_profile = cache
+			.apply_diff_to_table::<AccountProfile>("account_profile", &self.account_profile)
+			.with_updates_by_pk(|row| &row.id);
 		diff.external_account = cache
 			.apply_diff_to_table::<ExternalAccount>("external_account", &self.external_account)
 			.with_updates_by_pk(|row| &row.id);
@@ -261,9 +266,6 @@ impl __sdk::DbUpdate for DbUpdate {
 			.apply_diff_to_table::<Message>("message", &self.message)
 			.with_updates_by_pk(|row| &row.id);
 		diff.service = cache.apply_diff_to_table::<Service>("service", &self.service);
-		diff.social_profile = cache
-			.apply_diff_to_table::<SocialProfile>("social_profile", &self.social_profile)
-			.with_updates_by_pk(|row| &row.id);
 		diff.text_channel = cache
 			.apply_diff_to_table::<TextChannel>("text_channel", &self.text_channel)
 			.with_updates_by_pk(|row| &row.id);
@@ -277,10 +279,10 @@ impl __sdk::DbUpdate for DbUpdate {
 #[doc(hidden)]
 pub struct AppliedDiff<'r> {
 	account:          __sdk::TableAppliedDiff<'r, Account>,
+	account_profile:  __sdk::TableAppliedDiff<'r, AccountProfile>,
 	external_account: __sdk::TableAppliedDiff<'r, ExternalAccount>,
 	message:          __sdk::TableAppliedDiff<'r, Message>,
 	service:          __sdk::TableAppliedDiff<'r, Service>,
-	social_profile:   __sdk::TableAppliedDiff<'r, SocialProfile>,
 	text_channel:     __sdk::TableAppliedDiff<'r, TextChannel>,
 }
 
@@ -293,6 +295,11 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 		&self, event: &EventContext, callbacks: &mut __sdk::DbCallbacks<RemoteModule>,
 	) {
 		callbacks.invoke_table_row_callbacks::<Account>("account", &self.account, event);
+		callbacks.invoke_table_row_callbacks::<AccountProfile>(
+			"account_profile",
+			&self.account_profile,
+			event,
+		);
 		callbacks.invoke_table_row_callbacks::<ExternalAccount>(
 			"external_account",
 			&self.external_account,
@@ -300,11 +307,6 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 		);
 		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
 		callbacks.invoke_table_row_callbacks::<Service>("service", &self.service, event);
-		callbacks.invoke_table_row_callbacks::<SocialProfile>(
-			"social_profile",
-			&self.social_profile,
-			event,
-		);
 		callbacks.invoke_table_row_callbacks::<TextChannel>(
 			"text_channel",
 			&self.text_channel,
@@ -940,10 +942,10 @@ impl __sdk::SpacetimeModule for RemoteModule {
 
 	fn register_tables(client_cache: &mut __sdk::ClientCache<Self>) {
 		account_table::register_table(client_cache);
+		account_profile_table::register_table(client_cache);
 		external_account_table::register_table(client_cache);
 		message_table::register_table(client_cache);
 		service_table::register_table(client_cache);
-		social_profile_table::register_table(client_cache);
 		text_channel_table::register_table(client_cache);
 	}
 }

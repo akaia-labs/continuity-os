@@ -17,7 +17,7 @@ pub fn set_callsign(ctx: &ReducerContext, callsign: String) -> Result<(), String
 
 		Ok(())
 	} else {
-		Err("Cannot set callsign for unknown account".to_string())
+		Err(format!("{} does not have an internal account.", ctx.sender))
 	}
 }
 
@@ -33,11 +33,11 @@ pub fn link_external_account(
 				..ext_account
 			});
 		} else {
-			return Err(format!("{} does not have an internal account", ctx.sender));
+			return Err(format!("{} does not have an internal account.", ctx.sender));
 		};
 	} else {
 		return Err(format!(
-			"External account {} not found in the system",
+			"External account {} not found in the system.",
 			ext_account_id
 		));
 	}
@@ -57,11 +57,11 @@ pub fn unlink_external_account(
 				..ext_account
 			});
 		} else {
-			return Err(format!("{} does not have an internal account", ctx.sender));
+			return Err(format!("{} does not have an internal account.", ctx.sender));
 		}
 	} else {
 		return Err(format!(
-			"External account {} not found in the system",
+			"External account {} not found in the system.",
 			ctx.sender
 		));
 	}
