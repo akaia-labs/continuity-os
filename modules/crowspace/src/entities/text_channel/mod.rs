@@ -1,3 +1,4 @@
 mod tables;
 
-pub use tables::{TextChannel, TextChannelId};
+#[allow(unused_imports)]
+pub use tables::*;
