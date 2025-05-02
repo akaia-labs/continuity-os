@@ -1,3 +1,4 @@
+mod assertions;
 mod reducers;
 mod tables;
 mod validators;

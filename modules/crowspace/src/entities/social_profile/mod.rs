@@ -1,3 +1,4 @@
-mod model;
+mod tables;
 
-pub use model::*;
+#[allow(unused_imports)]
+pub use tables::*;

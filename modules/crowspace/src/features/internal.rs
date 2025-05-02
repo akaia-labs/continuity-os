@@ -1,6 +1,6 @@
 use spacetimedb::ReducerContext;
 
-use super::{AccountRole, account};
+use crate::entities::internal_account::{AccountRole, account};
 
 /// Asserts that the executor is an admin.
 pub fn assert_admin(ctx: &ReducerContext) {

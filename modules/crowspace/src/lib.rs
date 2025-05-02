@@ -1,6 +1,7 @@
 mod entities;
+mod features;
 
-use entities::account::*;
+use entities::internal_account::*;
 use spacetimedb::{ReducerContext, Table, reducer};
 
 #[reducer(init)]

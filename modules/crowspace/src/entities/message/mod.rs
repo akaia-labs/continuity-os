@@ -1,3 +1,6 @@
-mod model;
+mod reducers;
+mod tables;
+pub mod validators;
 
-pub use model::*;
+#[allow(unused_imports)]
+pub use tables::*;

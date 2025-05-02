@@ -1,6 +1,6 @@
 use crate::entities::{
-	account::account,
 	external_account::{ExternalAccountReference, external_account},
+	internal_account::account,
 };
 
 use super::{tables::*, validators::*};
