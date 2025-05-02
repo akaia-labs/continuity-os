@@ -1,3 +1,5 @@
+use std::fmt::{self, Display, Formatter};
+
 use spacetimedb::{SpacetimeType, table};
 
 use crate::entities::{external_account::ExternalAccountId, internal_account::AccountId};
@@ -33,6 +35,16 @@ fn default_short_name() -> String {
 	"Anonymous".to_string()
 }
 
+impl Display for PublicProfileName {
+	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+		if let Some(name_extension) = &self.name_extension {
+			write!(formatter, "{} {}", self.short_name, name_extension)
+		} else {
+			write!(formatter, "{}", self.short_name)
+		}
+	}
+}
+
 #[derive(SpacetimeType, Default, serde::Serialize, serde::Deserialize)]
 /// Logical grouping of name tokens
 pub struct PublicProfileMetadata {
@@ -40,4 +52,17 @@ pub struct PublicProfileMetadata {
 	#[serde(default)]
 	/// Markdown-formatted string
 	pub bio:  String,
+}
+
+impl PublicProfileMetadata {
+	pub fn default_with_name(name: String) -> Self {
+		PublicProfileMetadata {
+			name: PublicProfileName {
+				short_name:     name,
+				name_extension: None,
+			},
+
+			..Default::default()
+		}
+	}
 }

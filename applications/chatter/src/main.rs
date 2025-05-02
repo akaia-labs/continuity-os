@@ -1,7 +1,10 @@
 use std::process;
 
 use crowcomm::{
-	crowspace::{self, *},
+	crowspace::{
+		self, AccountTableAccess, MessageTableAccess, account::AccountDisplayName, send_message,
+		set_callsign,
+	},
 	get_env_config,
 };
 use spacetimedb_sdk::{
@@ -40,27 +43,6 @@ fn on_disconnected(_ctx: &crowspace::ErrorContext, err: Option<Error>) {
 
 // TODO: Extract to Account entity
 
-fn account_display_name(
-	ctx: &impl crowspace::RemoteDbContext, account: &crowspace::Account,
-) -> String {
-	ctx.db()
-		.public_profile()
-		.id()
-		.find(&account.profile_id)
-		.map(|p| {
-			if p.metadata.name
-				== (crowspace::PublicProfileName {
-					short_name:     "Anonymous".to_string(),
-					name_extension: None,
-				}) {
-				account.callsign.clone()
-			} else {
-				p.metadata.name.to_string()
-			}
-		})
-		.unwrap_or_else(|| account.callsign.clone())
-}
-
 /// If the account is online, prints a notification.
 fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Account) {
 	if account.is_online {
@@ -95,7 +77,7 @@ fn on_callsign_set(ctx: &crowspace::ReducerEventContext, callsign: &String) {
 	}
 }
 
-// !	MESSAGE SUBSCRIPTIONS
+//*	MESSAGE SUBSCRIPTIONS
 
 fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Message) {
 	let sender = ctx
@@ -103,7 +85,7 @@ fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Mes
 		.account()
 		.id()
 		.find(&message.sender.clone())
-		.map(|account| account_display_name(ctx, &account))
+		.map(|account| account.get_display_name(ctx))
 		.unwrap_or_else(|| "unknown".to_string());
 
 	println!("{}: {}", sender, message.text);
