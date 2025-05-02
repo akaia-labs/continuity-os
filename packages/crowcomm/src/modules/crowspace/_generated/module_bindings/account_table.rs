@@ -2,6 +2,7 @@
 // WILL NOT BE SAVED. MODIFY TABLES IN YOUR MODULE SOURCE CODE INSTEAD.
 
 #![allow(unused, clippy::all)]
+use super::account_role_type::AccountRole;
 use super::account_type::Account;
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
@@ -79,7 +80,7 @@ impl<'ctx> __sdk::Table for AccountTableHandle<'ctx> {
 #[doc(hidden)]
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
 	let _table = client_cache.get_or_make_table::<Account>("account");
-	_table.add_unique_constraint::<__sdk::Identity>("identity", |row| &row.identity);
+	_table.add_unique_constraint::<__sdk::Identity>("id", |row| &row.id);
 }
 pub struct AccountUpdateCallbackId(__sdk::CallbackId);
 
@@ -108,32 +109,30 @@ pub(super) fn parse_table_update(
 	})
 }
 
-/// Access to the `identity` unique index on the table `account`,
+/// Access to the `id` unique index on the table `account`,
 /// which allows point queries on the field of the same name
-/// via the [`AccountIdentityUnique::find`] method.
+/// via the [`AccountIdUnique::find`] method.
 ///
 /// Users are encouraged not to explicitly reference this type,
 /// but to directly chain method calls,
-/// like `ctx.db.account().identity().find(...)`.
-pub struct AccountIdentityUnique<'ctx> {
+/// like `ctx.db.account().id().find(...)`.
+pub struct AccountIdUnique<'ctx> {
 	imp: __sdk::UniqueConstraintHandle<Account, __sdk::Identity>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
 impl<'ctx> AccountTableHandle<'ctx> {
-	/// Get a handle on the `identity` unique index on the table `account`.
-	pub fn identity(&self) -> AccountIdentityUnique<'ctx> {
-		AccountIdentityUnique {
-			imp: self
-				.imp
-				.get_unique_constraint::<__sdk::Identity>("identity"),
+	/// Get a handle on the `id` unique index on the table `account`.
+	pub fn id(&self) -> AccountIdUnique<'ctx> {
+		AccountIdUnique {
+			imp: self.imp.get_unique_constraint::<__sdk::Identity>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}
 }
 
-impl<'ctx> AccountIdentityUnique<'ctx> {
-	/// Find the subscribed row whose `identity` column value is equal to `col_val`,
+impl<'ctx> AccountIdUnique<'ctx> {
+	/// Find the subscribed row whose `id` column value is equal to `col_val`,
 	/// if such a row is present in the client cache.
 	pub fn find(&self, col_val: &__sdk::Identity) -> Option<Account> {
 		self.imp.find(col_val)

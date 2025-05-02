@@ -4,27 +4,68 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+pub mod account_role_type;
 pub mod account_table;
 pub mod account_type;
+pub mod add_external_account_reducer;
+pub mod admin_link_external_account_reducer;
+pub mod admin_set_account_role_reducer;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
+pub mod external_account_reference_type;
+pub mod external_account_table;
+pub mod external_account_type;
+pub mod external_platform_name_type;
+pub mod import_message_reducer;
+pub mod link_external_account_reducer;
+pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
 pub mod send_message_reducer;
+pub mod service_table;
+pub mod service_type;
 pub mod set_callsign_reducer;
+pub mod unlink_external_account_reducer;
 
+pub use account_role_type::AccountRole;
 pub use account_table::*;
 pub use account_type::Account;
+pub use add_external_account_reducer::{
+	AddExternalAccountCallbackId, add_external_account, set_flags_for_add_external_account,
+};
+pub use admin_link_external_account_reducer::{
+	AdminLinkExternalAccountCallbackId, admin_link_external_account,
+	set_flags_for_admin_link_external_account,
+};
+pub use admin_set_account_role_reducer::{
+	AdminSetAccountRoleCallbackId, admin_set_account_role, set_flags_for_admin_set_account_role,
+};
 pub use client_connected_reducer::{
 	ClientConnectedCallbackId, client_connected, set_flags_for_client_connected,
 };
 pub use client_disconnected_reducer::{
 	ClientDisconnectedCallbackId, client_disconnected, set_flags_for_client_disconnected,
 };
+pub use external_account_reference_type::ExternalAccountReference;
+pub use external_account_table::*;
+pub use external_account_type::ExternalAccount;
+pub use external_platform_name_type::ExternalPlatformName;
+pub use import_message_reducer::{
+	ImportMessageCallbackId, import_message, set_flags_for_import_message,
+};
+pub use link_external_account_reducer::{
+	LinkExternalAccountCallbackId, link_external_account, set_flags_for_link_external_account,
+};
+pub use message_author_id_type::MessageAuthorId;
 pub use message_table::*;
 pub use message_type::Message;
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
+pub use service_table::*;
+pub use service_type::Service;
 pub use set_callsign_reducer::{SetCallsignCallbackId, set_callsign, set_flags_for_set_callsign};
+pub use unlink_external_account_reducer::{
+	UnlinkExternalAccountCallbackId, set_flags_for_unlink_external_account, unlink_external_account,
+};
 
 #[derive(Clone, PartialEq, Debug)]
 
@@ -34,10 +75,35 @@ pub use set_callsign_reducer::{SetCallsignCallbackId, set_callsign, set_flags_fo
 /// to indicate which reducer caused the event.
 
 pub enum Reducer {
+	AddExternalAccount {
+		reference: ExternalAccountReference,
+	},
+	AdminLinkExternalAccount {
+		account_id: __sdk::Identity,
+		ext_account_id: String,
+	},
+	AdminSetAccountRole {
+		account_id: __sdk::Identity,
+		role: AccountRole,
+	},
 	ClientConnected,
 	ClientDisconnected,
-	SendMessage { text: String },
-	SetCallsign { callsign: String },
+	ImportMessage {
+		author_reference: ExternalAccountReference,
+		text: String,
+	},
+	LinkExternalAccount {
+		ext_account_id: String,
+	},
+	SendMessage {
+		text: String,
+	},
+	SetCallsign {
+		callsign: String,
+	},
+	UnlinkExternalAccount {
+		ext_account_id: String,
+	},
 }
 
 impl __sdk::InModule for Reducer {
@@ -47,10 +113,16 @@ impl __sdk::InModule for Reducer {
 impl __sdk::Reducer for Reducer {
 	fn reducer_name(&self) -> &'static str {
 		match self {
+			| Reducer::AddExternalAccount { .. } => "add_external_account",
+			| Reducer::AdminLinkExternalAccount { .. } => "admin_link_external_account",
+			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
+			| Reducer::ImportMessage { .. } => "import_message",
+			| Reducer::LinkExternalAccount { .. } => "link_external_account",
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetCallsign { .. } => "set_callsign",
+			| Reducer::UnlinkExternalAccount { .. } => "unlink_external_account",
 		}
 	}
 }
@@ -58,6 +130,18 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 	type Error = __sdk::Error;
 	fn try_from(value: __ws::ReducerCallInfo<__ws::BsatnFormat>) -> __sdk::Result<Self> {
 		match &value.reducer_name[..] {
+			| "add_external_account" => Ok(__sdk::parse_reducer_args::<
+				add_external_account_reducer::AddExternalAccountArgs,
+			>("add_external_account", &value.args)?
+			.into()),
+			| "admin_link_external_account" => Ok(__sdk::parse_reducer_args::<
+				admin_link_external_account_reducer::AdminLinkExternalAccountArgs,
+			>("admin_link_external_account", &value.args)?
+			.into()),
+			| "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<
+				admin_set_account_role_reducer::AdminSetAccountRoleArgs,
+			>("admin_set_account_role", &value.args)?
+			.into()),
 			| "client_connected" => Ok(__sdk::parse_reducer_args::<
 				client_connected_reducer::ClientConnectedArgs,
 			>("client_connected", &value.args)?
@@ -66,6 +150,14 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 				client_disconnected_reducer::ClientDisconnectedArgs,
 			>("client_disconnected", &value.args)?
 			.into()),
+			| "import_message" => Ok(__sdk::parse_reducer_args::<
+				import_message_reducer::ImportMessageArgs,
+			>("import_message", &value.args)?
+			.into()),
+			| "link_external_account" => Ok(__sdk::parse_reducer_args::<
+				link_external_account_reducer::LinkExternalAccountArgs,
+			>("link_external_account", &value.args)?
+			.into()),
 			| "send_message" => Ok(__sdk::parse_reducer_args::<
 				send_message_reducer::SendMessageArgs,
 			>("send_message", &value.args)?
@@ -73,6 +165,10 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 			| "set_callsign" => Ok(__sdk::parse_reducer_args::<
 				set_callsign_reducer::SetCallsignArgs,
 			>("set_callsign", &value.args)?
+			.into()),
+			| "unlink_external_account" => Ok(__sdk::parse_reducer_args::<
+				unlink_external_account_reducer::UnlinkExternalAccountArgs,
+			>("unlink_external_account", &value.args)?
 			.into()),
 			| unknown => {
 				Err(
@@ -89,7 +185,9 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 #[doc(hidden)]
 pub struct DbUpdate {
 	account: __sdk::TableUpdate<Account>,
+	external_account: __sdk::TableUpdate<ExternalAccount>,
 	message: __sdk::TableUpdate<Message>,
+	service: __sdk::TableUpdate<Service>,
 }
 
 impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
@@ -99,7 +197,12 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 		for table_update in raw.tables {
 			match &table_update.table_name[..] {
 				| "account" => db_update.account = account_table::parse_table_update(table_update)?,
+				| "external_account" => {
+					db_update.external_account =
+						external_account_table::parse_table_update(table_update)?
+				},
 				| "message" => db_update.message = message_table::parse_table_update(table_update)?,
+				| "service" => db_update.service = service_table::parse_table_update(table_update)?,
 
 				| unknown => {
 					return Err(__sdk::InternalError::unknown_name(
@@ -127,10 +230,14 @@ impl __sdk::DbUpdate for DbUpdate {
 
 		diff.account = cache
 			.apply_diff_to_table::<Account>("account", &self.account)
-			.with_updates_by_pk(|row| &row.identity);
+			.with_updates_by_pk(|row| &row.id);
+		diff.external_account = cache
+			.apply_diff_to_table::<ExternalAccount>("external_account", &self.external_account)
+			.with_updates_by_pk(|row| &row.id);
 		diff.message = cache
 			.apply_diff_to_table::<Message>("message", &self.message)
 			.with_updates_by_pk(|row| &row.id);
+		diff.service = cache.apply_diff_to_table::<Service>("service", &self.service);
 
 		diff
 	}
@@ -141,7 +248,9 @@ impl __sdk::DbUpdate for DbUpdate {
 #[doc(hidden)]
 pub struct AppliedDiff<'r> {
 	account: __sdk::TableAppliedDiff<'r, Account>,
+	external_account: __sdk::TableAppliedDiff<'r, ExternalAccount>,
 	message: __sdk::TableAppliedDiff<'r, Message>,
+	service: __sdk::TableAppliedDiff<'r, Service>,
 }
 
 impl __sdk::InModule for AppliedDiff<'_> {
@@ -153,7 +262,13 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 		&self, event: &EventContext, callbacks: &mut __sdk::DbCallbacks<RemoteModule>,
 	) {
 		callbacks.invoke_table_row_callbacks::<Account>("account", &self.account, event);
+		callbacks.invoke_table_row_callbacks::<ExternalAccount>(
+			"external_account",
+			&self.external_account,
+			event,
+		);
 		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
+		callbacks.invoke_table_row_callbacks::<Service>("service", &self.service, event);
 	}
 }
 
@@ -730,6 +845,8 @@ impl __sdk::SpacetimeModule for RemoteModule {
 
 	fn register_tables(client_cache: &mut __sdk::ClientCache<Self>) {
 		account_table::register_table(client_cache);
+		external_account_table::register_table(client_cache);
 		message_table::register_table(client_cache);
+		service_table::register_table(client_cache);
 	}
 }

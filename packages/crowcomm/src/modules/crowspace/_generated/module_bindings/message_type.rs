@@ -4,12 +4,15 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+use super::message_author_id_type::MessageAuthorId;
+
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct Message {
 	pub id: u64,
+	pub sent_at: __sdk::Timestamp,
 	pub sender: __sdk::Identity,
-	pub sent: __sdk::Timestamp,
+	pub author_id: MessageAuthorId,
 	pub text: String,
 }
 

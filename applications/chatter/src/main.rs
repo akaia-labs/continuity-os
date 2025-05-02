@@ -50,7 +50,7 @@ fn account_name_or_identity(account: &crowspace::Account) -> String {
 	account
 		.callsign
 		.clone()
-		.unwrap_or_else(|| account.identity.to_hex().to_string())
+		.unwrap_or_else(|| account.id.to_hex().to_string())
 }
 
 /// If the account is online, prints a notification.
@@ -96,7 +96,7 @@ fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Mes
 	let sender = ctx
 		.db()
 		.account()
-		.identity()
+		.id()
 		.find(&message.sender.clone())
 		.map(|u| account_name_or_identity(&u))
 		.unwrap_or_else(|| "unknown".to_string());
@@ -126,7 +126,7 @@ fn on_message_sent(ctx: &crowspace::ReducerEventContext, text: &String) {
 fn on_sub_applied(ctx: &crowspace::SubscriptionEventContext) {
 	let mut messages = ctx.db.message().iter().collect::<Vec<_>>();
 
-	messages.sort_by_key(|m| m.sent);
+	messages.sort_by_key(|m| m.sent_at);
 
 	for message in messages {
 		print_message(ctx, &message);

@@ -4,20 +4,18 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::account_role_type::AccountRole;
-
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub struct Account {
-	pub id: __sdk::Identity,
-	pub callsign: Option<String>,
-	pub role: AccountRole,
-	pub is_online: bool,
-	pub created_at: __sdk::Timestamp,
-	pub updated_at: __sdk::Timestamp,
-	pub last_seen_at: __sdk::Timestamp,
+pub enum MessageAuthorId {
+	System,
+
+	InternalAccountId(__sdk::Identity),
+
+	ExternalAccountId(String),
+
+	Unknown,
 }
 
-impl __sdk::InModule for Account {
+impl __sdk::InModule for MessageAuthorId {
 	type Module = super::RemoteModule;
 }

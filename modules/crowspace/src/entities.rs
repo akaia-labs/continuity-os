@@ -4,3 +4,4 @@ pub mod internal_account;
 pub mod message;
 pub mod service;
 pub mod social_profile;
+pub mod text_channel;

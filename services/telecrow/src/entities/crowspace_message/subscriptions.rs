@@ -26,11 +26,11 @@ pub fn handle_telegram_forward(
 		// Ignore messages inserted by the service itself
 		if message.sender != stdb.identity() {
 			// Only forward messages sent after handler initialization
-			if subscribed_at.le(&message.sent) {
+			if subscribed_at.le(&message.sent_at) {
 				let sender_name = stdb
 					.db()
 					.account()
-					.identity()
+					.id()
 					.find(&message.sender.clone())
 					.map(|u| crowspace_account::identifier(&u))
 					.unwrap_or_else(|| "unknown".to_string());
