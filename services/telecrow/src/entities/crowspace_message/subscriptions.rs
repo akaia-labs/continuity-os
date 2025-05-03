@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowcomm::crowspace::{self, account::AccountDisplayName, *};
+use crowcomm::crowspace::{self, traits::DisplayName, *};
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use tokio::sync::mpsc;
 

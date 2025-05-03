@@ -9,7 +9,7 @@ pub fn add_external_account(
 ) -> Result<(), String> {
 	ctx.db.external_account().insert(ExternalAccount {
 		id:         reference.to_string(),
-		owner:      None,
+		owner_id:   None,
 		profile_id: None,
 	});
 

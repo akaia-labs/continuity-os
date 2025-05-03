@@ -16,7 +16,7 @@ pub struct ExternalAccount {
 	/// "{String}@{ExternalPlatformName}"
 	pub id:         ExternalAccountId,
 	#[index(btree)]
-	pub owner:      Option<Identity>,
+	pub owner_id:   Option<Identity>,
 	#[index(btree)]
 	pub profile_id: Option<PublicProfileId>,
 }

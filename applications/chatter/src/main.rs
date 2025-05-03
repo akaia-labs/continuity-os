@@ -2,8 +2,8 @@ use std::process;
 
 use crowcomm::{
 	crowspace::{
-		self, AccountTableAccess, MessageTableAccess, account::AccountDisplayName, send_message,
-		set_callsign,
+		self, AccountTableAccess, MessageTableAccess, send_message, set_callsign,
+		traits::DisplayName,
 	},
 	get_env_config,
 };

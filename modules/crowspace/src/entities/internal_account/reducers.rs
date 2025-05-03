@@ -29,7 +29,7 @@ pub fn link_external_account(
 	if let Some(ext_account) = ctx.db.external_account().id().find(ext_account_id.clone()) {
 		if let Some(account) = ctx.db.account().id().find(ctx.sender) {
 			ctx.db.external_account().id().update(ExternalAccount {
-				owner: Some(account.id),
+				owner_id: Some(account.id),
 				..ext_account
 			});
 		} else {
@@ -53,7 +53,7 @@ pub fn unlink_external_account(
 	if let Some(ext_account) = ctx.db.external_account().id().find(ext_account_id) {
 		if let Some(_) = ctx.db.account().id().find(ctx.sender) {
 			ctx.db.external_account().id().update(ExternalAccount {
-				owner: None,
+				owner_id: None,
 				..ext_account
 			});
 		} else {

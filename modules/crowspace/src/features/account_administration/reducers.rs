@@ -8,10 +8,8 @@ use crate::{
 	features::internal::assert_admin,
 };
 
-/// Administration
-///
-/// ! HEADS UP! Don't forget to call `assert_admin(ctx);` in the first line of
-/// every admin reducer!
+// ! HEADS UP! Don't forget to call `assert_admin(ctx);`
+// ! in the first line of every admin reducer!
 
 #[reducer]
 /// Sets role for the specified account.
@@ -43,7 +41,7 @@ pub fn admin_link_external_account(
 	if let Some(ext_account) = ctx.db.external_account().id().find(ext_account_id.clone()) {
 		if let Some(account) = ctx.db.account().id().find(account_id) {
 			ctx.db.external_account().id().update(ExternalAccount {
-				owner: Some(account.id),
+				owner_id: Some(account.id),
 				..ext_account
 			});
 		} else {

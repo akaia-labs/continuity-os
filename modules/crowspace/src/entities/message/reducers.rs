@@ -42,7 +42,7 @@ pub fn import_message(
 		.id()
 		.find(author_reference.to_string())
 	{
-		if let Some(author_account_id) = author_external_account.owner {
+		if let Some(author_account_id) = author_external_account.owner_id {
 			MessageAuthorId::InternalAccountId(author_account_id)
 		} else {
 			MessageAuthorId::ExternalAccountId(author_external_account.id)
