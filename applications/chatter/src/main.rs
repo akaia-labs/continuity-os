@@ -85,7 +85,7 @@ fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Mes
 		.account()
 		.id()
 		.find(&message.sender.clone())
-		.map(|account| account.get_display_name(ctx))
+		.map(|account| account.display_name(ctx))
 		.unwrap_or_else(|| "unknown".to_string());
 
 	println!("{}: {}", sender, message.text);

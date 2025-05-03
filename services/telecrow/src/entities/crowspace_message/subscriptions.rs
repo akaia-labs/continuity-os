@@ -1,13 +1,10 @@
 use std::sync::Arc;
 
-use crowcomm::crowspace::{self, *};
+use crowcomm::crowspace::{self, account::AccountDisplayName, *};
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use tokio::sync::mpsc;
 
-use crate::{
-	common::{bindings::telegram, runtime::AsyncHandler},
-	entities::crowspace_account,
-};
+use crate::common::{bindings::telegram, runtime::AsyncHandler};
 
 pub struct TelegramForwardRequest {
 	pub chat_id:      i64,
@@ -32,8 +29,8 @@ pub fn handle_telegram_forward(
 					.account()
 					.id()
 					.find(&message.sender.clone())
-					.map(|u| crowspace_account::identifier(&u))
-					.unwrap_or_else(|| "unknown".to_string());
+					.map(|account| account.display_name(stdb))
+					.unwrap_or(format!("{}", message.sender));
 
 				let request = TelegramForwardRequest {
 					// TODO: The chat id must be taken from the crowspace::TextChannel room

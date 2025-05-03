@@ -5,7 +5,7 @@ use std::{
 
 use spacetimedb::{Identity, SpacetimeType, table};
 
-use crate::entities::external_platform::ExternalPlatformName;
+use crate::entities::{external_platform::ExternalPlatformName, public_profile::PublicProfileId};
 
 /// "{String}@{ExternalPlatformName}"
 pub type ExternalAccountId = String;
@@ -14,9 +14,11 @@ pub type ExternalAccountId = String;
 pub struct ExternalAccount {
 	#[primary_key]
 	/// "{String}@{ExternalPlatformName}"
-	pub id:    ExternalAccountId,
+	pub id:         ExternalAccountId,
 	#[index(btree)]
-	pub owner: Option<Identity>,
+	pub owner:      Option<Identity>,
+	#[index(btree)]
+	pub profile_id: Option<PublicProfileId>,
 }
 
 #[derive(SpacetimeType)]
