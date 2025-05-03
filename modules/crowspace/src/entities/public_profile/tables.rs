@@ -23,16 +23,11 @@ pub enum PublicProfileOwnerId {
 	ExternalAccountId(ExternalAccountId),
 }
 
-#[derive(SpacetimeType, Default, serde::Serialize, serde::Deserialize)]
+#[derive(SpacetimeType)]
 /// Logical grouping of name tokens
 pub struct PublicProfileName {
-	#[serde(default = "default_short_name")]
 	pub short_name:     String,
 	pub name_extension: Option<String>,
-}
-
-fn default_short_name() -> String {
-	"Anonymous".to_string()
 }
 
 impl Display for PublicProfileName {
@@ -45,13 +40,25 @@ impl Display for PublicProfileName {
 	}
 }
 
-#[derive(SpacetimeType, Default, serde::Serialize, serde::Deserialize)]
+#[derive(SpacetimeType)]
 /// Logical grouping of name tokens
 pub struct PublicProfileMetadata {
 	pub name: PublicProfileName,
-	#[serde(default)]
 	/// Markdown-formatted string
 	pub bio:  String,
+}
+
+impl Default for PublicProfileMetadata {
+	fn default() -> Self {
+		PublicProfileMetadata {
+			name: PublicProfileName {
+				short_name:     "Anonymous".to_string(),
+				name_extension: None,
+			},
+
+			bio: "".to_string(),
+		}
+	}
 }
 
 impl PublicProfileMetadata {

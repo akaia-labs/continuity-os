@@ -48,11 +48,6 @@ fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Acco
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
-
-	println!(
-		"{:#?}",
-		_ctx.db.public_profile().id().find(&account.profile_id)
-	);
 }
 
 /// Prints a notification about callsign and status changes.
@@ -132,12 +127,16 @@ fn on_sub_error(_ctx: &crowspace::ErrorContext, err: Error) {
 	std::process::exit(1);
 }
 
-/// Registers subscriptions for all rows of both tables.
 fn subscribe_to_tables(ctx: &crowspace::DbConnection) {
 	ctx.subscription_builder()
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
-		.subscribe(["SELECT * FROM account", "SELECT * FROM message"]);
+		.subscribe([
+			"SELECT * FROM account",
+			"SELECT * FROM external_account",
+			"SELECT * FROM message",
+			"SELECT * FROM public_profile",
+		]);
 }
 
 // !	USER INPUT

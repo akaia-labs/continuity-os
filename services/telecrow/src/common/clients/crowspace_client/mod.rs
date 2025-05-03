@@ -72,5 +72,10 @@ pub fn subscribe(stdb: &crowspace::DbConnection) {
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
 		// Subscribe to SQL queries in order to construct a local partial replica of the database.
-		.subscribe(["SELECT * FROM account", "SELECT * FROM message"]);
+		.subscribe([
+			"SELECT * FROM account",
+			"SELECT * FROM external_account",
+			"SELECT * FROM message",
+			"SELECT * FROM public_profile"
+		]);
 }

@@ -12,8 +12,6 @@ pub fn handle_message(
 	move |msg: telegram::Message, _bot: Bot| {
 		let crowchat_connection = stdb.clone();
 
-		let sender_display_name = "";
-
 		Box::pin(async move {
 			if let Some(text) = msg.text() {
 				let _result = crowchat_connection.reducers.send_message(text.to_owned());

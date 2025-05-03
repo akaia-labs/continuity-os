@@ -3,10 +3,7 @@ mod features;
 
 use entities::{
 	internal_account::*,
-	public_profile::{
-		PublicProfile, PublicProfileMetadata, PublicProfileName, PublicProfileOwnerId,
-		public_profile,
-	},
+	public_profile::{PublicProfile, PublicProfileMetadata, PublicProfileOwnerId, public_profile},
 };
 use spacetimedb::{ReducerContext, Table, reducer};
 
@@ -24,21 +21,20 @@ pub fn client_connected(ctx: &ReducerContext) {
 			..account
 		});
 	} else {
-		let account_profile = ctx.db.public_profile().insert(PublicProfile {
+		let initial_profile = ctx.db.public_profile().insert(PublicProfile {
 			id:       0,
 			owner_id: PublicProfileOwnerId::InternalAccountId(ctx.sender),
 			metadata: PublicProfileMetadata::default(),
 		});
 
-		//*  Ensuring the profile name is unique at least by default
-		ctx.db.public_profile().id().update(PublicProfile {
+		let account_profile = ctx.db.public_profile().id().update(PublicProfile {
+			//*  Ensuring the profile name is unique at least by default
 			metadata: PublicProfileMetadata::default_with_name(format!(
 				"{}-{}",
-				PublicProfileName::default(),
-				account_profile.id
+				initial_profile.metadata.name.short_name, initial_profile.id
 			)),
 
-			..account_profile
+			..initial_profile
 		});
 
 		ctx.db.account().insert(Account {
