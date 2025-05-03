@@ -28,13 +28,14 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(req) = forward_receiver.recv().await {
+			let message_header = format!("💬 {}\n\n", req.sender_name);
+			let message_text = format!("{}{}", message_header, req.message_text);
+
 			let _ = telegram_transmitter
-				.send_message(
-					telegram::ChatId(req.chat_id),
-					format!("💬 {}: {}", req.sender_name, req.message_text),
-				)
+				.send_message(telegram::ChatId(req.chat_id), &message_text)
 				.message_thread_id(telegram::ThreadId(telegram::MessageId(3315)))
-				.await;
+				.await
+				.map_err(|err| println!("{:?}", err));
 		}
 	});
 
