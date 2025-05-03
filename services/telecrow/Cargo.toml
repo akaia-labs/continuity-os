@@ -1,0 +1,25 @@
+[package]
+name = "telecrow"
+description = "Akaia Labs crow.d Rust telegram bridge"
+version = "0.1.0"
+edition = "2024"
+default-run = "telecrow"
+
+
+[[bin]]
+name = "telecrow"
+path = "src/main.rs"
+
+
+[dependencies]
+# crow.d
+crowcomm.workspace = true
+
+# External packages
+dotenvy.workspace = true
+hex.workspace = true
+log.workspace = true
+pretty_env_logger.workspace = true
+spacetimedb-sdk.workspace = true
+teloxide.workspace = true
+tokio.workspace = true

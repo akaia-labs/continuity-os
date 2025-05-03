@@ -1,0 +1,17 @@
+[package]
+name = "crowspace"
+description = "Akaia Labs crow.d community server module for SpacetimeDB"
+version = "0.2.0"
+edition = "2024"
+
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+log.workspace = true
+serde.workspace = true
+spacetimedb.workspace = true
+strum.workspace = true
+strum_macros.workspace = true

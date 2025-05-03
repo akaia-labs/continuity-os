@@ -1,0 +1,41 @@
+[workspace]
+resolver = "3"
+
+members = [
+	"applications/chatter",
+	"modules/crowspace",
+	"packages/crowcomm",
+	"services/telecrow",
+]
+
+
+[workspace.package]
+version = "0.2.0"
+authors = ["Carina.Akaia.org <cvo.akaia@gmail.com>"]
+keywords = ["akaia-labs", "communication", "community", "knowledge base"]
+
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+overflow-checks = true
+
+
+[workspace.dependencies]
+# crow.d
+crowcomm = { path = "packages/crowcomm" }
+
+# External packages
+dotenvy = "0.15.7"
+hex = "0.4"
+log = "0.4"
+pretty_env_logger = "0.5"
+serde = { version = "1.0", features = ["derive"] }
+spacetimedb = "1.1.1"
+spacetimedb-sdk = "1.1.1"
+strum = { version = "0.25.0", features = ["derive"] }
+strum_macros = "0.25.3"
+teloxide = { version = "0.15.0", features = ["macros"] }
+tokio = { version = "1.8", features = ["rt-multi-thread", "macros"] }
+# wasm-opt = "0.116.1"

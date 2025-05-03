@@ -1,0 +1,25 @@
+[package]
+name = "raiven"
+description = "Akaia Labs crow.d AI service"
+version = "0.1.0"
+edition = "2024"
+default-run = "raiven"
+
+# Subject to be extracted into a separate package, resides here for the initial prototyping
+[[bin]]
+name = "raiven"
+path = "src/main.rs"
+
+
+[dependencies]
+# crow.d
+crowcomm.workspace = true
+
+# External packages
+dotenvy.workspace = true
+hex.workspace = true
+log.workspace = true
+pretty_env_logger.workspace = true
+spacetimedb-sdk.workspace = true
+teloxide.workspace = true
+tokio.workspace = true

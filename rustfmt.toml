@@ -1,0 +1,25 @@
+style_edition = "2024"
+
+# Stable features
+fn_params_layout = "Compressed"
+hard_tabs = true
+match_arm_leading_pipes = "Always"
+match_block_trailing_comma = true
+newline_style = "Unix"
+reorder_imports = true
+use_field_init_shorthand = true
+use_try_shorthand = true
+
+# Unstable features
+unstable_features = true
+format_strings = true
+group_imports = "StdExternalCrate"
+imports_granularity = "Crate"
+normalize_comments = true
+normalize_doc_attributes = true
+overflow_delimited_expr = true
+reorder_impl_items = true
+spaces_around_ranges = true
+struct_field_align_threshold = 20
+where_single_line = true
+wrap_comments = true
