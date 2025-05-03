@@ -1,5 +1,5 @@
-mod _generated;
+mod common;
 mod entities;
 
-pub use _generated::*;
+pub use common::*;
 pub use entities::*;

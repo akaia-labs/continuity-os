@@ -22,7 +22,7 @@ local-dblogs-crowspace:
 generate-module_bindings:
 	spacetime generate --lang rust \
 		--project-path modules/crowspace \
-		--out-dir packages/crowcomm/src/modules/crowspace/_generated/module_bindings
+		--out-dir packages/crowcomm/src/modules/crowspace/common/_generated_bindings
 
 
 local-publish: local-publish-crowspace
