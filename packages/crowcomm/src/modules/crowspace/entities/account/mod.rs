@@ -1,6 +1,3 @@
-mod implementations;
-mod traits;
+mod display_name;
 
-#[allow(unused_imports)]
-pub use implementations::*;
-pub use traits::*;
+pub use display_name::*;

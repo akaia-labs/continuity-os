@@ -1,6 +1,5 @@
 use std::fmt::{self, Display, Formatter};
 
-use super::AccountDisplayName;
 use crate::crowspace::{self, AccountTableAccess, PublicProfileName, PublicProfileTableAccess};
 
 impl Display for PublicProfileName {
@@ -11,6 +10,10 @@ impl Display for PublicProfileName {
 			write!(formatter, "{}", self.short_name)
 		}
 	}
+}
+
+pub trait AccountDisplayName {
+	fn display_name(&self, ctx: &impl crowspace::RemoteDbContext) -> String;
 }
 
 impl AccountDisplayName for crowspace::Account {
