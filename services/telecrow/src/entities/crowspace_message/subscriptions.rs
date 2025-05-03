@@ -33,8 +33,7 @@ pub fn handle_telegram_forward(
 					.unwrap_or(format!("{}", message.sender));
 
 				let request = TelegramForwardRequest {
-					// TODO: The chat id must be taken from the crowspace::TextChannel room
-					// properties
+					// TODO: The chat id must be taken from crowspace::TextChannel
 					chat_id: -1001544271932,
 					sender_name,
 					message_text: message.text.clone(),

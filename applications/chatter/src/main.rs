@@ -2,8 +2,8 @@ use std::process;
 
 use crowcomm::{
 	crowspace::{
-		self, AccountTableAccess, MessageTableAccess, send_message, set_callsign,
-		traits::DisplayName,
+		self, AccountTableAccess, MessageTableAccess, PublicProfileTableAccess, send_message,
+		set_callsign, traits::DisplayName,
 	},
 	get_env_config,
 };
@@ -48,6 +48,11 @@ fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Acco
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
+
+	println!(
+		"{:#?}",
+		_ctx.db.public_profile().id().find(&account.profile_id)
+	);
 }
 
 /// Prints a notification about callsign and status changes.

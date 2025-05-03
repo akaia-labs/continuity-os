@@ -15,7 +15,6 @@ pub fn init(_ctx: &ReducerContext) {
 	// Called when the module is initially published
 }
 
-/// Called when a client connects to the SpacetimeDB
 #[reducer(client_connected)]
 pub fn client_connected(ctx: &ReducerContext) {
 	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
@@ -55,7 +54,6 @@ pub fn client_connected(ctx: &ReducerContext) {
 	}
 }
 
-/// Called when a client disconnects from SpacetimeDB
 #[reducer(client_disconnected)]
 pub fn client_disconnected(ctx: &ReducerContext) {
 	if let Some(account) = ctx.db.account().id().find(ctx.sender) {

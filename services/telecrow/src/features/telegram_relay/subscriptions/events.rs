@@ -2,7 +2,12 @@ use std::sync::Arc;
 
 use crowcomm::crowspace::{self, *};
 use spacetimedb_sdk::TableWithPrimaryKey;
-use teloxide::{Bot, payloads::SendMessageSetters, prelude::Requester};
+use teloxide::{
+	Bot,
+	payloads::SendMessageSetters,
+	prelude::Requester,
+	types::{MessageEntity, MessageEntityKind},
+};
 use tokio::sync::mpsc;
 
 use crate::{
@@ -28,13 +33,20 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(req) = forward_receiver.recv().await {
+			let message_header = format!("ℹ️ {}\n\n", req.sender_name);
+			let message_header_length = message_header.encode_utf16().count();
+			let message_text = format!("{}{}", message_header, req.message_text);
+
 			let _ = telegram_transmitter
-				.send_message(
-					telegram::ChatId(req.chat_id),
-					format!("ℹ️ {}: {}", req.sender_name, req.message_text),
-				)
+				.send_message(telegram::ChatId(req.chat_id), message_text)
+				.entities([MessageEntity::new(
+					MessageEntityKind::Bold,
+					0,
+					message_header_length,
+				)])
 				.message_thread_id(telegram::ThreadId(telegram::MessageId(3315)))
-				.await;
+				.await
+				.map_err(|err| println!("{:?}", err));
 		}
 	});
 
