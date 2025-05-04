@@ -26,11 +26,14 @@ generate-module_bindings:
 
 
 local-publish: local-publish-core
-	(echo "DONE.")
+	(echo "✅ DONE.")
+
+unsafe-local-republish: unsafe-local-drop
+	(just local-publish)
 
 
 generate: generate-module_bindings
-	(echo "DONE.")
+	(echo "✅ DONE.")
 
 
 telecrow-dev:
