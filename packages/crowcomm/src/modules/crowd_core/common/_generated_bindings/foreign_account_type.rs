@@ -8,6 +8,7 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 #[sats(crate = __lib)]
 pub struct ForeignAccount {
 	pub id:         String,
+	pub callsign:   Option<String>,
 	pub owner_id:   Option<__sdk::Identity>,
 	pub profile_id: Option<u64>,
 }

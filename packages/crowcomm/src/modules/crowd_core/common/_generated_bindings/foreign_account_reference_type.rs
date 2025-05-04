@@ -4,13 +4,13 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::external_platform_name_type::ExternalPlatformName;
+use super::foreign_platform_name_type::ForeignPlatformName;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct ForeignAccountReference {
 	pub id:            String,
-	pub platform_name: ExternalPlatformName,
+	pub platform_name: ForeignPlatformName,
 }
 
 impl __sdk::InModule for ForeignAccountReference {

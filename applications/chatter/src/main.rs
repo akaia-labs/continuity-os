@@ -132,7 +132,7 @@ fn subscribe_to_tables(ctx: &crowd_core::DbConnection) {
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
 		.subscribe([
-			"SELECT * FROM account",
+			"SELECT * FROM local_account",
 			"SELECT * FROM foreign_account",
 			"SELECT * FROM message",
 			"SELECT * FROM account_profile",

@@ -1,3 +1,3 @@
-pub mod crowspace;
+pub mod crowd_core;
 
-pub use crowspace as crowspace_client;
+pub use crowd_core as crowd_core_client;

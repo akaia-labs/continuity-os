@@ -9,15 +9,15 @@ pub mod account_profile_name_type;
 pub mod account_profile_owner_id_type;
 pub mod account_profile_table;
 pub mod account_profile_type;
-pub mod add_foreign_account_reducer;
 pub mod admin_link_foreign_account_reducer;
 pub mod admin_set_account_role_reducer;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
-pub mod external_platform_name_type;
 pub mod foreign_account_reference_type;
 pub mod foreign_account_table;
 pub mod foreign_account_type;
+pub mod foreign_platform_name_type;
+pub mod import_foreign_account_reducer;
 pub mod import_message_reducer;
 pub mod link_foreign_account_reducer;
 pub mod local_account_role_type;
@@ -39,9 +39,6 @@ pub use account_profile_name_type::AccountProfileName;
 pub use account_profile_owner_id_type::AccountProfileOwnerId;
 pub use account_profile_table::*;
 pub use account_profile_type::AccountProfile;
-pub use add_foreign_account_reducer::{
-	AddForeignAccountCallbackId, add_foreign_account, set_flags_for_add_foreign_account,
-};
 pub use admin_link_foreign_account_reducer::{
 	AdminLinkForeignAccountCallbackId, admin_link_foreign_account,
 	set_flags_for_admin_link_foreign_account,
@@ -55,10 +52,13 @@ pub use client_connected_reducer::{
 pub use client_disconnected_reducer::{
 	ClientDisconnectedCallbackId, client_disconnected, set_flags_for_client_disconnected,
 };
-pub use external_platform_name_type::ExternalPlatformName;
 pub use foreign_account_reference_type::ForeignAccountReference;
 pub use foreign_account_table::*;
 pub use foreign_account_type::ForeignAccount;
+pub use foreign_platform_name_type::ForeignPlatformName;
+pub use import_foreign_account_reducer::{
+	ImportForeignAccountCallbackId, import_foreign_account, set_flags_for_import_foreign_account,
+};
 pub use import_message_reducer::{
 	ImportMessageCallbackId, import_message, set_flags_for_import_message,
 };
@@ -89,9 +89,6 @@ pub use unlink_foreign_account_reducer::{
 /// events to indicate which reducer caused the event.
 
 pub enum Reducer {
-	AddForeignAccount {
-		reference: ForeignAccountReference,
-	},
 	AdminLinkForeignAccount {
 		account_id:     __sdk::Identity,
 		ext_account_id: String,
@@ -102,6 +99,11 @@ pub enum Reducer {
 	},
 	ClientConnected,
 	ClientDisconnected,
+	ImportForeignAccount {
+		reference: ForeignAccountReference,
+		callsign:  Option<String>,
+		metadata:  Option<AccountProfileMetadata>,
+	},
 	ImportMessage {
 		author_reference: ForeignAccountReference,
 		text:             String,
@@ -127,11 +129,11 @@ impl __sdk::InModule for Reducer {
 impl __sdk::Reducer for Reducer {
 	fn reducer_name(&self) -> &'static str {
 		match self {
-			| Reducer::AddForeignAccount { .. } => "add_foreign_account",
 			| Reducer::AdminLinkForeignAccount { .. } => "admin_link_foreign_account",
 			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
+			| Reducer::ImportForeignAccount { .. } => "import_foreign_account",
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::LinkForeignAccount { .. } => "link_foreign_account",
 			| Reducer::SendMessage { .. } => "send_message",
@@ -145,10 +147,6 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 
 	fn try_from(value: __ws::ReducerCallInfo<__ws::BsatnFormat>) -> __sdk::Result<Self> {
 		match &value.reducer_name[..] {
-			| "add_foreign_account" => Ok(__sdk::parse_reducer_args::<
-				add_foreign_account_reducer::AddForeignAccountArgs,
-			>("add_foreign_account", &value.args)?
-			.into()),
 			| "admin_link_foreign_account" => Ok(__sdk::parse_reducer_args::<
 				admin_link_foreign_account_reducer::AdminLinkForeignAccountArgs,
 			>("admin_link_foreign_account", &value.args)?
@@ -164,6 +162,10 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 			| "client_disconnected" => Ok(__sdk::parse_reducer_args::<
 				client_disconnected_reducer::ClientDisconnectedArgs,
 			>("client_disconnected", &value.args)?
+			.into()),
+			| "import_foreign_account" => Ok(__sdk::parse_reducer_args::<
+				import_foreign_account_reducer::ImportForeignAccountArgs,
+			>("import_foreign_account", &value.args)?
 			.into()),
 			| "import_message" => Ok(__sdk::parse_reducer_args::<
 				import_message_reducer::ImportMessageArgs,

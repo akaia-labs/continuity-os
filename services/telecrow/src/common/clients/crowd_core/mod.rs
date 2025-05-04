@@ -38,7 +38,7 @@ pub fn subscribe(core_ctx: &DbConnection) {
 		.on_error(subscriptions::on_sub_error)
 		// Facilitating creation of a local partial replica of the database.
 		.subscribe([
-			"SELECT * FROM account",
+			"SELECT * FROM local_account",
 			"SELECT * FROM foreign_account",
 			"SELECT * FROM message",
 			"SELECT * FROM account_profile"

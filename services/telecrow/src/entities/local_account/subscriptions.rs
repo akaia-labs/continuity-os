@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
 use crowcomm::crowd_core::{
-	DbConnection, EventContext, LocalAccountTableAccess, ReducerEventContext, set_callsign,
+	DbConnection, EventContext, LocalAccount, LocalAccountTableAccess, ReducerEventContext,
+	set_callsign,
 };
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;

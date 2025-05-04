@@ -17,6 +17,7 @@ pub struct LocalAccount {
 	pub id:           LocalAccountId,
 	#[unique]
 	#[index(btree)]
+	/// An authentic counterpart to "usernames" or "handles" on other platforms.
 	pub callsign:     String,
 	#[index(btree)]
 	pub role:         LocalAccountRole,

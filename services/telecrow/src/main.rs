@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use crowcomm::telegram;
 use dotenvy::dotenv;
+use entities::telegram_user;
 use teloxide::{
 	Bot,
 	dispatching::{HandlerExt, UpdateFilterExt},
@@ -14,8 +15,8 @@ use teloxide::{
 };
 
 use crate::{
-	common::{clients::crowspace_client, runtime, runtime::TelecrowError},
-	entities::{crowspace_message, local_account},
+	common::{clients::crowd_core_client, runtime, runtime::TelecrowError},
+	entities::{local_account, local_message},
 	features::telegram_relay,
 };
 
@@ -26,23 +27,27 @@ async fn main() -> Result<(), TelecrowError> {
 	println!("\n⏳ Initializing clients...\n");
 
 	let async_handler = runtime::new_async_handler();
-	let crowspace_connection = Arc::new(crowspace_client::connect());
+	let core_connection = Arc::new(crowd_core_client::connect());
 	let telegram_relay_bot = Bot::from_env();
 
 	println!("⏳ Initializing subscriptions...\n");
-	crowspace_client::subscribe(&crowspace_connection);
-	local_account::subscribe(&crowspace_connection);
-	crowspace_message::subscribe(&crowspace_connection);
-	crowspace_connection.run_threaded();
+	crowd_core_client::subscribe(&core_connection);
+	local_account::subscribe(&core_connection);
+	local_message::subscribe(&core_connection);
+	core_connection.run_threaded();
 
 	telegram_relay::subscribe(
-		&crowspace_connection,
+		&core_connection,
 		async_handler.clone(),
 		telegram_relay_bot.clone(),
 	);
 
 	let telegram_relay_handler = dptree::entry()
-		.branch(dptree::entry().map(|update: telegram::Update| update.from().cloned()))
+		.branch(
+			dptree::entry()
+				.map(|update: telegram::Update| update.from().cloned())
+				.endpoint(telegram_user::handle_updates(core_connection.clone())),
+		)
 		.branch(
 			telegram::Update::filter_message()
 			.branch(
@@ -54,7 +59,7 @@ async fn main() -> Result<(), TelecrowError> {
 			.filter_map(|update: telegram::Update| update.from().cloned())
 			.branch(
 				dptree::endpoint(
-					telegram_relay::handle_messages(crowspace_connection.clone())
+					telegram_relay::handle_messages(core_connection.clone())
 				),
 			),
 		);
