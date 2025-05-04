@@ -19,17 +19,17 @@ pub fn handle_telegram_forward(
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |stdb: &crowspace::EventContext, message: &crowspace::Message| {
+	return move |crowspace_ctx: &crowspace::EventContext, message: &crowspace::Message| {
 		// Ignore messages inserted by the service itself
-		if message.sender != stdb.identity() {
+		if message.sender != crowspace_ctx.identity() {
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {
-				let sender_name = stdb
+				let sender_name = crowspace_ctx
 					.db()
 					.account()
 					.id()
 					.find(&message.sender.clone())
-					.map(|account| account.display_name(stdb))
+					.map(|account| account.display_name(crowspace_ctx))
 					.unwrap_or(format!("{}", message.sender));
 
 				let request = TelegramForwardRequest {
@@ -50,19 +50,19 @@ pub fn handle_telegram_forward(
 	};
 }
 
-pub fn on_tg_message_received(stdb: &crowspace::DbConnection, msg: telegram::Message) {
+pub fn on_tg_message_received(crowspace_ctx: &crowspace::DbConnection, msg: telegram::Message) {
 	if let Some(text) = msg.text() {
-		stdb.reducers.send_message(text.to_owned()).unwrap();
+		crowspace_ctx.reducers.send_message(text.to_owned()).unwrap();
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_message_sent(stdb: &crowspace::ReducerEventContext, text: &String) {
-	if let Status::Failed(err) = &stdb.event.status {
+fn on_message_sent(crowspace_ctx: &crowspace::ReducerEventContext, text: &String) {
+	if let Status::Failed(err) = &crowspace_ctx.event.status {
 		eprintln!("Failed to send message {:?}: {}", text, err);
 	}
 }
 
-pub fn subscribe(stdb: &crowspace::DbConnection) {
-	stdb.reducers.on_send_message(on_message_sent);
+pub fn subscribe(crowspace_ctx: &crowspace::DbConnection) {
+	crowspace_ctx.reducers.on_send_message(on_message_sent);
 }

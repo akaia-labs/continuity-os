@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowcomm::crowspace::{self, *};
+use crowcomm::crowspace::MessageTableAccess;
 use spacetimedb_sdk::Table;
 use teloxide::{
 	Bot,
@@ -11,7 +11,7 @@ use teloxide::{
 use tokio::sync::mpsc;
 
 use crate::{
-	common::{bindings::telegram, runtime::AsyncHandler},
+	common::{bindings::telegram, clients::crowspace_client, runtime::AsyncHandler},
 	entities::crowspace_message,
 };
 
@@ -22,7 +22,8 @@ use crate::{
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
 pub fn subscribe(
-	stdb: &crowspace::DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: Bot,
+	crowspace_ctx: &crowspace_client::Connection, async_handler: Arc<AsyncHandler>,
+	telegram_bot: Bot,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<crowspace_message::TelegramForwardRequest>(100);
@@ -51,7 +52,8 @@ pub fn subscribe(
 	});
 
 	// Registering the message handler
-	stdb.db
+	crowspace_ctx
+		.db
 		.message()
 		.on_insert(crowspace_message::handle_telegram_forward(
 			forward_transmitter,

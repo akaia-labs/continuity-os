@@ -4,6 +4,20 @@
 
 🚧 WORK IN PROGRESS 🚧
 
+## Roadmap
+
+🚧 WORK IN PROGRESS 🚧
+
+## Development
+
+### Environment setup
+
+🚧 WORK IN PROGRESS 🚧
+
+### Conventions
+
+🚧 WORK IN PROGRESS 🚧
+
 ## License
 
 [![License: AkaiaLabs NonCommercial Attribution 1.0](https://img.shields.io/badge/License-AkaiaLabs_NC--By_1.0-black.svg)](./LICENSE.md)

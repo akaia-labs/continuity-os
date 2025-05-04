@@ -26,31 +26,37 @@ async fn main() -> Result<(), TelecrowError> {
 	println!("\n⏳ Initializing clients...\n");
 
 	let async_handler = runtime::new_async_handler();
-	let crowspace = Arc::new(crowspace_client::connect());
+	let crowspace_connection = Arc::new(crowspace_client::connect());
 	let telegram_relay_bot = Bot::from_env();
 
 	println!("⏳ Initializing subscriptions...\n");
-	crowspace_client::subscribe(&crowspace);
-	crowspace_account::subscribe(&crowspace);
-	crowspace_message::subscribe(&crowspace);
-	crowspace.run_threaded();
+	crowspace_client::subscribe(&crowspace_connection);
+	crowspace_account::subscribe(&crowspace_connection);
+	crowspace_message::subscribe(&crowspace_connection);
+	crowspace_connection.run_threaded();
 
 	telegram_relay::subscribe(
-		&crowspace,
+		&crowspace_connection,
 		async_handler.clone(),
 		telegram_relay_bot.clone(),
 	);
 
-	let telegram_relay_handler = telegram::Update::filter_message()
+	let telegram_relay_handler = dptree::entry()
+		.branch(dptree::entry().map(|update: telegram::Update| update.from().cloned()))
 		.branch(
-			dptree::entry()
-			.filter_command::<telegram_relay::BasicCommand>()
-			.endpoint(telegram_relay::on_basic_command),
-		)
-		// Injecting the `User` object representing the author of an incoming message
-		.filter_map(|update: telegram::Update| update.from().cloned())
-		.branch(
-			dptree::endpoint(telegram_relay::handle_message(crowspace.clone())),
+			telegram::Update::filter_message()
+			.branch(
+				dptree::entry()
+				.filter_command::<telegram_relay::BasicCommand>()
+				.endpoint(telegram_relay::on_basic_command),
+			)
+			// Injecting the `User` object representing the author of an incoming message
+			.filter_map(|update: telegram::Update| update.from().cloned())
+			.branch(
+				dptree::endpoint(
+					telegram_relay::handle_message(crowspace_connection.clone())
+				),
+			),
 		);
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");

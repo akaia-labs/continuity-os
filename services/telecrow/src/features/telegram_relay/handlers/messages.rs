@@ -1,20 +1,20 @@
-use std::{future::Future, pin::Pin, sync::Arc};
+use std::{future::Future, pin::Pin};
 
-use crowcomm::crowspace::{self, send_message};
+use crowcomm::crowspace::send_message;
 use teloxide::{Bot, RequestError, respond};
 
-use crate::common::bindings::telegram;
+use crate::common::{bindings::telegram, clients::crowspace_client};
 
 pub fn handle_message(
-	stdb: Arc<crowspace::DbConnection>,
+	crowspace_ctx: crowspace_client::ConnectionPointer,
 ) -> impl Fn(telegram::Message, Bot) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
 {
 	move |msg: telegram::Message, _bot: Bot| {
-		let crowchat_connection = stdb.clone();
+		let crowspace_connection = crowspace_ctx.clone();
 
 		Box::pin(async move {
 			if let Some(text) = msg.text() {
-				let _result = crowchat_connection.reducers.send_message(text.to_owned());
+				let _result = crowspace_connection.reducers.send_message(text.to_owned());
 			}
 
 			respond(())

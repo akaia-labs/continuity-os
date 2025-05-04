@@ -19,7 +19,7 @@ pub fn handle_status_telegram_forward(
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |_stdb: &crowspace::EventContext,
+	return move |_crowspace_ctx: &crowspace::EventContext,
 	             outdated_account_data: &crowspace::Account,
 	             updated_account_data: &crowspace::Account| {
 		// Only forward events registered after handler initialization
@@ -77,7 +77,7 @@ fn on_callsign_set(ctx: &crowspace::ReducerEventContext, callsign: &String) {
 	}
 }
 
-pub fn subscribe(stdb: &crowspace::DbConnection) {
-	stdb.db.account().on_insert(on_account_inserted);
-	stdb.reducers.on_set_callsign(on_callsign_set);
+pub fn subscribe(crowspace_ctx: &crowspace::DbConnection) {
+	crowspace_ctx.db.account().on_insert(on_account_inserted);
+	crowspace_ctx.reducers.on_set_callsign(on_callsign_set);
 }
