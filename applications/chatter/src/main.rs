@@ -2,7 +2,7 @@ use std::process;
 
 use crowcomm::{
 	crowd_core::{
-		self, AccountTableAccess, MessageTableAccess, PublicProfileTableAccess, send_message,
+		self, AccountProfileTableAccess, LocalAccountTableAccess, MessageTableAccess, send_message,
 		set_callsign, traits::DisplayName,
 	},
 	get_env_config,
@@ -44,7 +44,7 @@ fn on_disconnected(_ctx: &crowd_core::ErrorContext, err: Option<Error>) {
 // TODO: Extract to Account entity
 
 /// If the account is online, prints a notification.
-fn on_account_inserted(_ctx: &crowd_core::EventContext, account: &crowd_core::Account) {
+fn on_account_inserted(_ctx: &crowd_core::EventContext, account: &crowd_core::LocalAccount) {
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
@@ -52,7 +52,7 @@ fn on_account_inserted(_ctx: &crowd_core::EventContext, account: &crowd_core::Ac
 
 /// Prints a notification about callsign and status changes.
 fn on_account_updated(
-	_ctx: &crowd_core::EventContext, old: &crowd_core::Account, new: &crowd_core::Account,
+	_ctx: &crowd_core::EventContext, old: &crowd_core::LocalAccount, new: &crowd_core::LocalAccount,
 ) {
 	if old.callsign != new.callsign {
 		println!(
@@ -82,7 +82,7 @@ fn on_callsign_set(ctx: &crowd_core::ReducerEventContext, callsign: &String) {
 fn print_message(ctx: &impl crowd_core::RemoteDbContext, message: &crowd_core::Message) {
 	let sender = ctx
 		.db()
-		.account()
+		.local_account()
 		.id()
 		.find(&message.sender.clone())
 		.map(|account| account.display_name(ctx))
@@ -133,9 +133,9 @@ fn subscribe_to_tables(ctx: &crowd_core::DbConnection) {
 		.on_error(on_sub_error)
 		.subscribe([
 			"SELECT * FROM account",
-			"SELECT * FROM external_account",
+			"SELECT * FROM foreign_account",
 			"SELECT * FROM message",
-			"SELECT * FROM public_profile",
+			"SELECT * FROM account_profile",
 		]);
 }
 
@@ -162,10 +162,10 @@ fn account_input_loop(ctx: &crowd_core::DbConnection) {
 /// Registers all the callbacks the app will use to respond to database events.
 fn register_callbacks(ctx: &crowd_core::DbConnection) {
 	// When a new account joins, print a notification.
-	ctx.db.account().on_insert(on_account_inserted);
+	ctx.db.local_account().on_insert(on_account_inserted);
 
 	// When a account's status changes, print a notification.
-	ctx.db.account().on_update(on_account_updated);
+	ctx.db.local_account().on_update(on_account_updated);
 
 	// When a new message is received, print it.
 	ctx.db.message().on_insert(on_message_inserted);

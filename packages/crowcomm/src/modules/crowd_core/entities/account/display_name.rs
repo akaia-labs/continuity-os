@@ -1,14 +1,15 @@
 use crate::crowd_core::{
-	Account, AccountTableAccess, ExternalAccount, PublicProfileTableAccess, RemoteDbContext,
+	AccountProfileTableAccess, ForeignAccount, LocalAccount, LocalAccountTableAccess,
+	RemoteDbContext,
 	traits::{DisplayName, Displayable},
 };
 
-impl DisplayName for Account {
+impl DisplayName for LocalAccount {
 	/// Returns the display name of the linked profile, if present,
 	/// otherwise the account callsign
 	fn display_name(&self, ctx: &impl RemoteDbContext) -> String {
 		ctx.db()
-			.public_profile()
+			.account_profile()
 			.id()
 			.find(&self.profile_id)
 			.map(|p| p.display_name())
@@ -16,12 +17,12 @@ impl DisplayName for Account {
 	}
 }
 
-impl DisplayName for ExternalAccount {
+impl DisplayName for ForeignAccount {
 	/// Walks the ownership tree starting from the bound internal account
 	/// (if present) to retrieve the first available identifier for display
 	fn display_name(&self, ctx: &impl RemoteDbContext) -> String {
 		let owner_account = if let Some(owner_id) = self.owner_id {
-			ctx.db().account().id().find(&owner_id)
+			ctx.db().local_account().id().find(&owner_id)
 		} else {
 			None
 		};
@@ -30,7 +31,7 @@ impl DisplayName for ExternalAccount {
 			owner.display_name(ctx)
 		} else if let Some(profile_id) = self.profile_id {
 			ctx.db()
-				.public_profile()
+				.account_profile()
 				.id()
 				.find(&profile_id)
 				.map(|p| p.display_name())

@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use crowcomm::{
 	crowd_core::{
-		AccountTableAccess, DbConnection, EventContext, Message, ReducerEventContext, send_message,
-		traits::DisplayName,
+		DbConnection, EventContext, LocalAccountTableAccess, Message, ReducerEventContext,
+		send_message, traits::DisplayName,
 	},
 	telegram,
 };
@@ -25,17 +25,17 @@ pub fn handle_telegram_forward(
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |crowspace_ctx: &EventContext, message: &Message| {
+	return move |core_ctx: &EventContext, message: &Message| {
 		// Ignore messages inserted by the service itself
-		if message.sender != crowspace_ctx.identity() {
+		if message.sender != core_ctx.identity() {
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {
-				let sender_name = crowspace_ctx
+				let sender_name = core_ctx
 					.db()
-					.account()
+					.local_account()
 					.id()
 					.find(&message.sender.clone())
-					.map(|account| account.display_name(crowspace_ctx))
+					.map(|account| account.display_name(core_ctx))
 					.unwrap_or(format!("{}", message.sender));
 
 				let request = TelegramForwardRequest {
@@ -56,22 +56,19 @@ pub fn handle_telegram_forward(
 	};
 }
 
-pub fn on_tg_message_received(crowspace_ctx: &DbConnection, msg: telegram::Message) {
+pub fn on_tg_message_received(core_ctx: &DbConnection, msg: telegram::Message) {
 	if let Some(text) = msg.text() {
-		crowspace_ctx
-			.reducers
-			.send_message(text.to_owned())
-			.unwrap();
+		core_ctx.reducers.send_message(text.to_owned()).unwrap();
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_message_sent(crowspace_ctx: &ReducerEventContext, text: &String) {
-	if let Status::Failed(err) = &crowspace_ctx.event.status {
+fn on_message_sent(core_ctx: &ReducerEventContext, text: &String) {
+	if let Status::Failed(err) = &core_ctx.event.status {
 		eprintln!("Failed to send message {:?}: {}", text, err);
 	}
 }
 
-pub fn subscribe(crowspace_ctx: &DbConnection) {
-	crowspace_ctx.reducers.on_send_message(on_message_sent);
+pub fn subscribe(core_ctx: &DbConnection) {
+	core_ctx.reducers.on_send_message(on_message_sent);
 }

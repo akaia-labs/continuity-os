@@ -1,15 +1,15 @@
 use spacetimedb::{ReducerContext, reducer};
 
 use super::{tables::*, validation::*};
-use crate::entities::external_account::{ExternalAccount, ExternalAccountId, external_account};
+use crate::entities::foreign_account::{ForeignAccount, ForeignAccountId, foreign_account};
 
 #[reducer]
 /// Clients invoke this reducer to set their account names.
 pub fn set_callsign(ctx: &ReducerContext, callsign: String) -> Result<(), String> {
 	let callsign = validate_callsign(callsign)?;
 
-	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
-		ctx.db.account().id().update(Account {
+	if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
+		ctx.db.local_account().id().update(LocalAccount {
 			callsign,
 			updated_at: ctx.timestamp,
 			..account
@@ -23,12 +23,12 @@ pub fn set_callsign(ctx: &ReducerContext, callsign: String) -> Result<(), String
 
 #[reducer]
 /// Binds an external account to an internal account
-pub fn link_external_account(
-	ctx: &ReducerContext, ext_account_id: ExternalAccountId,
+pub fn link_foreign_account(
+	ctx: &ReducerContext, ext_account_id: ForeignAccountId,
 ) -> Result<(), String> {
-	if let Some(ext_account) = ctx.db.external_account().id().find(ext_account_id.clone()) {
-		if let Some(account) = ctx.db.account().id().find(ctx.sender) {
-			ctx.db.external_account().id().update(ExternalAccount {
+	if let Some(ext_account) = ctx.db.foreign_account().id().find(ext_account_id.clone()) {
+		if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
+			ctx.db.foreign_account().id().update(ForeignAccount {
 				owner_id: Some(account.id),
 				..ext_account
 			});
@@ -47,12 +47,12 @@ pub fn link_external_account(
 
 #[reducer]
 /// Unbinds an external account from an internal account
-pub fn unlink_external_account(
-	ctx: &ReducerContext, ext_account_id: ExternalAccountId,
+pub fn unlink_foreign_account(
+	ctx: &ReducerContext, ext_account_id: ForeignAccountId,
 ) -> Result<(), String> {
-	if let Some(ext_account) = ctx.db.external_account().id().find(ext_account_id) {
-		if let Some(_) = ctx.db.account().id().find(ctx.sender) {
-			ctx.db.external_account().id().update(ExternalAccount {
+	if let Some(ext_account) = ctx.db.foreign_account().id().find(ext_account_id) {
+		if let Some(_) = ctx.db.local_account().id().find(ctx.sender) {
+			ctx.db.foreign_account().id().update(ForeignAccount {
 				owner_id: None,
 				..ext_account
 			});

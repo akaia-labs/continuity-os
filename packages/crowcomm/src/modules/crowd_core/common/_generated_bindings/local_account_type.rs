@@ -4,14 +4,21 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+use super::local_account_role_type::LocalAccountRole;
+
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub enum PublicProfileOwnerId {
-	InternalAccountId(__sdk::Identity),
-
-	ExternalAccountId(String),
+pub struct LocalAccount {
+	pub id:           __sdk::Identity,
+	pub callsign:     String,
+	pub role:         LocalAccountRole,
+	pub is_online:    bool,
+	pub created_at:   __sdk::Timestamp,
+	pub updated_at:   __sdk::Timestamp,
+	pub last_seen_at: __sdk::Timestamp,
+	pub profile_id:   u64,
 }
 
-impl __sdk::InModule for PublicProfileOwnerId {
+impl __sdk::InModule for LocalAccount {
 	type Module = super::RemoteModule;
 }

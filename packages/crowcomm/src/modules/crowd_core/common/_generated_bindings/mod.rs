@@ -4,45 +4,47 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-pub mod account_role_type;
-pub mod account_table;
-pub mod account_type;
-pub mod add_external_account_reducer;
-pub mod admin_link_external_account_reducer;
+pub mod account_profile_metadata_type;
+pub mod account_profile_name_type;
+pub mod account_profile_owner_id_type;
+pub mod account_profile_table;
+pub mod account_profile_type;
+pub mod add_foreign_account_reducer;
+pub mod admin_link_foreign_account_reducer;
 pub mod admin_set_account_role_reducer;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
-pub mod external_account_reference_type;
-pub mod external_account_table;
-pub mod external_account_type;
 pub mod external_platform_name_type;
+pub mod foreign_account_reference_type;
+pub mod foreign_account_table;
+pub mod foreign_account_type;
 pub mod import_message_reducer;
-pub mod link_external_account_reducer;
+pub mod link_foreign_account_reducer;
+pub mod local_account_role_type;
+pub mod local_account_table;
+pub mod local_account_type;
 pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
-pub mod public_profile_metadata_type;
-pub mod public_profile_name_type;
-pub mod public_profile_owner_id_type;
-pub mod public_profile_table;
-pub mod public_profile_type;
 pub mod send_message_reducer;
 pub mod service_table;
 pub mod service_type;
 pub mod set_callsign_reducer;
 pub mod text_channel_table;
 pub mod text_channel_type;
-pub mod unlink_external_account_reducer;
+pub mod unlink_foreign_account_reducer;
 
-pub use account_role_type::AccountRole;
-pub use account_table::*;
-pub use account_type::Account;
-pub use add_external_account_reducer::{
-	AddExternalAccountCallbackId, add_external_account, set_flags_for_add_external_account,
+pub use account_profile_metadata_type::AccountProfileMetadata;
+pub use account_profile_name_type::AccountProfileName;
+pub use account_profile_owner_id_type::AccountProfileOwnerId;
+pub use account_profile_table::*;
+pub use account_profile_type::AccountProfile;
+pub use add_foreign_account_reducer::{
+	AddForeignAccountCallbackId, add_foreign_account, set_flags_for_add_foreign_account,
 };
-pub use admin_link_external_account_reducer::{
-	AdminLinkExternalAccountCallbackId, admin_link_external_account,
-	set_flags_for_admin_link_external_account,
+pub use admin_link_foreign_account_reducer::{
+	AdminLinkForeignAccountCallbackId, admin_link_foreign_account,
+	set_flags_for_admin_link_foreign_account,
 };
 pub use admin_set_account_role_reducer::{
 	AdminSetAccountRoleCallbackId, admin_set_account_role, set_flags_for_admin_set_account_role,
@@ -53,32 +55,30 @@ pub use client_connected_reducer::{
 pub use client_disconnected_reducer::{
 	ClientDisconnectedCallbackId, client_disconnected, set_flags_for_client_disconnected,
 };
-pub use external_account_reference_type::ExternalAccountReference;
-pub use external_account_table::*;
-pub use external_account_type::ExternalAccount;
 pub use external_platform_name_type::ExternalPlatformName;
+pub use foreign_account_reference_type::ForeignAccountReference;
+pub use foreign_account_table::*;
+pub use foreign_account_type::ForeignAccount;
 pub use import_message_reducer::{
 	ImportMessageCallbackId, import_message, set_flags_for_import_message,
 };
-pub use link_external_account_reducer::{
-	LinkExternalAccountCallbackId, link_external_account, set_flags_for_link_external_account,
+pub use link_foreign_account_reducer::{
+	LinkForeignAccountCallbackId, link_foreign_account, set_flags_for_link_foreign_account,
 };
+pub use local_account_role_type::LocalAccountRole;
+pub use local_account_table::*;
+pub use local_account_type::LocalAccount;
 pub use message_author_id_type::MessageAuthorId;
 pub use message_table::*;
 pub use message_type::Message;
-pub use public_profile_metadata_type::PublicProfileMetadata;
-pub use public_profile_name_type::PublicProfileName;
-pub use public_profile_owner_id_type::PublicProfileOwnerId;
-pub use public_profile_table::*;
-pub use public_profile_type::PublicProfile;
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
 pub use service_table::*;
 pub use service_type::Service;
 pub use set_callsign_reducer::{SetCallsignCallbackId, set_callsign, set_flags_for_set_callsign};
 pub use text_channel_table::*;
 pub use text_channel_type::TextChannel;
-pub use unlink_external_account_reducer::{
-	UnlinkExternalAccountCallbackId, set_flags_for_unlink_external_account, unlink_external_account,
+pub use unlink_foreign_account_reducer::{
+	UnlinkForeignAccountCallbackId, set_flags_for_unlink_foreign_account, unlink_foreign_account,
 };
 
 #[derive(Clone, PartialEq, Debug)]
@@ -89,24 +89,24 @@ pub use unlink_external_account_reducer::{
 /// events to indicate which reducer caused the event.
 
 pub enum Reducer {
-	AddExternalAccount {
-		reference: ExternalAccountReference,
+	AddForeignAccount {
+		reference: ForeignAccountReference,
 	},
-	AdminLinkExternalAccount {
+	AdminLinkForeignAccount {
 		account_id:     __sdk::Identity,
 		ext_account_id: String,
 	},
 	AdminSetAccountRole {
 		account_id: __sdk::Identity,
-		role:       AccountRole,
+		role:       LocalAccountRole,
 	},
 	ClientConnected,
 	ClientDisconnected,
 	ImportMessage {
-		author_reference: ExternalAccountReference,
+		author_reference: ForeignAccountReference,
 		text:             String,
 	},
-	LinkExternalAccount {
+	LinkForeignAccount {
 		ext_account_id: String,
 	},
 	SendMessage {
@@ -115,7 +115,7 @@ pub enum Reducer {
 	SetCallsign {
 		callsign: String,
 	},
-	UnlinkExternalAccount {
+	UnlinkForeignAccount {
 		ext_account_id: String,
 	},
 }
@@ -127,16 +127,16 @@ impl __sdk::InModule for Reducer {
 impl __sdk::Reducer for Reducer {
 	fn reducer_name(&self) -> &'static str {
 		match self {
-			| Reducer::AddExternalAccount { .. } => "add_external_account",
-			| Reducer::AdminLinkExternalAccount { .. } => "admin_link_external_account",
+			| Reducer::AddForeignAccount { .. } => "add_foreign_account",
+			| Reducer::AdminLinkForeignAccount { .. } => "admin_link_foreign_account",
 			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
 			| Reducer::ImportMessage { .. } => "import_message",
-			| Reducer::LinkExternalAccount { .. } => "link_external_account",
+			| Reducer::LinkForeignAccount { .. } => "link_foreign_account",
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetCallsign { .. } => "set_callsign",
-			| Reducer::UnlinkExternalAccount { .. } => "unlink_external_account",
+			| Reducer::UnlinkForeignAccount { .. } => "unlink_foreign_account",
 		}
 	}
 }
@@ -145,13 +145,13 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 
 	fn try_from(value: __ws::ReducerCallInfo<__ws::BsatnFormat>) -> __sdk::Result<Self> {
 		match &value.reducer_name[..] {
-			| "add_external_account" => Ok(__sdk::parse_reducer_args::<
-				add_external_account_reducer::AddExternalAccountArgs,
-			>("add_external_account", &value.args)?
+			| "add_foreign_account" => Ok(__sdk::parse_reducer_args::<
+				add_foreign_account_reducer::AddForeignAccountArgs,
+			>("add_foreign_account", &value.args)?
 			.into()),
-			| "admin_link_external_account" => Ok(__sdk::parse_reducer_args::<
-				admin_link_external_account_reducer::AdminLinkExternalAccountArgs,
-			>("admin_link_external_account", &value.args)?
+			| "admin_link_foreign_account" => Ok(__sdk::parse_reducer_args::<
+				admin_link_foreign_account_reducer::AdminLinkForeignAccountArgs,
+			>("admin_link_foreign_account", &value.args)?
 			.into()),
 			| "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<
 				admin_set_account_role_reducer::AdminSetAccountRoleArgs,
@@ -169,9 +169,9 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 				import_message_reducer::ImportMessageArgs,
 			>("import_message", &value.args)?
 			.into()),
-			| "link_external_account" => Ok(__sdk::parse_reducer_args::<
-				link_external_account_reducer::LinkExternalAccountArgs,
-			>("link_external_account", &value.args)?
+			| "link_foreign_account" => Ok(__sdk::parse_reducer_args::<
+				link_foreign_account_reducer::LinkForeignAccountArgs,
+			>("link_foreign_account", &value.args)?
 			.into()),
 			| "send_message" => Ok(__sdk::parse_reducer_args::<
 				send_message_reducer::SendMessageArgs,
@@ -181,9 +181,9 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 				set_callsign_reducer::SetCallsignArgs,
 			>("set_callsign", &value.args)?
 			.into()),
-			| "unlink_external_account" => Ok(__sdk::parse_reducer_args::<
-				unlink_external_account_reducer::UnlinkExternalAccountArgs,
-			>("unlink_external_account", &value.args)?
+			| "unlink_foreign_account" => Ok(__sdk::parse_reducer_args::<
+				unlink_foreign_account_reducer::UnlinkForeignAccountArgs,
+			>("unlink_foreign_account", &value.args)?
 			.into()),
 			| unknown => {
 				Err(
@@ -199,12 +199,12 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct DbUpdate {
-	account:          __sdk::TableUpdate<Account>,
-	external_account: __sdk::TableUpdate<ExternalAccount>,
-	message:          __sdk::TableUpdate<Message>,
-	public_profile:   __sdk::TableUpdate<PublicProfile>,
-	service:          __sdk::TableUpdate<Service>,
-	text_channel:     __sdk::TableUpdate<TextChannel>,
+	account_profile: __sdk::TableUpdate<AccountProfile>,
+	foreign_account: __sdk::TableUpdate<ForeignAccount>,
+	local_account:   __sdk::TableUpdate<LocalAccount>,
+	message:         __sdk::TableUpdate<Message>,
+	service:         __sdk::TableUpdate<Service>,
+	text_channel:    __sdk::TableUpdate<TextChannel>,
 }
 
 impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
@@ -214,16 +214,18 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 		let mut db_update = DbUpdate::default();
 		for table_update in raw.tables {
 			match &table_update.table_name[..] {
-				| "account" => db_update.account = account_table::parse_table_update(table_update)?,
-				| "external_account" => {
-					db_update.external_account =
-						external_account_table::parse_table_update(table_update)?
+				| "account_profile" => {
+					db_update.account_profile =
+						account_profile_table::parse_table_update(table_update)?
+				},
+				| "foreign_account" => {
+					db_update.foreign_account =
+						foreign_account_table::parse_table_update(table_update)?
+				},
+				| "local_account" => {
+					db_update.local_account = local_account_table::parse_table_update(table_update)?
 				},
 				| "message" => db_update.message = message_table::parse_table_update(table_update)?,
-				| "public_profile" => {
-					db_update.public_profile =
-						public_profile_table::parse_table_update(table_update)?
-				},
 				| "service" => db_update.service = service_table::parse_table_update(table_update)?,
 				| "text_channel" => {
 					db_update.text_channel = text_channel_table::parse_table_update(table_update)?
@@ -253,17 +255,17 @@ impl __sdk::DbUpdate for DbUpdate {
 	) -> AppliedDiff<'_> {
 		let mut diff = AppliedDiff::default();
 
-		diff.account = cache
-			.apply_diff_to_table::<Account>("account", &self.account)
+		diff.account_profile = cache
+			.apply_diff_to_table::<AccountProfile>("account_profile", &self.account_profile)
 			.with_updates_by_pk(|row| &row.id);
-		diff.external_account = cache
-			.apply_diff_to_table::<ExternalAccount>("external_account", &self.external_account)
+		diff.foreign_account = cache
+			.apply_diff_to_table::<ForeignAccount>("foreign_account", &self.foreign_account)
+			.with_updates_by_pk(|row| &row.id);
+		diff.local_account = cache
+			.apply_diff_to_table::<LocalAccount>("local_account", &self.local_account)
 			.with_updates_by_pk(|row| &row.id);
 		diff.message = cache
 			.apply_diff_to_table::<Message>("message", &self.message)
-			.with_updates_by_pk(|row| &row.id);
-		diff.public_profile = cache
-			.apply_diff_to_table::<PublicProfile>("public_profile", &self.public_profile)
 			.with_updates_by_pk(|row| &row.id);
 		diff.service = cache.apply_diff_to_table::<Service>("service", &self.service);
 		diff.text_channel = cache
@@ -278,12 +280,12 @@ impl __sdk::DbUpdate for DbUpdate {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct AppliedDiff<'r> {
-	account:          __sdk::TableAppliedDiff<'r, Account>,
-	external_account: __sdk::TableAppliedDiff<'r, ExternalAccount>,
-	message:          __sdk::TableAppliedDiff<'r, Message>,
-	public_profile:   __sdk::TableAppliedDiff<'r, PublicProfile>,
-	service:          __sdk::TableAppliedDiff<'r, Service>,
-	text_channel:     __sdk::TableAppliedDiff<'r, TextChannel>,
+	account_profile: __sdk::TableAppliedDiff<'r, AccountProfile>,
+	foreign_account: __sdk::TableAppliedDiff<'r, ForeignAccount>,
+	local_account:   __sdk::TableAppliedDiff<'r, LocalAccount>,
+	message:         __sdk::TableAppliedDiff<'r, Message>,
+	service:         __sdk::TableAppliedDiff<'r, Service>,
+	text_channel:    __sdk::TableAppliedDiff<'r, TextChannel>,
 }
 
 impl __sdk::InModule for AppliedDiff<'_> {
@@ -294,18 +296,22 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 	fn invoke_row_callbacks(
 		&self, event: &EventContext, callbacks: &mut __sdk::DbCallbacks<RemoteModule>,
 	) {
-		callbacks.invoke_table_row_callbacks::<Account>("account", &self.account, event);
-		callbacks.invoke_table_row_callbacks::<ExternalAccount>(
-			"external_account",
-			&self.external_account,
+		callbacks.invoke_table_row_callbacks::<AccountProfile>(
+			"account_profile",
+			&self.account_profile,
+			event,
+		);
+		callbacks.invoke_table_row_callbacks::<ForeignAccount>(
+			"foreign_account",
+			&self.foreign_account,
+			event,
+		);
+		callbacks.invoke_table_row_callbacks::<LocalAccount>(
+			"local_account",
+			&self.local_account,
 			event,
 		);
 		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
-		callbacks.invoke_table_row_callbacks::<PublicProfile>(
-			"public_profile",
-			&self.public_profile,
-			event,
-		);
 		callbacks.invoke_table_row_callbacks::<Service>("service", &self.service, event);
 		callbacks.invoke_table_row_callbacks::<TextChannel>(
 			"text_channel",
@@ -941,10 +947,10 @@ impl __sdk::SpacetimeModule for RemoteModule {
 	type SubscriptionHandle = SubscriptionHandle;
 
 	fn register_tables(client_cache: &mut __sdk::ClientCache<Self>) {
-		account_table::register_table(client_cache);
-		external_account_table::register_table(client_cache);
+		account_profile_table::register_table(client_cache);
+		foreign_account_table::register_table(client_cache);
+		local_account_table::register_table(client_cache);
 		message_table::register_table(client_cache);
-		public_profile_table::register_table(client_cache);
 		service_table::register_table(client_cache);
 		text_channel_table::register_table(client_cache);
 	}

@@ -4,13 +4,13 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::account_role_type::AccountRole;
+use super::local_account_role_type::LocalAccountRole;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct AdminSetAccountRoleArgs {
 	pub account_id: __sdk::Identity,
-	pub role:       AccountRole,
+	pub role:       LocalAccountRole,
 }
 
 impl From<AdminSetAccountRoleArgs> for super::Reducer {
@@ -41,7 +41,7 @@ pub trait admin_set_account_role {
 	///  and its status can be observed by listening for
 	/// [`Self::on_admin_set_account_role`] callbacks.
 	fn admin_set_account_role(
-		&self, account_id: __sdk::Identity, role: AccountRole,
+		&self, account_id: __sdk::Identity, role: LocalAccountRole,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `admin_set_account_role`.
@@ -53,7 +53,7 @@ pub trait admin_set_account_role {
 	/// [`Self::remove_on_admin_set_account_role`] to cancel the callback.
 	fn on_admin_set_account_role(
 		&self,
-		callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &AccountRole)
+		callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &LocalAccountRole)
 		+ Send
 		+ 'static,
 	) -> AdminSetAccountRoleCallbackId;
@@ -65,7 +65,7 @@ pub trait admin_set_account_role {
 
 impl admin_set_account_role for super::RemoteReducers {
 	fn admin_set_account_role(
-		&self, account_id: __sdk::Identity, role: AccountRole,
+		&self, account_id: __sdk::Identity, role: LocalAccountRole,
 	) -> __sdk::Result<()> {
 		self.imp
 			.call_reducer("admin_set_account_role", AdminSetAccountRoleArgs {
@@ -76,7 +76,7 @@ impl admin_set_account_role for super::RemoteReducers {
 
 	fn on_admin_set_account_role(
 		&self,
-		mut callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &AccountRole)
+		mut callback: impl FnMut(&super::ReducerEventContext, &__sdk::Identity, &LocalAccountRole)
 		+ Send
 		+ 'static,
 	) -> AdminSetAccountRoleCallbackId {

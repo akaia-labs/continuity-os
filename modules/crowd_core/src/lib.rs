@@ -2,8 +2,10 @@ mod entities;
 mod features;
 
 use entities::{
-	internal_account::*,
-	public_profile::{PublicProfile, PublicProfileMetadata, PublicProfileOwnerId, public_profile},
+	account_profile::{
+		AccountProfile, AccountProfileMetadata, AccountProfileOwnerId, account_profile,
+	},
+	local_account::*,
 };
 use spacetimedb::{ReducerContext, Table, reducer};
 
@@ -14,22 +16,22 @@ pub fn init(_ctx: &ReducerContext) {
 
 #[reducer(client_connected)]
 pub fn client_connected(ctx: &ReducerContext) {
-	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
-		ctx.db.account().id().update(Account {
+	if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
+		ctx.db.local_account().id().update(LocalAccount {
 			is_online: true,
 			last_seen_at: ctx.timestamp,
 			..account
 		});
 	} else {
-		let initial_profile = ctx.db.public_profile().insert(PublicProfile {
+		let initial_profile = ctx.db.account_profile().insert(AccountProfile {
 			id:       0,
-			owner_id: PublicProfileOwnerId::InternalAccountId(ctx.sender),
-			metadata: PublicProfileMetadata::default(),
+			owner_id: AccountProfileOwnerId::LocalAccountId(ctx.sender),
+			metadata: AccountProfileMetadata::default(),
 		});
 
-		let account_profile = ctx.db.public_profile().id().update(PublicProfile {
+		let account_profile = ctx.db.account_profile().id().update(AccountProfile {
 			//*  Ensuring the profile name is unique at least by default
-			metadata: PublicProfileMetadata::default_with_name(format!(
+			metadata: AccountProfileMetadata::default_with_name(format!(
 				"{}-{}",
 				initial_profile.metadata.name.short_name, initial_profile.id
 			)),
@@ -37,10 +39,10 @@ pub fn client_connected(ctx: &ReducerContext) {
 			..initial_profile
 		});
 
-		ctx.db.account().insert(Account {
+		ctx.db.local_account().insert(LocalAccount {
 			id:           ctx.sender,
 			callsign:     format!("0x{}", ctx.sender.to_hex().to_string()),
-			role:         AccountRole::Interactor,
+			role:         LocalAccountRole::Interactor,
 			is_online:    true,
 			created_at:   ctx.timestamp,
 			updated_at:   ctx.timestamp,
@@ -52,8 +54,8 @@ pub fn client_connected(ctx: &ReducerContext) {
 
 #[reducer(client_disconnected)]
 pub fn client_disconnected(ctx: &ReducerContext) {
-	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
-		ctx.db.account().id().update(Account {
+	if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
+		ctx.db.local_account().id().update(LocalAccount {
 			is_online: false,
 			last_seen_at: ctx.timestamp,
 			..account

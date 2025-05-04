@@ -22,7 +22,7 @@ use crate::{common::runtime::AsyncHandler, entities::crowspace_message};
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
 pub fn subscribe(
-	crowspace_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: Bot,
+	core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: Bot,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<crowspace_message::TelegramForwardRequest>(100);
@@ -51,7 +51,7 @@ pub fn subscribe(
 	});
 
 	// Registering the message handler
-	crowspace_ctx
+	core_ctx
 		.db
 		.message()
 		.on_insert(crowspace_message::handle_telegram_forward(

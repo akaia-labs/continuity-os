@@ -7,11 +7,11 @@ use crowcomm::{
 use teloxide::{Bot, RequestError, respond};
 
 pub fn handle_messages(
-	crowspace_ctx: Arc<DbConnection>,
+	core_ctx: Arc<DbConnection>,
 ) -> impl Fn(telegram::Message, Bot) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
 {
 	move |msg: telegram::Message, _bot: Bot| {
-		let crowspace_connection = crowspace_ctx.clone();
+		let crowspace_connection = core_ctx.clone();
 
 		Box::pin(async move {
 			if let Some(text) = msg.text() {

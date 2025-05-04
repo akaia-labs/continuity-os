@@ -1,13 +1,13 @@
 use spacetimedb::{Identity, SpacetimeType, Timestamp, table};
 
-use crate::entities::{external_account::ExternalAccountId, internal_account::AccountId};
+use crate::entities::{foreign_account::ForeignAccountId, local_account::LocalAccountId};
 
 #[derive(SpacetimeType)]
 /// The original message author.
 pub enum MessageAuthorId {
 	System,
-	InternalAccountId(AccountId),
-	ExternalAccountId(ExternalAccountId),
+	LocalAccountId(LocalAccountId),
+	ForeignAccountId(ForeignAccountId),
 	/// Fallback value, use with caution.
 	Unknown,
 }

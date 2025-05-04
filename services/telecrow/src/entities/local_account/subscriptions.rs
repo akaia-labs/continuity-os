@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crowcomm::crowd_core::{
-	Account, AccountTableAccess, DbConnection, EventContext, ReducerEventContext, set_callsign,
+	DbConnection, EventContext, LocalAccountTableAccess, ReducerEventContext, set_callsign,
 };
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
@@ -17,13 +17,13 @@ pub struct StatusTelegramForwardRequest {
 /// Logs event on Telegram using a channel.
 pub fn handle_status_telegram_forward(
 	transmitter: mpsc::Sender<StatusTelegramForwardRequest>, async_handler: Arc<AsyncHandler>,
-) -> impl FnMut(&EventContext, &Account, &Account) {
+) -> impl FnMut(&EventContext, &LocalAccount, &LocalAccount) {
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
 	return move |_crowspace_ctx: &EventContext,
-	             outdated_account_data: &Account,
-	             updated_account_data: &Account| {
+	             outdated_account_data: &LocalAccount,
+	             updated_account_data: &LocalAccount| {
 		// Only forward events registered after handler initialization
 		if subscribed_at.le(&updated_account_data.updated_at) {
 			if outdated_account_data.callsign != updated_account_data.callsign {
@@ -53,7 +53,7 @@ pub fn handle_status_telegram_forward(
 
 /// @deprecated
 /// Prints a notification about callsign and status changes.
-fn _on_account_updated(_ctx: &EventContext, old: &Account, new: &Account) {
+fn _on_account_updated(_ctx: &EventContext, old: &LocalAccount, new: &LocalAccount) {
 	if old.is_online && !new.is_online {
 		println!("Account {} disconnected.", old.callsign);
 	}
@@ -64,7 +64,7 @@ fn _on_account_updated(_ctx: &EventContext, old: &Account, new: &Account) {
 }
 
 /// If the account is online, prints a notification.
-fn on_account_inserted(_ctx: &EventContext, account: &Account) {
+fn on_account_inserted(_ctx: &EventContext, account: &LocalAccount) {
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
@@ -77,7 +77,8 @@ fn on_callsign_set(ctx: &ReducerEventContext, callsign: &String) {
 	}
 }
 
-pub fn subscribe(crowspace_ctx: &DbConnection) {
-	crowspace_ctx.db.account().on_insert(on_account_inserted);
-	crowspace_ctx.reducers.on_set_callsign(on_callsign_set);
+pub fn subscribe(core_ctx: &DbConnection) {
+	core_ctx.db.local_account().on_insert(on_account_inserted);
+
+	core_ctx.reducers.on_set_callsign(on_callsign_set);
 }

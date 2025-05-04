@@ -7,16 +7,16 @@ setup:
 
 
 unsafe-local-drop:
-	(spacetime delete -s localhost crowd_core)
+	(spacetime delete -s localhost crowd-core)
 
 local-publish-core:
-	(spacetime publish -s localhost --project-path modules/crowd_core crowd_core)
+	(spacetime publish -s localhost --project-path modules/crowd_core crowd-core)
 
 local-dbcall-core:
-	(spacetime call -s localhost crowd_core)
+	(spacetime call -s localhost crowd-core)
 
 local-dblogs-core:
-	(spacetime logs -s localhost crowd_core)
+	(spacetime logs -s localhost crowd-core)
 
 
 generate-module_bindings:

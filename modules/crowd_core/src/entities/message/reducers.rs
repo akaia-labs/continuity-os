@@ -2,16 +2,16 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{tables::*, validation::*};
 use crate::entities::{
-	external_account::{ExternalAccountReference, external_account},
-	internal_account::account,
+	foreign_account::{ForeignAccountReference, foreign_account},
+	local_account::local_account,
 };
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 	let author_id: MessageAuthorId =
-		if let Some(author_account) = ctx.db.account().id().find(ctx.sender) {
-			MessageAuthorId::InternalAccountId(author_account.id)
+		if let Some(author_account) = ctx.db.local_account().id().find(ctx.sender) {
+			MessageAuthorId::LocalAccountId(author_account.id)
 		} else {
 			MessageAuthorId::System
 		};
@@ -34,25 +34,25 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, author_reference: ExternalAccountReference, text: String,
+	ctx: &ReducerContext, author_reference: ForeignAccountReference, text: String,
 ) -> Result<(), String> {
-	let author_id: MessageAuthorId = if let Some(author_external_account) = ctx
+	let author_id: MessageAuthorId = if let Some(author_foreign_account) = ctx
 		.db
-		.external_account()
+		.foreign_account()
 		.id()
 		.find(author_reference.to_string())
 	{
-		if let Some(author_account_id) = author_external_account.owner_id {
-			MessageAuthorId::InternalAccountId(author_account_id)
+		if let Some(author_account_id) = author_foreign_account.owner_id {
+			MessageAuthorId::LocalAccountId(author_account_id)
 		} else {
-			MessageAuthorId::ExternalAccountId(author_external_account.id)
+			MessageAuthorId::ForeignAccountId(author_foreign_account.id)
 		}
 	} else {
 		MessageAuthorId::Unknown
 	};
 
 	let sender = match author_id {
-		| MessageAuthorId::InternalAccountId(identity) => identity,
+		| MessageAuthorId::LocalAccountId(identity) => identity,
 		| _ => ctx.sender,
 	};
 

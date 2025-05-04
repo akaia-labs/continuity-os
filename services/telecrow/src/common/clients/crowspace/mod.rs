@@ -31,16 +31,16 @@ pub fn connect() -> DbConnection {
 }
 
 /// Registers subscriptions to tables.
-pub fn subscribe(crowspace_ctx: &DbConnection) {
-	crowspace_ctx
+pub fn subscribe(core_ctx: &DbConnection) {
+	core_ctx
 		.subscription_builder()
 		.on_applied(subscriptions::on_sub_applied)
 		.on_error(subscriptions::on_sub_error)
 		// Facilitating creation of a local partial replica of the database.
 		.subscribe([
 			"SELECT * FROM account",
-			"SELECT * FROM external_account",
+			"SELECT * FROM foreign_account",
 			"SELECT * FROM message",
-			"SELECT * FROM public_profile"
+			"SELECT * FROM account_profile"
 		]);
 }

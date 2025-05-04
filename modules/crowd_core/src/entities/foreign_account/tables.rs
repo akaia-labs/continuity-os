@@ -5,33 +5,33 @@ use std::{
 
 use spacetimedb::{Identity, SpacetimeType, table};
 
-use crate::entities::{external_platform::ExternalPlatformName, public_profile::PublicProfileId};
+use crate::entities::{account_profile::AccountProfileId, foreign_platform::ExternalPlatformName};
 
 /// "{String}@{ExternalPlatformName}"
-pub type ExternalAccountId = String;
+pub type ForeignAccountId = String;
 
-#[table(name = external_account, public)]
-pub struct ExternalAccount {
+#[table(name = foreign_account, public)]
+pub struct ForeignAccount {
 	#[primary_key]
 	/// "{String}@{ExternalPlatformName}"
-	pub id:         ExternalAccountId,
+	pub id:         ForeignAccountId,
 	#[index(btree)]
 	pub owner_id:   Option<Identity>,
 	#[index(btree)]
-	pub profile_id: Option<PublicProfileId>,
+	pub profile_id: Option<AccountProfileId>,
 }
 
 #[derive(SpacetimeType)]
-pub struct ExternalAccountReference {
+pub struct ForeignAccountReference {
 	pub id:            String,
 	pub platform_name: ExternalPlatformName,
 }
 
-impl ExternalAccountReference {
+impl ForeignAccountReference {
 	pub const DELIMITER: char = '@';
 }
 
-impl Display for ExternalAccountReference {
+impl Display for ForeignAccountReference {
 	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
 		write!(
 			formatter,
@@ -43,7 +43,7 @@ impl Display for ExternalAccountReference {
 	}
 }
 
-impl FromStr for ExternalAccountReference {
+impl FromStr for ForeignAccountReference {
 	type Err = &'static str;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -55,7 +55,7 @@ impl FromStr for ExternalAccountReference {
 			.parse::<ExternalPlatformName>()
 			.map_err(|_| "invalid platform")?;
 
-		Ok(ExternalAccountReference {
+		Ok(ForeignAccountReference {
 			id: id.to_owned(),
 			platform_name,
 		})

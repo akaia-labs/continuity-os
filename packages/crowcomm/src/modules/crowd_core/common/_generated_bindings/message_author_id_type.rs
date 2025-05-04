@@ -9,9 +9,9 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 pub enum MessageAuthorId {
 	System,
 
-	InternalAccountId(__sdk::Identity),
+	LocalAccountId(__sdk::Identity),
 
-	ExternalAccountId(String),
+	ForeignAccountId(String),
 
 	Unknown,
 }

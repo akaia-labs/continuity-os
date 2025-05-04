@@ -2,8 +2,8 @@ use spacetimedb::{ReducerContext, reducer};
 
 use crate::{
 	entities::{
-		external_account::{ExternalAccount, ExternalAccountId, external_account},
-		internal_account::{Account, AccountId, AccountRole, account},
+		foreign_account::{ForeignAccount, ForeignAccountId, foreign_account},
+		local_account::{LocalAccount, LocalAccountId, LocalAccountRole, local_account},
 	},
 	features::internal::assert_admin,
 };
@@ -14,12 +14,12 @@ use crate::{
 #[reducer]
 /// Sets role for the specified account.
 pub fn admin_set_account_role(
-	ctx: &ReducerContext, account_id: AccountId, role: AccountRole,
+	ctx: &ReducerContext, account_id: LocalAccountId, role: LocalAccountRole,
 ) -> Result<(), String> {
 	assert_admin(ctx);
 
-	if let Some(account) = ctx.db.account().id().find(account_id) {
-		ctx.db.account().id().update(Account {
+	if let Some(account) = ctx.db.local_account().id().find(account_id) {
+		ctx.db.local_account().id().update(LocalAccount {
 			role,
 			updated_at: ctx.timestamp,
 			..account
@@ -33,14 +33,14 @@ pub fn admin_set_account_role(
 
 #[reducer]
 /// Sets role for the specified account.
-pub fn admin_link_external_account(
-	ctx: &ReducerContext, account_id: AccountId, ext_account_id: ExternalAccountId,
+pub fn admin_link_foreign_account(
+	ctx: &ReducerContext, account_id: LocalAccountId, ext_account_id: ForeignAccountId,
 ) -> Result<(), String> {
 	assert_admin(ctx);
 
-	if let Some(ext_account) = ctx.db.external_account().id().find(ext_account_id.clone()) {
-		if let Some(account) = ctx.db.account().id().find(account_id) {
-			ctx.db.external_account().id().update(ExternalAccount {
+	if let Some(ext_account) = ctx.db.foreign_account().id().find(ext_account_id.clone()) {
+		if let Some(account) = ctx.db.local_account().id().find(account_id) {
+			ctx.db.foreign_account().id().update(ForeignAccount {
 				owner_id: Some(account.id),
 				..ext_account
 			});

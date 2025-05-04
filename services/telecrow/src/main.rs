@@ -15,7 +15,7 @@ use teloxide::{
 
 use crate::{
 	common::{clients::crowspace_client, runtime, runtime::TelecrowError},
-	entities::{crowspace_account, crowspace_message},
+	entities::{crowspace_message, local_account},
 	features::telegram_relay,
 };
 
@@ -31,7 +31,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	println!("⏳ Initializing subscriptions...\n");
 	crowspace_client::subscribe(&crowspace_connection);
-	crowspace_account::subscribe(&crowspace_connection);
+	local_account::subscribe(&crowspace_connection);
 	crowspace_message::subscribe(&crowspace_connection);
 	crowspace_connection.run_threaded();
 
