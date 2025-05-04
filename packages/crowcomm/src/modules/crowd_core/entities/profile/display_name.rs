@@ -1,6 +1,6 @@
 use std::fmt::{self, Display, Formatter};
 
-use crate::crowspace::{self, PublicProfileName, traits::Displayable};
+use crate::crowd_core::{PublicProfile, PublicProfileName, traits::Displayable};
 
 impl Display for PublicProfileName {
 	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
@@ -12,7 +12,7 @@ impl Display for PublicProfileName {
 	}
 }
 
-impl Displayable for crowspace::PublicProfile {
+impl Displayable for PublicProfile {
 	fn display_name(&self) -> String {
 		self.metadata.name.to_string()
 	}

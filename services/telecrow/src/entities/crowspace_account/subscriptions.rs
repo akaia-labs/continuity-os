@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use crowcomm::crowspace::{self, *};
+use crowcomm::crowd_core::{
+	Account, AccountTableAccess, DbConnection, EventContext, ReducerEventContext, set_callsign,
+};
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
 
@@ -15,13 +17,13 @@ pub struct StatusTelegramForwardRequest {
 /// Logs event on Telegram using a channel.
 pub fn handle_status_telegram_forward(
 	transmitter: mpsc::Sender<StatusTelegramForwardRequest>, async_handler: Arc<AsyncHandler>,
-) -> impl FnMut(&crowspace::EventContext, &crowspace::Account, &crowspace::Account) {
+) -> impl FnMut(&EventContext, &Account, &Account) {
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |_crowspace_ctx: &crowspace::EventContext,
-	             outdated_account_data: &crowspace::Account,
-	             updated_account_data: &crowspace::Account| {
+	return move |_crowspace_ctx: &EventContext,
+	             outdated_account_data: &Account,
+	             updated_account_data: &Account| {
 		// Only forward events registered after handler initialization
 		if subscribed_at.le(&updated_account_data.updated_at) {
 			if outdated_account_data.callsign != updated_account_data.callsign {
@@ -51,9 +53,7 @@ pub fn handle_status_telegram_forward(
 
 /// @deprecated
 /// Prints a notification about callsign and status changes.
-fn _on_account_updated(
-	_ctx: &crowspace::EventContext, old: &crowspace::Account, new: &crowspace::Account,
-) {
+fn _on_account_updated(_ctx: &EventContext, old: &Account, new: &Account) {
 	if old.is_online && !new.is_online {
 		println!("Account {} disconnected.", old.callsign);
 	}
@@ -64,20 +64,20 @@ fn _on_account_updated(
 }
 
 /// If the account is online, prints a notification.
-fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Account) {
+fn on_account_inserted(_ctx: &EventContext, account: &Account) {
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_callsign_set(ctx: &crowspace::ReducerEventContext, callsign: &String) {
+fn on_callsign_set(ctx: &ReducerEventContext, callsign: &String) {
 	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to change callsign to {:?}: {}", callsign, err);
 	}
 }
 
-pub fn subscribe(crowspace_ctx: &crowspace::DbConnection) {
+pub fn subscribe(crowspace_ctx: &DbConnection) {
 	crowspace_ctx.db.account().on_insert(on_account_inserted);
 	crowspace_ctx.reducers.on_set_callsign(on_callsign_set);
 }

@@ -4,7 +4,7 @@ pub mod features;
 
 use std::sync::Arc;
 
-use common::runtime::TelecrowError;
+use crowcomm::telegram;
 use dotenvy::dotenv;
 use teloxide::{
 	Bot,
@@ -14,7 +14,7 @@ use teloxide::{
 };
 
 use crate::{
-	common::{bindings::telegram, clients::crowspace_client, runtime},
+	common::{clients::crowspace_client, runtime, runtime::TelecrowError},
 	entities::{crowspace_account, crowspace_message},
 	features::telegram_relay,
 };
@@ -54,7 +54,7 @@ async fn main() -> Result<(), TelecrowError> {
 			.filter_map(|update: telegram::Update| update.from().cloned())
 			.branch(
 				dptree::endpoint(
-					telegram_relay::handle_message(crowspace_connection.clone())
+					telegram_relay::handle_messages(crowspace_connection.clone())
 				),
 			),
 		);

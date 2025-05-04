@@ -1,12 +1,12 @@
-use crate::crowspace::{
-	self, AccountTableAccess, PublicProfileTableAccess,
+use crate::crowd_core::{
+	Account, AccountTableAccess, ExternalAccount, PublicProfileTableAccess, RemoteDbContext,
 	traits::{DisplayName, Displayable},
 };
 
-impl DisplayName for crowspace::Account {
+impl DisplayName for Account {
 	/// Returns the display name of the linked profile, if present,
 	/// otherwise the account callsign
-	fn display_name(&self, ctx: &impl crowspace::RemoteDbContext) -> String {
+	fn display_name(&self, ctx: &impl RemoteDbContext) -> String {
 		ctx.db()
 			.public_profile()
 			.id()
@@ -16,10 +16,10 @@ impl DisplayName for crowspace::Account {
 	}
 }
 
-impl DisplayName for crowspace::ExternalAccount {
+impl DisplayName for ExternalAccount {
 	/// Walks the ownership tree starting from the bound internal account
 	/// (if present) to retrieve the first available identifier for display
-	fn display_name(&self, ctx: &impl crowspace::RemoteDbContext) -> String {
+	fn display_name(&self, ctx: &impl RemoteDbContext) -> String {
 		let owner_account = if let Some(owner_id) = self.owner_id {
 			ctx.db().account().id().find(&owner_id)
 		} else {

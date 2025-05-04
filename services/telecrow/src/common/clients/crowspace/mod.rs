@@ -2,18 +2,14 @@ mod authentication;
 mod subscriptions;
 
 use core::panic;
-use std::sync::Arc;
 
-use crowcomm::{crowspace, get_env_config};
+use crowcomm::{crowd_core::DbConnection, get_env_config};
 use spacetimedb_sdk::DbContext;
 
-pub type Connection = crowspace::DbConnection;
-pub type ConnectionPointer = Arc<crowspace::DbConnection>;
-
 /// Loads credentials from a file and connects to the database.
-pub fn connect() -> Connection {
+pub fn connect() -> DbConnection {
 	if let Some(env_config) = get_env_config() {
-		crowspace::DbConnection::builder()
+		DbConnection::builder()
 			.on_connect(subscriptions::on_connected)
 			.on_connect_error(subscriptions::on_connect_error)
 			.on_disconnect(subscriptions::on_disconnected)
@@ -35,7 +31,7 @@ pub fn connect() -> Connection {
 }
 
 /// Registers subscriptions to tables.
-pub fn subscribe(crowspace_ctx: &Connection) {
+pub fn subscribe(crowspace_ctx: &DbConnection) {
 	crowspace_ctx
 		.subscription_builder()
 		.on_applied(subscriptions::on_sub_applied)

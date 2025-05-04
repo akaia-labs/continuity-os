@@ -316,10 +316,11 @@ version = "0.1.0"
 dependencies = [
  "hex",
  "spacetimedb-sdk",
+ "teloxide",
 ]
 
 [[package]]
-name = "crowspace"
+name = "crowd_core"
 version = "0.2.0"
 dependencies = [
  "log",

@@ -7,25 +7,25 @@ setup:
 
 
 unsafe-local-drop:
-	(spacetime delete -s localhost crowspace)
+	(spacetime delete -s localhost crowd_core)
 
-local-publish-crowspace:
-	(spacetime publish -s localhost --project-path modules/crowspace crowspace)
+local-publish-core:
+	(spacetime publish -s localhost --project-path modules/crowd_core crowd_core)
 
-local-dbcall-crowspace:
-	(spacetime call -s localhost crowspace)
+local-dbcall-core:
+	(spacetime call -s localhost crowd_core)
 
-local-dblogs-crowspace:
-	(spacetime logs -s localhost crowspace)
+local-dblogs-core:
+	(spacetime logs -s localhost crowd_core)
 
 
 generate-module_bindings:
 	spacetime generate --lang rust \
-		--project-path modules/crowspace \
-		--out-dir packages/crowcomm/src/modules/crowspace/common/_generated_bindings
+		--project-path modules/crowd_core \
+		--out-dir packages/crowcomm/src/modules/crowd_core/common/_generated_bindings
 
 
-local-publish: local-publish-crowspace
+local-publish: local-publish-core
 	(echo "DONE.")
 
 

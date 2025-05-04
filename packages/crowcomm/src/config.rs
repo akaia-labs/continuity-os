@@ -14,13 +14,13 @@ pub struct CrowcommEnvConfig {
 }
 
 pub fn get_env_config() -> Option<CrowcommEnvConfig> {
-	if env::var("CROWD_HOST").is_ok() && env::var("CROWSPACE_MODULE_NAME").is_ok() {
+	if env::var("CROWD_HOST").is_ok() && env::var("CROWD_CORE_MODULE_NAME").is_ok() {
 		Some(CrowcommEnvConfig {
 			host: env::var("CROWD_HOST").unwrap(),
 
 			modules: CrowcommModules {
 				crowspace: CrowcommModuleConfig {
-					name: env::var("CROWSPACE_MODULE_NAME").unwrap(),
+					name: env::var("CROWD_CORE_MODULE_NAME").unwrap(),
 				},
 			},
 		})

@@ -1,7 +1,7 @@
 use std::process;
 
 use crowcomm::{
-	crowspace::{
+	crowd_core::{
 		self, AccountTableAccess, MessageTableAccess, PublicProfileTableAccess, send_message,
 		set_callsign, traits::DisplayName,
 	},
@@ -18,20 +18,20 @@ fn creds_store() -> credentials::File {
 }
 
 /// Saves client account credentials to a file.
-fn on_connected(_ctx: &crowspace::DbConnection, _identity: Identity, token: &str) {
+fn on_connected(_ctx: &crowd_core::DbConnection, _identity: Identity, token: &str) {
 	if let Err(e) = creds_store().save(token) {
 		eprintln!("Failed to save credentials: {:?}", e);
 	}
 }
 
 /// Prints the error, then exits the process.
-fn on_connect_error(_ctx: &crowspace::ErrorContext, err: Error) {
+fn on_connect_error(_ctx: &crowd_core::ErrorContext, err: Error) {
 	eprintln!("Connection error: {:?}", err);
 	process::exit(1);
 }
 
 /// Prints a note, then exits the process.
-fn on_disconnected(_ctx: &crowspace::ErrorContext, err: Option<Error>) {
+fn on_disconnected(_ctx: &crowd_core::ErrorContext, err: Option<Error>) {
 	if let Some(err) = err {
 		eprintln!("Disconnected: {}", err);
 		process::exit(1);
@@ -44,7 +44,7 @@ fn on_disconnected(_ctx: &crowspace::ErrorContext, err: Option<Error>) {
 // TODO: Extract to Account entity
 
 /// If the account is online, prints a notification.
-fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Account) {
+fn on_account_inserted(_ctx: &crowd_core::EventContext, account: &crowd_core::Account) {
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
@@ -52,7 +52,7 @@ fn on_account_inserted(_ctx: &crowspace::EventContext, account: &crowspace::Acco
 
 /// Prints a notification about callsign and status changes.
 fn on_account_updated(
-	_ctx: &crowspace::EventContext, old: &crowspace::Account, new: &crowspace::Account,
+	_ctx: &crowd_core::EventContext, old: &crowd_core::Account, new: &crowd_core::Account,
 ) {
 	if old.callsign != new.callsign {
 		println!(
@@ -71,7 +71,7 @@ fn on_account_updated(
 }
 
 /// Prints a warning if the reducer failed.
-fn on_callsign_set(ctx: &crowspace::ReducerEventContext, callsign: &String) {
+fn on_callsign_set(ctx: &crowd_core::ReducerEventContext, callsign: &String) {
 	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to change callsign to {:?}: {}", callsign, err);
 	}
@@ -79,7 +79,7 @@ fn on_callsign_set(ctx: &crowspace::ReducerEventContext, callsign: &String) {
 
 //*	MESSAGE SUBSCRIPTIONS
 
-fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Message) {
+fn print_message(ctx: &impl crowd_core::RemoteDbContext, message: &crowd_core::Message) {
 	let sender = ctx
 		.db()
 		.account()
@@ -92,14 +92,14 @@ fn print_message(ctx: &impl crowspace::RemoteDbContext, message: &crowspace::Mes
 }
 
 /// Prints new messages.
-fn on_message_inserted(ctx: &crowspace::EventContext, message: &crowspace::Message) {
+fn on_message_inserted(ctx: &crowd_core::EventContext, message: &crowd_core::Message) {
 	if let Event::Reducer(_) = ctx.event {
 		print_message(ctx, message)
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_message_sent(ctx: &crowspace::ReducerEventContext, text: &String) {
+fn on_message_sent(ctx: &crowd_core::ReducerEventContext, text: &String) {
 	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to send message {:?}: {}", text, err);
 	}
@@ -108,7 +108,7 @@ fn on_message_sent(ctx: &crowspace::ReducerEventContext, text: &String) {
 // !	TABLE SUBSCRIPTIONS
 
 /// Sorts all past messages and print them in timestamp order.
-fn on_sub_applied(ctx: &crowspace::SubscriptionEventContext) {
+fn on_sub_applied(ctx: &crowd_core::SubscriptionEventContext) {
 	let mut messages = ctx.db.message().iter().collect::<Vec<_>>();
 
 	messages.sort_by_key(|m| m.sent_at);
@@ -122,12 +122,12 @@ fn on_sub_applied(ctx: &crowspace::SubscriptionEventContext) {
 }
 
 /// Prints the error, then exits the process.
-fn on_sub_error(_ctx: &crowspace::ErrorContext, err: Error) {
+fn on_sub_error(_ctx: &crowd_core::ErrorContext, err: Error) {
 	eprintln!("Subscription failed: {}", err);
 	std::process::exit(1);
 }
 
-fn subscribe_to_tables(ctx: &crowspace::DbConnection) {
+fn subscribe_to_tables(ctx: &crowd_core::DbConnection) {
 	ctx.subscription_builder()
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
@@ -143,7 +143,7 @@ fn subscribe_to_tables(ctx: &crowspace::DbConnection) {
 
 /// Reads each line of standard input, and either executes a command or sends a
 /// message as appropriate.
-fn account_input_loop(ctx: &crowspace::DbConnection) {
+fn account_input_loop(ctx: &crowd_core::DbConnection) {
 	for line in std::io::stdin().lines() {
 		let Ok(line) = line else {
 			panic!("Failed to read from stdin.");
@@ -160,7 +160,7 @@ fn account_input_loop(ctx: &crowspace::DbConnection) {
 // !	GENERAL
 
 /// Registers all the callbacks the app will use to respond to database events.
-fn register_callbacks(ctx: &crowspace::DbConnection) {
+fn register_callbacks(ctx: &crowd_core::DbConnection) {
 	// When a new account joins, print a notification.
 	ctx.db.account().on_insert(on_account_inserted);
 
@@ -178,9 +178,9 @@ fn register_callbacks(ctx: &crowspace::DbConnection) {
 }
 
 /// Load credentials from a file and connect to the database.
-fn connect_to_db() -> crowspace::DbConnection {
+fn connect_to_db() -> crowd_core::DbConnection {
 	if let Some(env_config) = get_env_config() {
-		crowspace::DbConnection::builder()
+		crowd_core::DbConnection::builder()
 		.on_connect(on_connected)
 		.on_connect_error(on_connect_error)
 		.on_disconnect(on_disconnected)

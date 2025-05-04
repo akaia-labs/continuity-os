@@ -1,12 +1,13 @@
-use std::{future::Future, pin::Pin};
+use std::{future::Future, pin::Pin, sync::Arc};
 
-use crowcomm::crowspace::send_message;
+use crowcomm::{
+	crowd_core::{DbConnection, send_message},
+	telegram,
+};
 use teloxide::{Bot, RequestError, respond};
 
-use crate::common::{bindings::telegram, clients::crowspace_client};
-
-pub fn handle_message(
-	crowspace_ctx: crowspace_client::ConnectionPointer,
+pub fn handle_messages(
+	crowspace_ctx: Arc<DbConnection>,
 ) -> impl Fn(telegram::Message, Bot) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
 {
 	move |msg: telegram::Message, _bot: Bot| {

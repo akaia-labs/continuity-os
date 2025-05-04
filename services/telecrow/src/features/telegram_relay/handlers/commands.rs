@@ -1,11 +1,10 @@
+use crowcomm::telegram;
 use teloxide::{
 	Bot,
 	payloads::SendMessageSetters,
 	prelude::{Requester, ResponseResult},
 	utils::command::BotCommands,
 };
-
-use crate::common::bindings::telegram;
 
 #[derive(BotCommands, Clone)]
 #[command(rename_rule = "lowercase")]
