@@ -2,8 +2,8 @@ use std::process;
 
 use crowcomm::{
 	crowd_core::{
-		self, AccountProfileTableAccess, LocalAccountTableAccess, MessageTableAccess, send_message,
-		set_callsign, traits::DisplayName,
+		self, AccountProfileTableAccess, ForeignAccountTableAccess, LocalAccountTableAccess,
+		MessageAuthorId, MessageTableAccess, send_message, set_callsign, traits::DisplayName,
 	},
 	get_env_config,
 };
@@ -80,13 +80,26 @@ fn on_callsign_set(ctx: &crowd_core::ReducerEventContext, callsign: &String) {
 //*	MESSAGE SUBSCRIPTIONS
 
 fn print_message(ctx: &impl crowd_core::RemoteDbContext, message: &crowd_core::Message) {
-	let sender = ctx
-		.db()
-		.local_account()
-		.id()
-		.find(&message.sender.clone())
-		.map(|account| account.display_name(ctx))
-		.unwrap_or_else(|| "unknown".to_string());
+	let sender = match &message.author_id {
+		| MessageAuthorId::LocalAccountId(author_id) => ctx
+			.db()
+			.local_account()
+			.id()
+			.find(&author_id)
+			.map(|account| account.display_name(ctx))
+			.unwrap_or_else(|| "unknown".to_string()),
+
+		| MessageAuthorId::ForeignAccountId(author_id) => ctx
+			.db()
+			.foreign_account()
+			.id()
+			.find(&author_id)
+			.map(|account| account.display_name(ctx))
+			.unwrap_or_else(|| "unknown".to_string()),
+
+		| MessageAuthorId::System => "system".to_string(),
+		| MessageAuthorId::Unknown => "unknown".to_string(),
+	};
 
 	println!("{}: {}", sender, message.text);
 }
@@ -119,6 +132,18 @@ fn on_sub_applied(ctx: &crowd_core::SubscriptionEventContext) {
 
 	println!("Fully connected and all subscriptions applied.");
 	println!("Use /callsign to set your callsign, or type a message!");
+
+	let foreign_accounts = ctx.db.foreign_account().iter().collect::<Vec<_>>();
+
+	for account in foreign_accounts {
+		println!("{:?}", account)
+	}
+
+	let profiles = ctx.db.account_profile().iter().collect::<Vec<_>>();
+
+	for profile in profiles {
+		println!("{:?}", profile)
+	}
 }
 
 /// Prints the error, then exits the process.

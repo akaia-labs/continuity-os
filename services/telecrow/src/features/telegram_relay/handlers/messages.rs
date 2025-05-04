@@ -1,7 +1,7 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowcomm::{
-	crowd_core::{DbConnection, send_message},
+	crowd_core::{DbConnection, account::ForeignAccountImport, import_message, send_message},
 	telegram,
 };
 use teloxide::{Bot, RequestError, respond};
@@ -15,7 +15,12 @@ pub fn handle_messages(
 
 		Box::pin(async move {
 			if let Some(text) = msg.text() {
-				let _result = ctx.reducers.send_message(text.to_owned());
+				let _result = if let Some(author) = &msg.from {
+					ctx.reducers
+						.import_message(author.into_account_reference(), text.to_owned())
+				} else {
+					ctx.reducers.send_message(text.to_owned())
+				};
 			}
 
 			respond(())
