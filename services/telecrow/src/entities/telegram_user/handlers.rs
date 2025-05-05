@@ -35,7 +35,7 @@ pub fn handle_updates(
 					.is_some_and(|profile| profile.metadata != account_metadata)
 				{
 					// TODO: Update the profile if it's outdated
-					let _result = ctx.reducers.import_foreign_account(
+					let _result = ctx.reducers.update_foreign_account(
 						account_reference,
 						tg_username,
 						Some(account_metadata),

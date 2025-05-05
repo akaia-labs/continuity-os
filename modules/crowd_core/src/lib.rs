@@ -2,9 +2,7 @@ mod entities;
 mod features;
 
 use entities::{
-	account_profile::{
-		AccountProfile, AccountProfileMetadata, AccountProfileOwnerId, account_profile,
-	},
+	account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
 	local_account::*,
 };
 use spacetimedb::{ReducerContext, Table, reducer};
@@ -25,7 +23,6 @@ pub fn client_connected(ctx: &ReducerContext) {
 	} else {
 		let initial_profile = ctx.db.account_profile().insert(AccountProfile {
 			id:       0,
-			owner_id: AccountProfileOwnerId::LocalAccountId(ctx.sender),
 			metadata: AccountProfileMetadata::default(),
 		});
 

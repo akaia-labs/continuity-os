@@ -2,8 +2,6 @@ use std::fmt::{self, Display, Formatter};
 
 use spacetimedb::{SpacetimeType, table};
 
-use crate::entities::{foreign_account::ForeignAccountId, local_account::LocalAccountId};
-
 pub type AccountProfileId = u64;
 
 #[table(name = account_profile, public)]
@@ -11,16 +9,7 @@ pub struct AccountProfile {
 	#[auto_inc]
 	#[primary_key]
 	pub id:       AccountProfileId,
-	#[unique]
-	#[index(btree)]
-	pub owner_id: AccountProfileOwnerId,
 	pub metadata: AccountProfileMetadata,
-}
-
-#[derive(SpacetimeType)]
-pub enum AccountProfileOwnerId {
-	LocalAccountId(LocalAccountId),
-	ForeignAccountId(ForeignAccountId),
 }
 
 #[derive(SpacetimeType)]
