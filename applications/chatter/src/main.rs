@@ -130,19 +130,19 @@ fn on_sub_applied(ctx: &crowd_core::SubscriptionEventContext) {
 		print_message(ctx, &message);
 	}
 
-	println!("Fully connected and all subscriptions applied.");
-	println!("Use /callsign to set your callsign, or type a message!");
+	println!("\nFully connected and all subscriptions applied.");
+	println!("Use /callsign to set your callsign, or type a message!\n");
 
 	let foreign_accounts = ctx.db.foreign_account().iter().collect::<Vec<_>>();
 
 	for account in foreign_accounts {
-		println!("{:?}", account)
+		println!("\n{:?}", account)
 	}
 
 	let profiles = ctx.db.account_profile().iter().collect::<Vec<_>>();
 
 	for profile in profiles {
-		println!("{:?}", profile)
+		println!("\n{:?}", profile)
 	}
 }
 

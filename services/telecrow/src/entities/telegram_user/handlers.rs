@@ -58,8 +58,8 @@ fn on_foreign_account_import(
 	ctx: &ReducerEventContext, reference: &ForeignAccountReference, callsign: &Option<String>,
 	metadata: &Option<AccountProfileMetadata>,
 ) {
-	println!("{:?}", reference);
-	println!("{:?}", metadata);
+	println!("\n{:?}", reference);
+	println!("{:?}\n", metadata);
 
 	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to import account for {:?}: {}", callsign, err);
