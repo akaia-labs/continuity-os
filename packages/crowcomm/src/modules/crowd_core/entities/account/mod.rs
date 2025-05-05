@@ -1,5 +1,5 @@
-mod display_name;
 mod id;
-mod import;
+mod profile;
+mod traits;
 
-pub use import::*;
+pub use traits::*;

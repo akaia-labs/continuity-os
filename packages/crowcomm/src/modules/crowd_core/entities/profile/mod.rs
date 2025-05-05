@@ -1,4 +1,4 @@
 mod display_name;
-mod import;
+mod traits;
 
-pub use import::*;
+pub use traits::*;
