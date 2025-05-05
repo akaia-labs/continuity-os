@@ -27,7 +27,7 @@ pub fn client_connected(ctx: &ReducerContext) {
 		});
 
 		let account_profile = ctx.db.account_profile().id().update(AccountProfile {
-			//*  Ensuring the profile name is unique at least by default
+			//*  Ensuring the profile name is unique upon profile creation.
 			metadata: AccountProfileMetadata::default_with_name(format!(
 				"{}-{}",
 				initial_profile.metadata.name.short_name, initial_profile.id

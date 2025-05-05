@@ -44,21 +44,32 @@ pub fn update_foreign_account(
 			"Foreign account {reference} is not registered in the system."
 		))?;
 
-	if let Some(profile_id) = account.profile_id {
+	let profile = if let Some(profile_id) = account.profile_id {
 		ctx.db.account_profile().id().update(AccountProfile {
 			id:       profile_id,
 			metadata: metadata.unwrap_or_default(),
-		});
-
-		ctx.db.foreign_account().id().update(ForeignAccount {
-			callsign,
-			..account
-		});
-
-		Ok(())
+		})
 	} else {
-		Err(format!(
-			"Foreign account {reference} does not have a profile."
-		))
-	}
+		ctx.db.account_profile().insert(AccountProfile {
+			id:       0,
+			metadata: metadata.unwrap_or_default(),
+		})
+	};
+
+	let account_update = if callsign != account.callsign {
+		ForeignAccount {
+			callsign,
+			profile_id: Some(profile.id),
+			..account
+		}
+	} else {
+		ForeignAccount {
+			profile_id: Some(profile.id),
+			..account
+		}
+	};
+
+	ctx.db.foreign_account().id().update(account_update);
+
+	Ok(())
 }
