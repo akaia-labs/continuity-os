@@ -33,6 +33,7 @@ fn main() {
 	register_callbacks(&ctx);
 	crowd_core_client::subscribe_to_tables(&ctx);
 	foreign_account::subscribe(&ctx);
-	repl::start(&ctx);
 	ctx.run_threaded();
+
+	repl::start(&ctx);
 }
