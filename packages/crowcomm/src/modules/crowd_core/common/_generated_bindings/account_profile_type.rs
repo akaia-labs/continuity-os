@@ -4,16 +4,12 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::{
-	account_profile_metadata_type::AccountProfileMetadata,
-	account_profile_owner_id_type::AccountProfileOwnerId,
-};
+use super::account_profile_metadata_type::AccountProfileMetadata;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct AccountProfile {
 	pub id:       u64,
-	pub owner_id: AccountProfileOwnerId,
 	pub metadata: AccountProfileMetadata,
 }
 

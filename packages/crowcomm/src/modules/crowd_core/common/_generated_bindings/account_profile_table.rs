@@ -5,8 +5,7 @@
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 use super::{
-	account_profile_metadata_type::AccountProfileMetadata,
-	account_profile_owner_id_type::AccountProfileOwnerId, account_profile_type::AccountProfile,
+	account_profile_metadata_type::AccountProfileMetadata, account_profile_type::AccountProfile,
 };
 
 /// Table handle for the table `account_profile`.

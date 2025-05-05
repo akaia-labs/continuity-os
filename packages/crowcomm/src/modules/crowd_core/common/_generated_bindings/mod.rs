@@ -6,7 +6,6 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 pub mod account_profile_metadata_type;
 pub mod account_profile_name_type;
-pub mod account_profile_owner_id_type;
 pub mod account_profile_table;
 pub mod account_profile_type;
 pub mod admin_link_foreign_account_reducer;
@@ -33,10 +32,10 @@ pub mod set_callsign_reducer;
 pub mod text_channel_table;
 pub mod text_channel_type;
 pub mod unlink_foreign_account_reducer;
+pub mod update_foreign_account_reducer;
 
 pub use account_profile_metadata_type::AccountProfileMetadata;
 pub use account_profile_name_type::AccountProfileName;
-pub use account_profile_owner_id_type::AccountProfileOwnerId;
 pub use account_profile_table::*;
 pub use account_profile_type::AccountProfile;
 pub use admin_link_foreign_account_reducer::{
@@ -80,6 +79,9 @@ pub use text_channel_type::TextChannel;
 pub use unlink_foreign_account_reducer::{
 	UnlinkForeignAccountCallbackId, set_flags_for_unlink_foreign_account, unlink_foreign_account,
 };
+pub use update_foreign_account_reducer::{
+	UpdateForeignAccountCallbackId, set_flags_for_update_foreign_account, update_foreign_account,
+};
 
 #[derive(Clone, PartialEq, Debug)]
 
@@ -120,6 +122,11 @@ pub enum Reducer {
 	UnlinkForeignAccount {
 		ext_account_id: String,
 	},
+	UpdateForeignAccount {
+		reference: ForeignAccountReference,
+		callsign:  Option<String>,
+		metadata:  Option<AccountProfileMetadata>,
+	},
 }
 
 impl __sdk::InModule for Reducer {
@@ -139,6 +146,7 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetCallsign { .. } => "set_callsign",
 			| Reducer::UnlinkForeignAccount { .. } => "unlink_foreign_account",
+			| Reducer::UpdateForeignAccount { .. } => "update_foreign_account",
 		}
 	}
 }
@@ -186,6 +194,10 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 			| "unlink_foreign_account" => Ok(__sdk::parse_reducer_args::<
 				unlink_foreign_account_reducer::UnlinkForeignAccountArgs,
 			>("unlink_foreign_account", &value.args)?
+			.into()),
+			| "update_foreign_account" => Ok(__sdk::parse_reducer_args::<
+				update_foreign_account_reducer::UpdateForeignAccountArgs,
+			>("update_foreign_account", &value.args)?
 			.into()),
 			| unknown => {
 				Err(
