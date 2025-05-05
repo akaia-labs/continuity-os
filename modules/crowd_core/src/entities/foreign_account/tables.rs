@@ -22,6 +22,7 @@ pub struct ForeignAccount {
 	pub callsign:   Option<String>,
 	#[index(btree)]
 	pub owner_id:   Option<Identity>,
+	#[unique]
 	#[index(btree)]
 	pub profile_id: Option<AccountProfileId>,
 }

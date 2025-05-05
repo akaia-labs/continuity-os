@@ -16,6 +16,8 @@ use crate::{
 pub fn admin_set_account_role(
 	ctx: &ReducerContext, account_id: LocalAccountId, role: LocalAccountRole,
 ) -> Result<(), String> {
+	// TODO: Return an error instead of panicking and consider converting
+	// TODO: this into `is_admin` on `LocalAccount` via permission control trait
 	assert_admin(ctx);
 
 	if let Some(account) = ctx.db.local_account().id().find(account_id) {
@@ -36,6 +38,7 @@ pub fn admin_set_account_role(
 pub fn admin_link_foreign_account(
 	ctx: &ReducerContext, account_id: LocalAccountId, ext_account_id: ForeignAccountId,
 ) -> Result<(), String> {
+	// TODO: Same as the above
 	assert_admin(ctx);
 
 	if let Some(ext_account) = ctx.db.foreign_account().id().find(ext_account_id.clone()) {

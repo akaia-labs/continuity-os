@@ -1,9 +1,9 @@
-use std::{pin::Pin, sync::Arc};
+use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowcomm::{
 	crowd_core::{
 		AccountProfileMetadata, DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
-		ReducerEventContext, RemoteDbContext,
+		ReducerEventContext,
 		account::ForeignAccountImport,
 		import_foreign_account,
 		profile::{ProfileImport, ProfileRetrieval},
@@ -19,7 +19,7 @@ pub fn handle_updates(
 {
 	move |tg_user_data: telegram::User, _bot: Bot| {
 		let ctx = core_ctx.clone();
-
+		let tg_username = tg_user_data.clone().username;
 		let account_reference = tg_user_data.into_account_reference();
 		let account_metadata = tg_user_data.into_profile_metadata();
 
@@ -30,13 +30,22 @@ pub fn handle_updates(
 				.id()
 				.find(&account_reference.to_string())
 			{
-				// TODO: Update the profile if it's outdated
-				let profile = account.profile(&ctx.db);
+				if account
+					.profile(&*ctx)
+					.is_some_and(|profile| profile.metadata != account_metadata)
+				{
+					// TODO: Update the profile if it's outdated
+					let _result = ctx.reducers.import_foreign_account(
+						account_reference,
+						tg_username,
+						Some(account_metadata),
+					);
+				}
 			} else {
 				let _result = ctx.reducers.import_foreign_account(
 					account_reference,
-					tg_user_data.clone().username,
-					Some(tg_user_data.into_profile_metadata()),
+					tg_username,
+					Some(account_metadata),
 				);
 			}
 
