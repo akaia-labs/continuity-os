@@ -2,8 +2,7 @@ use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowcomm::{
 	crowd_core::{
-		AccountProfileMetadata, DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
-		ReducerEventContext,
+		DbConnection, ForeignAccountTableAccess,
 		account::ForeignAccountImport,
 		import_foreign_account,
 		profile::{ProfileImport, ProfileRetrieval},
@@ -11,7 +10,6 @@ use crowcomm::{
 	},
 	telegram,
 };
-use spacetimedb_sdk::Status;
 use teloxide::{Bot, RequestError, respond};
 
 pub fn handle_updates(
@@ -52,22 +50,4 @@ pub fn handle_updates(
 			respond(())
 		})
 	}
-}
-
-fn on_foreign_account_import(
-	ctx: &ReducerEventContext, reference: &ForeignAccountReference, callsign: &Option<String>,
-	metadata: &Option<AccountProfileMetadata>,
-) {
-	println!("\n{:?}", reference);
-	println!("{:?}\n", metadata);
-
-	if let Status::Failed(err) = &ctx.event.status {
-		eprintln!("Failed to import account for {:?}: {}", callsign, err);
-	}
-}
-
-pub fn subscribe(core_ctx: &DbConnection) {
-	core_ctx
-		.reducers
-		.on_import_foreign_account(on_foreign_account_import);
 }

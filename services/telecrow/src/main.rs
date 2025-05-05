@@ -34,7 +34,6 @@ async fn main() -> Result<(), TelecrowError> {
 	crowd_core_client::subscribe(&core_connection);
 	local_account::subscribe(&core_connection);
 	local_message::subscribe(&core_connection);
-	telegram_user::subscribe(&core_connection);
 	core_connection.run_threaded();
 
 	telegram_relay::subscribe(
