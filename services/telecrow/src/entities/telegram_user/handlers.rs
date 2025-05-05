@@ -3,7 +3,7 @@ use std::{pin::Pin, sync::Arc};
 use crowcomm::{
 	crowd_core::{
 		AccountProfileMetadata, DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
-		ReducerEventContext,
+		ReducerEventContext, RemoteDbContext,
 		account::ForeignAccountImport,
 		import_foreign_account,
 		profile::{ProfileImport, ProfileRetrieval},
@@ -23,8 +23,6 @@ pub fn handle_updates(
 		let account_reference = tg_user_data.into_account_reference();
 		let account_metadata = tg_user_data.into_profile_metadata();
 
-		// TODO: Check if the account is already registered and update its profile
-		// TODO: instead if this is the case
 		Box::pin(async move {
 			if let Some(account) = ctx
 				.db
@@ -32,16 +30,15 @@ pub fn handle_updates(
 				.id()
 				.find(&account_reference.to_string())
 			{
-				let profile = account
-					.local_profile(&ctx.db.into())
-					.unwrap_or(account.profile(&ctx.db.into()));
+				// TODO: Update the profile if it's outdated
+				let profile = account.profile(&ctx.db);
+			} else {
+				let _result = ctx.reducers.import_foreign_account(
+					account_reference,
+					tg_user_data.clone().username,
+					Some(tg_user_data.into_profile_metadata()),
+				);
 			}
-
-			let _result = ctx.reducers.import_foreign_account(
-				account_reference,
-				tg_user_data.clone().username,
-				Some(tg_user_data.into_profile_metadata()),
-			);
 
 			respond(())
 		})
