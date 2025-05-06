@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use crowcomm::telegram;
 use dotenvy::dotenv;
-use entities::telegram_user;
+use entities::{telegram_command, telegram_update};
 use teloxide::{
 	Bot,
 	dispatching::{HandlerExt, UpdateFilterExt},
@@ -43,25 +43,15 @@ async fn main() -> Result<(), TelecrowError> {
 	);
 
 	let telegram_relay_handler = dptree::entry()
-		// .branch(
-		// 	dptree::entry()
-		// 		.filter_map(|update: telegram::Update| update.from().cloned())
-		// 		.endpoint(telegram_user::handle_updates(core_connection.clone())),
-		// )
 		.branch(
 			telegram::Update::filter_message()
-			.branch(
-				dptree::entry()
-				.filter_command::<telegram_relay::BasicCommand>()
-				.endpoint(telegram_relay::on_basic_command),
-			)
-			// Injecting the `User` object representing the author of an incoming message
-			.filter_map(|update: telegram::Update| update.from().cloned())
-			.branch(
-				dptree::endpoint(
-					telegram_relay::handle_messages(core_connection.clone())
-				),
-			),
+				.filter_command::<telegram_command::BasicCommand>()
+				.endpoint(telegram_command::handle),
+		)
+		.branch(
+			dptree::entry()
+				.filter_map(|update: telegram::Update| update.from().cloned())
+				.endpoint(telegram_update::root_handler(core_connection.clone())),
 		);
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");

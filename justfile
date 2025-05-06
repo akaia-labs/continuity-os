@@ -1,5 +1,8 @@
-# curl -sSf https://install.spacetimedb.com | sh
+subsystem-dev:
+	(cd subsystem && ./rvvm/rvvm_arm64)
 
+
+# `curl -sSf https://install.spacetimedb.com | sh` ?
 setup:
 	(mise trust)
 	(mise install)

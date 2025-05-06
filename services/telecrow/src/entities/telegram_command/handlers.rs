@@ -14,9 +14,7 @@ pub enum BasicCommand {
 	Help,
 }
 
-pub async fn on_basic_command(
-	bot: Bot, msg: telegram::Message, cmd: BasicCommand,
-) -> ResponseResult<()> {
+pub async fn handle(bot: Bot, msg: telegram::Message, cmd: BasicCommand) -> ResponseResult<()> {
 	match cmd {
 		| BasicCommand::Help => {
 			if let Some(message_thread_id) = msg.thread_id {

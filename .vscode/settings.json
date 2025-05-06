@@ -23,8 +23,10 @@
 		"libcrowd",
 		"mistralrs",
 		"MSVC",
+		"nogui",
 		"onnx",
 		"pocketverse",
+		"portfwd",
 		"protocrow",
 		"pycache",
 		"raiven",
@@ -39,6 +41,7 @@
 		"spacetimedb",
 		"stdb",
 		"telecrow",
-		"tsup"
+		"tsup",
+		"vfio"
 	]
 }
