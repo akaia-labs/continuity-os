@@ -1,0 +1,52 @@
+use std::sync::Arc;
+
+use crowcomm::crowd_core::{
+	DbConnection, ForeignAccountTableAccess,
+	account::ForeignAccountImport,
+	import_foreign_account, import_message,
+	profile::{ProfileImport, ProfileRetrieval},
+	send_message, update_foreign_account,
+};
+use teloxide::types::{Message, User};
+
+pub fn on_message(core_ctx: Arc<DbConnection>, msg: Message) {
+	if let Some(text) = msg.text() {
+		let _result = if let Some(author) = &msg.from {
+			core_ctx
+				.reducers
+				.import_message(author.into_account_reference(), text.to_owned())
+		} else {
+			core_ctx.reducers.send_message(text.to_owned())
+		};
+	}
+}
+
+pub fn on_user_update(core_ctx: Arc<DbConnection>, user_data: User) {
+	let username = user_data.clone().username;
+	let account_reference = user_data.into_account_reference();
+	let account_metadata = user_data.into_profile_metadata();
+
+	if let Some(account) = core_ctx
+		.db
+		.foreign_account()
+		.id()
+		.find(&account_reference.to_string())
+	{
+		if account
+			.profile(&*core_ctx)
+			.is_some_and(|profile| profile.metadata != account_metadata)
+		{
+			let _result = core_ctx.reducers.update_foreign_account(
+				account_reference,
+				username,
+				Some(account_metadata),
+			);
+		}
+	} else {
+		let _result = core_ctx.reducers.import_foreign_account(
+			account_reference,
+			username,
+			Some(account_metadata),
+		);
+	}
+}
