@@ -10,7 +10,7 @@ use entities::telegram_user;
 use teloxide::{
 	Bot,
 	dispatching::{HandlerExt, UpdateFilterExt},
-	dptree,
+	dptree::{self},
 	prelude::Dispatcher,
 };
 
@@ -43,25 +43,20 @@ async fn main() -> Result<(), TelecrowError> {
 	);
 
 	let telegram_relay_handler = dptree::entry()
-		// .branch(
-		// 	dptree::entry()
-		// 		.filter_map(|update: telegram::Update| update.from().cloned())
-		// 		.endpoint(telegram_user::handle_updates(core_connection.clone())),
-		// )
+		.chain(
+			dptree::filter_map(|update: telegram::Update| update.from().cloned())
+				.endpoint(telegram_user::handle_updates(core_connection.clone())),
+		)
 		.branch(
 			telegram::Update::filter_message()
-			.branch(
-				dptree::entry()
 				.filter_command::<telegram_relay::BasicCommand>()
 				.endpoint(telegram_relay::on_basic_command),
-			)
+		)
+		.branch(
+			telegram::Update::filter_message()
 			// Injecting the `User` object representing the author of an incoming message
-			.filter_map(|update: telegram::Update| update.from().cloned())
-			.branch(
-				dptree::endpoint(
-					telegram_relay::handle_messages(core_connection.clone())
-				),
-			),
+			  .filter_map(|update: telegram::Update| update.from().cloned())
+			  .endpoint(telegram_relay::handle_messages(core_connection.clone())),
 		);
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");
