@@ -43,11 +43,11 @@ async fn main() -> Result<(), TelecrowError> {
 	);
 
 	let telegram_relay_handler = dptree::entry()
-		.branch(
-			dptree::entry()
-				.filter_map(|update: telegram::Update| update.from().cloned())
-				.endpoint(telegram_user::handle_updates(core_connection.clone())),
-		)
+		// .branch(
+		// 	dptree::entry()
+		// 		.filter_map(|update: telegram::Update| update.from().cloned())
+		// 		.endpoint(telegram_user::handle_updates(core_connection.clone())),
+		// )
 		.branch(
 			telegram::Update::filter_message()
 			.branch(
