@@ -1,6 +1,6 @@
 [package]
 name = "crowcomm"
-description = "Akaia Labs crow.d protocol client library in Rust"
+description = "Akaia Labs crow.d client SDK in Rust"
 version = "0.1.0"
 edition = "2024"
 
@@ -11,5 +11,6 @@ path = "src/lib.rs"
 
 
 [dependencies]
-spacetimedb-sdk.workspace = true
 hex.workspace = true
+spacetimedb-sdk.workspace = true
+teloxide.workspace = true

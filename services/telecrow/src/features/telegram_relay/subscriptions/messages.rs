@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use crowcomm::crowspace::{self, *};
+use crowcomm::{
+	crowd_core::{DbConnection, MessageTableAccess},
+	telegram,
+};
 use spacetimedb_sdk::Table;
 use teloxide::{
 	Bot,
@@ -10,10 +13,7 @@ use teloxide::{
 };
 use tokio::sync::mpsc;
 
-use crate::{
-	common::{bindings::telegram, runtime::AsyncHandler},
-	entities::crowspace_message,
-};
+use crate::{common::runtime::AsyncHandler, entities::local_message};
 
 /// Sets up message forwarding from crowchat to Telegram.
 ///
@@ -21,11 +21,9 @@ use crate::{
 /// 1. Creates the channel for forwarding messages
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
-pub fn subscribe(
-	stdb: &crowspace::DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: Bot,
-) {
+pub fn subscribe(core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: Bot) {
 	let (forward_transmitter, mut forward_receiver) =
-		mpsc::channel::<crowspace_message::TelegramForwardRequest>(100);
+		mpsc::channel::<local_message::TelegramForwardRequest>(100);
 
 	// Telegram bot instance for the background task
 	let telegram_transmitter = telegram_bot.clone();
@@ -51,9 +49,10 @@ pub fn subscribe(
 	});
 
 	// Registering the message handler
-	stdb.db
+	core_ctx
+		.db
 		.message()
-		.on_insert(crowspace_message::handle_telegram_forward(
+		.on_insert(local_message::handle_telegram_forward(
 			forward_transmitter,
 			async_handler,
 		));
