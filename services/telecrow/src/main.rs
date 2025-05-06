@@ -6,11 +6,11 @@ use std::sync::Arc;
 
 use crowcomm::telegram;
 use dotenvy::dotenv;
-use entities::telegram_update;
+use entities::{telegram_command, telegram_update};
 use teloxide::{
 	Bot,
 	dispatching::{HandlerExt, UpdateFilterExt},
-	dptree::{self},
+	dptree,
 	prelude::Dispatcher,
 };
 
@@ -45,8 +45,8 @@ async fn main() -> Result<(), TelecrowError> {
 	let telegram_relay_handler = dptree::entry()
 		.branch(
 			telegram::Update::filter_message()
-				.filter_command::<telegram_relay::BasicCommand>()
-				.endpoint(telegram_relay::on_basic_command),
+				.filter_command::<telegram_command::BasicCommand>()
+				.endpoint(telegram_command::handle),
 		)
 		.branch(
 			dptree::entry()
