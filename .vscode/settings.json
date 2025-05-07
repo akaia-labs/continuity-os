@@ -41,6 +41,7 @@
 		"RVVM",
 		"serde",
 		"spacetimedb",
+		"splitn",
 		"stdb",
 		"telecrow",
 		"tsup",
