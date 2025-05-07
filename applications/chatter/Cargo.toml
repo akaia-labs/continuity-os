@@ -1,6 +1,6 @@
 [package]
 name = "chatter"
-description = "Simple console chat client for crow.d in Rust"
+description = "Simple terminal chat client for crow.d written in Rust"
 version = "0.1.0"
 edition = "2024"
 
