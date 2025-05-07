@@ -54,8 +54,8 @@ async fn main() -> Result<(), TelecrowError> {
 		)
 		.branch(
 			telegram::Update::filter_message()
-				.filter_command::<telegram_command::UserCommand>()
-				.endpoint(telegram_command::user_handler(core_connection.clone())),
+				.filter_command::<telegram_command::DmCommand>()
+				.endpoint(telegram_command::dm_handler(core_connection.clone())),
 		)
 		.branch(
 			dptree::entry()

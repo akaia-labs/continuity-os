@@ -24,8 +24,8 @@ pub enum BasicCommand {
 }
 
 #[derive(BotCommands, Clone)]
-#[command(rename_rule = "lowercase")]
-pub enum UserCommand {
+#[command(rename_rule = "snake_case")]
+pub enum DmCommand {
 	#[command(aliases = ["myaccountid"])]
 	/// Display id of the foreign account
 	/// associated with the caller's Telegram account.
@@ -41,9 +41,9 @@ pub async fn on_basic_command(
 				bot.send_message(
 					msg.chat.id,
 					format!(
-						"{}\n{}",
+						"Basic commands:\n\n{}\n\nDM commands:\n\n{}",
 						BasicCommand::descriptions(),
-						UserCommand::descriptions()
+						DmCommand::descriptions()
 					),
 				)
 				.message_thread_id(message_thread_id)
@@ -58,14 +58,14 @@ pub async fn on_basic_command(
 	Ok(())
 }
 
-pub fn user_handler(
+pub fn dm_handler(
 	core_ctx: Arc<DbConnection>,
 ) -> impl Fn(
 	BotInstanceType,
 	Message,
-	UserCommand,
+	DmCommand,
 ) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
-	move |bot: BotInstanceType, msg: Message, cmd: UserCommand| {
+	move |bot: BotInstanceType, msg: Message, cmd: DmCommand| {
 		let ctx = core_ctx.clone();
 		let user = msg.from;
 
@@ -78,13 +78,18 @@ pub fn user_handler(
 					.find(&user.into_account_reference().to_string());
 
 				match cmd {
-					| UserCommand::MyAccountId => {
+					| DmCommand::MyAccountId => {
 						if !msg.chat.is_private() {
-							bot.send_message(
-								msg.chat.id,
-								"This command can only be used as a DM to the bot.",
-							)
-							.await?;
+							let error_response_text =
+								"This command can only be used as a DM to the bot.";
+
+							if let Some(message_thread_id) = msg.thread_id {
+								bot.send_message(msg.chat.id, error_response_text)
+									.message_thread_id(message_thread_id)
+									.await?
+							} else {
+								bot.send_message(msg.chat.id, error_response_text).await?
+							};
 
 							return Ok(());
 						}
@@ -98,11 +103,9 @@ pub fn user_handler(
 							)
 						};
 
-						println!("\n{:?}\n", msg.thread_id);
-
-						if let Some(thread_id) = msg.thread_id {
+						if let Some(message_thread_id) = msg.thread_id {
 							bot.send_message(msg.chat.id, response_text)
-								.message_thread_id(thread_id)
+								.message_thread_id(message_thread_id)
 								.await?
 						} else {
 							bot.send_message(msg.chat.id, response_text).await?
