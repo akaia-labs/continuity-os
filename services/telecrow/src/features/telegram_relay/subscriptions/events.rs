@@ -6,14 +6,13 @@ use crowcomm::{
 };
 use spacetimedb_sdk::TableWithPrimaryKey;
 use teloxide::{
-	Bot,
 	payloads::SendMessageSetters,
 	prelude::Requester,
 	types::{MessageEntity, MessageEntityKind},
 };
 use tokio::sync::mpsc;
 
-use crate::{common::runtime::AsyncHandler, entities::local_account};
+use crate::{BotInstanceType, common::runtime::AsyncHandler, entities::local_account};
 
 /// Sets up event forwarding from crowchat to Telegram.
 ///
@@ -21,7 +20,9 @@ use crate::{common::runtime::AsyncHandler, entities::local_account};
 /// 1. Creates the channel for sending event messages
 /// 2. Spawns a background task that processes events from the channel
 /// 3. Registers the event handler
-pub fn subscribe(core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: Bot) {
+pub fn subscribe(
+	core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
+) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<local_account::StatusTelegramForwardRequest>(100);
 

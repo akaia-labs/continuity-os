@@ -6,11 +6,13 @@ use crowcomm::{
 	telegram,
 };
 use teloxide::{
-	Bot, RequestError,
+	RequestError,
 	payloads::SendMessageSetters,
 	prelude::{Requester, ResponseResult},
 	utils::command::BotCommands,
 };
+
+use crate::BotInstanceType;
 
 #[derive(BotCommands, Clone)]
 #[command(rename_rule = "lowercase")]
@@ -21,7 +23,7 @@ pub enum BasicCommand {
 }
 
 pub async fn on_basic_command(
-	bot: Bot, msg: telegram::Message, cmd: BasicCommand,
+	bot: BotInstanceType, msg: telegram::Message, cmd: BasicCommand,
 ) -> ResponseResult<()> {
 	match cmd {
 		| BasicCommand::Help => {
@@ -51,11 +53,11 @@ pub enum UserCommand {
 pub fn user_handler(
 	core_ctx: Arc<DbConnection>,
 ) -> impl Fn(
-	Bot,
+	BotInstanceType,
 	telegram::Message,
 	UserCommand,
 ) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
-	move |bot: Bot, msg: telegram::Message, cmd: UserCommand| {
+	move |bot: BotInstanceType, msg: telegram::Message, cmd: UserCommand| {
 		let ctx = core_ctx.clone();
 		let user = msg.from;
 
@@ -75,7 +77,7 @@ pub fn user_handler(
 						if !msg.chat.is_private() {
 							bot.send_message(
 								msg.chat.id,
-								"This command can only be used as a DM to the bot.",
+								"This command can only be used as a DM to the bot\\.",
 							)
 							.await?;
 
@@ -87,7 +89,7 @@ pub fn user_handler(
 						} else {
 							format!(
 								"Your Telegram account is not registered in this {PLATFORM_NAME} \
-								 instance."
+								 instance\\."
 							)
 						};
 

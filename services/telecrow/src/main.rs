@@ -9,6 +9,7 @@ use dotenvy::dotenv;
 use entities::{telegram_command, telegram_update};
 use teloxide::{
 	Bot,
+	adaptors::DefaultParseMode,
 	dispatching::{HandlerExt, UpdateFilterExt},
 	dptree,
 	prelude::{Dispatcher, RequesterExt},
@@ -21,6 +22,8 @@ use crate::{
 	features::telegram_relay,
 };
 
+pub type BotInstanceType = DefaultParseMode<Bot>;
+
 #[tokio::main]
 async fn main() -> Result<(), TelecrowError> {
 	dotenv()?;
@@ -29,10 +32,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let async_handler = runtime::new_async_handler();
 	let core_connection = Arc::new(crowd_core_client::connect());
-
-	let telegram_bridge = Bot::from_env()
-		.parse_mode(ParseMode::MarkdownV2)
-		.into_inner();
+	let telegram_bridge: BotInstanceType = Bot::from_env().parse_mode(ParseMode::MarkdownV2);
 
 	println!("⏳ Initializing subscriptions...\n");
 	crowd_core_client::subscribe(&core_connection);

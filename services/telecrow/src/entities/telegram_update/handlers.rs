@@ -2,16 +2,18 @@ use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowcomm::crowd_core::DbConnection;
 use teloxide::{
-	Bot, RequestError, respond,
+	RequestError, respond,
 	types::{Update, UpdateKind},
 };
 
 use super::subscriptions::{on_message, on_user_update};
+use crate::BotInstanceType;
 
 pub fn root_handler(
 	core_ctx: Arc<DbConnection>,
-) -> impl Fn(Update, Bot) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
-	move |update: Update, _bot: Bot| {
+) -> impl Fn(Update, BotInstanceType) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
+{
+	move |update: Update, _bot: BotInstanceType| {
 		let ctx = core_ctx.clone();
 		let user = update.from();
 
