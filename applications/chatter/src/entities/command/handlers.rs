@@ -25,8 +25,11 @@ pub fn on_account_command(
 
 		| (AccountCommand::LinkAccount, 1) => {
 			let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
-				.ok()
-				.ok_or(format!("Invalid foreign account id.").to_string())?;
+				.map_err(|e| format!("Unable to parse foreign account id: {e}"))?;
+
+			// let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
+			// 	.ok()
+			// 	.ok_or(format!("Invalid foreign account id.").to_string())?;
 
 			ctx.reducers
 				.link_foreign_account(foreign_account_ref)
@@ -35,8 +38,7 @@ pub fn on_account_command(
 
 		| (AccountCommand::UnlinkAccount, 1) => {
 			let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
-				.ok()
-				.ok_or(format!("Invalid foreign account id.").to_string())?;
+				.map_err(|e| format!("Unable to parse foreign account id: {e}"))?;
 
 			ctx.reducers
 				.unlink_foreign_account(foreign_account_ref)

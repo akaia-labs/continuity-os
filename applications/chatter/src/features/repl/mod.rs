@@ -1,5 +1,6 @@
 use crowcomm::crowd_core::{DbConnection, send_message, set_account_callsign};
 
+/// Starts REPL loop to handle commands and messages.
 pub fn start(ctx: &DbConnection) {
 	for line in std::io::stdin().lines() {
 		let Ok(line) = line else {
