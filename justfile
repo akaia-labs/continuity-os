@@ -19,7 +19,7 @@ local-dbcall-core:
 	(spacetime call -s localhost crowd-core)
 
 local-dblogs-core:
-	(spacetime logs -s localhost crowd-core)
+	(spacetime logs -s localhost -f crowd-core)
 
 
 generate-module_bindings:

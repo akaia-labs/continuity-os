@@ -34,3 +34,5 @@ pub fn on_callsign_set(ctx: &crowd_core::ReducerEventContext, callsign: &String)
 		eprintln!("Failed to change callsign to {:?}: {}", callsign, err);
 	}
 }
+
+// TODO: Error handling for `link_foreign_account` and `unlink_foreign_account`

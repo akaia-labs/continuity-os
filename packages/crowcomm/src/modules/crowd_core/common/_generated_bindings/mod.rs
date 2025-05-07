@@ -25,6 +25,7 @@ pub mod local_account_type;
 pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
+pub mod mirror_foreign_profile_reducer;
 pub mod send_message_reducer;
 pub mod service_table;
 pub mod service_type;
@@ -70,6 +71,9 @@ pub use local_account_type::LocalAccount;
 pub use message_author_id_type::MessageAuthorId;
 pub use message_table::*;
 pub use message_type::Message;
+pub use mirror_foreign_profile_reducer::{
+	MirrorForeignProfileCallbackId, mirror_foreign_profile, set_flags_for_mirror_foreign_profile,
+};
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
 pub use service_table::*;
 pub use service_type::Service;
@@ -115,6 +119,9 @@ pub enum Reducer {
 	LinkForeignAccount {
 		reference: ForeignAccountReference,
 	},
+	MirrorForeignProfile {
+		reference: ForeignAccountReference,
+	},
 	SendMessage {
 		text: String,
 	},
@@ -145,6 +152,7 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::ImportForeignAccount { .. } => "import_foreign_account",
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::LinkForeignAccount { .. } => "link_foreign_account",
+			| Reducer::MirrorForeignProfile { .. } => "mirror_foreign_profile",
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetAccountCallsign { .. } => "set_account_callsign",
 			| Reducer::UnlinkForeignAccount { .. } => "unlink_foreign_account",
@@ -184,6 +192,10 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 			| "link_foreign_account" => Ok(__sdk::parse_reducer_args::<
 				link_foreign_account_reducer::LinkForeignAccountArgs,
 			>("link_foreign_account", &value.args)?
+			.into()),
+			| "mirror_foreign_profile" => Ok(__sdk::parse_reducer_args::<
+				mirror_foreign_profile_reducer::MirrorForeignProfileArgs,
+			>("mirror_foreign_profile", &value.args)?
 			.into()),
 			| "send_message" => Ok(__sdk::parse_reducer_args::<
 				send_message_reducer::SendMessageArgs,

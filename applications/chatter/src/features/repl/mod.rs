@@ -39,7 +39,7 @@ pub fn start(ctx: &DbConnection) {
 				};
 
 				match on_account_command(ctx, &command, args) {
-					| Ok(_) => println!("Command executed successfully"),
+					| Ok(_) => println!("\n\n"),
 					| Err(e) => println!("Command error: {}", e),
 				}
 			} else {

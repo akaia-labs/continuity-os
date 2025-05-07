@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
 use crowcomm::crowd_core::{
-	DbConnection, ForeignAccountReference, link_foreign_account, set_account_callsign,
-	unlink_foreign_account,
+	DbConnection, ForeignAccountReference, link_foreign_account, mirror_foreign_profile,
+	set_account_callsign, unlink_foreign_account,
 };
 use strum_macros::{Display, EnumString};
 
@@ -12,6 +12,7 @@ pub enum AccountCommand {
 	Callsign,
 	LinkAccount,
 	UnlinkAccount,
+	MirrorForeignProfile,
 }
 
 pub fn on_account_command(
@@ -27,10 +28,6 @@ pub fn on_account_command(
 			let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse foreign account id: {e}"))?;
 
-			// let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
-			// 	.ok()
-			// 	.ok_or(format!("Invalid foreign account id.").to_string())?;
-
 			ctx.reducers
 				.link_foreign_account(foreign_account_ref)
 				.map_err(|e| e.to_string())
@@ -42,6 +39,15 @@ pub fn on_account_command(
 
 			ctx.reducers
 				.unlink_foreign_account(foreign_account_ref)
+				.map_err(|e| e.to_string())
+		},
+
+		| (AccountCommand::MirrorForeignProfile, 1) => {
+			let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
+				.map_err(|e| format!("Unable to parse foreign account id: {e}"))?;
+
+			ctx.reducers
+				.mirror_foreign_profile(foreign_account_ref)
 				.map_err(|e| e.to_string())
 		},
 
