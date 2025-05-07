@@ -45,7 +45,7 @@ pub fn subscribe(
 				)])
 				.message_thread_id(telegram::ThreadId(telegram::MessageId(3315)))
 				.await
-				.map_err(|err| println!("{:?}", err));
+				.map_err(|err| eprintln!("{:?}", err));
 		}
 	});
 

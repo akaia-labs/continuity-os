@@ -32,7 +32,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let async_handler = runtime::new_async_handler();
 	let core_connection = Arc::new(crowd_core_client::connect());
-	let telegram_bridge: BotInstanceType = Bot::from_env().parse_mode(ParseMode::MarkdownV2);
+	let telegram_bridge: BotInstanceType = Bot::from_env().parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
 	crowd_core_client::subscribe(&core_connection);
