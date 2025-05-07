@@ -9,6 +9,7 @@ use teloxide::{
 	RequestError,
 	payloads::SendMessageSetters,
 	prelude::{Requester, ResponseResult},
+	sugar::request::RequestReplyExt,
 	types::Message,
 	utils::command::BotCommands,
 };
@@ -47,9 +48,11 @@ pub async fn on_basic_command(
 					),
 				)
 				.message_thread_id(message_thread_id)
+				.reply_to(msg.id)
 				.await?
 			} else {
 				bot.send_message(msg.chat.id, BasicCommand::descriptions().to_string())
+					.reply_to(msg.id)
 					.await?
 			}
 		},
@@ -70,6 +73,21 @@ pub fn dm_handler(
 		let user = msg.from;
 
 		Box::pin(async move {
+			if !msg.chat.is_private() {
+				let error_response_text = "This command can only be used as a DM to the bot.";
+
+				if let Some(message_thread_id) = msg.thread_id {
+					bot.send_message(msg.chat.id, error_response_text)
+						.message_thread_id(message_thread_id)
+						.reply_to(msg.id)
+						.await?
+				} else {
+					bot.send_message(msg.chat.id, error_response_text).await?
+				};
+
+				return Ok(());
+			}
+
 			if let Some(user) = user {
 				let foreign_account = ctx
 					.db
@@ -79,21 +97,6 @@ pub fn dm_handler(
 
 				match cmd {
 					| DmCommand::MyAccountId => {
-						if !msg.chat.is_private() {
-							let error_response_text =
-								"This command can only be used as a DM to the bot.";
-
-							if let Some(message_thread_id) = msg.thread_id {
-								bot.send_message(msg.chat.id, error_response_text)
-									.message_thread_id(message_thread_id)
-									.await?
-							} else {
-								bot.send_message(msg.chat.id, error_response_text).await?
-							};
-
-							return Ok(());
-						}
-
 						let response_text = if let Some(foreign_account) = foreign_account {
 							format!("Your account id is <code>{}</code>", foreign_account.id)
 						} else {
@@ -106,9 +109,12 @@ pub fn dm_handler(
 						if let Some(message_thread_id) = msg.thread_id {
 							bot.send_message(msg.chat.id, response_text)
 								.message_thread_id(message_thread_id)
+								.reply_to(msg.id)
 								.await?
 						} else {
-							bot.send_message(msg.chat.id, response_text).await?
+							bot.send_message(msg.chat.id, response_text)
+								.reply_to(msg.id)
+								.await?
 						};
 					},
 				};
