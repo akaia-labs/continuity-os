@@ -4,16 +4,18 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+use super::foreign_account_reference_type::ForeignAccountReference;
+
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct UnlinkForeignAccountArgs {
-	pub ext_account_id: String,
+	pub reference: ForeignAccountReference,
 }
 
 impl From<UnlinkForeignAccountArgs> for super::Reducer {
 	fn from(args: UnlinkForeignAccountArgs) -> Self {
 		Self::UnlinkForeignAccount {
-			ext_account_id: args.ext_account_id,
+			reference: args.reference,
 		}
 	}
 }
@@ -36,7 +38,7 @@ pub trait unlink_foreign_account {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_unlink_foreign_account`] callbacks.
-	fn unlink_foreign_account(&self, ext_account_id: String) -> __sdk::Result<()>;
+	fn unlink_foreign_account(&self, reference: ForeignAccountReference) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `unlink_foreign_account`.
 	///
@@ -46,7 +48,8 @@ pub trait unlink_foreign_account {
 	/// The returned [`UnlinkForeignAccountCallbackId`] can be passed to
 	/// [`Self::remove_on_unlink_foreign_account`] to cancel the callback.
 	fn on_unlink_foreign_account(
-		&self, callback: impl FnMut(&super::ReducerEventContext, &String) + Send + 'static,
+		&self,
+		callback: impl FnMut(&super::ReducerEventContext, &ForeignAccountReference) + Send + 'static,
 	) -> UnlinkForeignAccountCallbackId;
 	/// Cancel a callback previously registered by
 	/// [`Self::on_unlink_foreign_account`], causing it not to run in the
@@ -55,15 +58,16 @@ pub trait unlink_foreign_account {
 }
 
 impl unlink_foreign_account for super::RemoteReducers {
-	fn unlink_foreign_account(&self, ext_account_id: String) -> __sdk::Result<()> {
+	fn unlink_foreign_account(&self, reference: ForeignAccountReference) -> __sdk::Result<()> {
 		self.imp
 			.call_reducer("unlink_foreign_account", UnlinkForeignAccountArgs {
-				ext_account_id,
+				reference,
 			})
 	}
 
 	fn on_unlink_foreign_account(
-		&self, mut callback: impl FnMut(&super::ReducerEventContext, &String) + Send + 'static,
+		&self,
+		mut callback: impl FnMut(&super::ReducerEventContext, &ForeignAccountReference) + Send + 'static,
 	) -> UnlinkForeignAccountCallbackId {
 		UnlinkForeignAccountCallbackId(self.imp.on_reducer(
 			"unlink_foreign_account",
@@ -71,7 +75,7 @@ impl unlink_foreign_account for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::UnlinkForeignAccount { ext_account_id },
+							reducer: super::Reducer::UnlinkForeignAccount { reference },
 							..
 						},
 					..
@@ -79,7 +83,7 @@ impl unlink_foreign_account for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, ext_account_id)
+				callback(ctx, reference)
 			}),
 		))
 	}

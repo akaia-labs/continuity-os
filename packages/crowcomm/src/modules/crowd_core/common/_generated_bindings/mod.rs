@@ -28,7 +28,7 @@ pub mod message_type;
 pub mod send_message_reducer;
 pub mod service_table;
 pub mod service_type;
-pub mod set_callsign_reducer;
+pub mod set_account_callsign_reducer;
 pub mod text_channel_table;
 pub mod text_channel_type;
 pub mod unlink_foreign_account_reducer;
@@ -73,7 +73,9 @@ pub use message_type::Message;
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
 pub use service_table::*;
 pub use service_type::Service;
-pub use set_callsign_reducer::{SetCallsignCallbackId, set_callsign, set_flags_for_set_callsign};
+pub use set_account_callsign_reducer::{
+	SetAccountCallsignCallbackId, set_account_callsign, set_flags_for_set_account_callsign,
+};
 pub use text_channel_table::*;
 pub use text_channel_type::TextChannel;
 pub use unlink_foreign_account_reducer::{
@@ -111,16 +113,16 @@ pub enum Reducer {
 		text:             String,
 	},
 	LinkForeignAccount {
-		ext_account_id: String,
+		reference: ForeignAccountReference,
 	},
 	SendMessage {
 		text: String,
 	},
-	SetCallsign {
+	SetAccountCallsign {
 		callsign: String,
 	},
 	UnlinkForeignAccount {
-		ext_account_id: String,
+		reference: ForeignAccountReference,
 	},
 	UpdateForeignAccount {
 		reference: ForeignAccountReference,
@@ -144,7 +146,7 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::LinkForeignAccount { .. } => "link_foreign_account",
 			| Reducer::SendMessage { .. } => "send_message",
-			| Reducer::SetCallsign { .. } => "set_callsign",
+			| Reducer::SetAccountCallsign { .. } => "set_account_callsign",
 			| Reducer::UnlinkForeignAccount { .. } => "unlink_foreign_account",
 			| Reducer::UpdateForeignAccount { .. } => "update_foreign_account",
 		}
@@ -187,9 +189,9 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 				send_message_reducer::SendMessageArgs,
 			>("send_message", &value.args)?
 			.into()),
-			| "set_callsign" => Ok(__sdk::parse_reducer_args::<
-				set_callsign_reducer::SetCallsignArgs,
-			>("set_callsign", &value.args)?
+			| "set_account_callsign" => Ok(__sdk::parse_reducer_args::<
+				set_account_callsign_reducer::SetAccountCallsignArgs,
+			>("set_account_callsign", &value.args)?
 			.into()),
 			| "unlink_foreign_account" => Ok(__sdk::parse_reducer_args::<
 				unlink_foreign_account_reducer::UnlinkForeignAccountArgs,

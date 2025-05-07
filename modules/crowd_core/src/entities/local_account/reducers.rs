@@ -1,70 +1,84 @@
 use spacetimedb::{ReducerContext, reducer};
 
 use super::{tables::*, validation::*};
-use crate::entities::foreign_account::{ForeignAccount, ForeignAccountId, foreign_account};
+use crate::entities::foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account};
 
 #[reducer]
-/// Clients invoke this reducer to set their account names.
-pub fn set_callsign(ctx: &ReducerContext, callsign: String) -> Result<(), String> {
+/// Clients invoke this reducer to set their callsigns.
+pub fn set_account_callsign(ctx: &ReducerContext, callsign: String) -> Result<(), String> {
+	let account = ctx.db.local_account().id().find(ctx.sender).ok_or(format!(
+		"Identity {id} does not have an account.",
+		id = ctx.sender
+	))?;
+
 	let callsign = validate_callsign(callsign)?;
 
-	if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
-		ctx.db.local_account().id().update(LocalAccount {
-			callsign,
-			updated_at: ctx.timestamp,
-			..account
-		});
-
-		Ok(())
-	} else {
-		Err(format!("{} does not have an internal account.", ctx.sender))
-	}
-}
-
-#[reducer]
-/// Binds an external account to an internal account
-pub fn link_foreign_account(
-	ctx: &ReducerContext, ext_account_id: ForeignAccountId,
-) -> Result<(), String> {
-	if let Some(ext_account) = ctx.db.foreign_account().id().find(ext_account_id.clone()) {
-		if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
-			ctx.db.foreign_account().id().update(ForeignAccount {
-				owner_id: Some(account.id),
-				..ext_account
-			});
-		} else {
-			return Err(format!("{} does not have an internal account.", ctx.sender));
-		};
-	} else {
-		return Err(format!(
-			"External account {} not found in the system.",
-			ext_account_id
-		));
-	}
+	ctx.db.local_account().id().update(LocalAccount {
+		callsign,
+		updated_at: ctx.timestamp,
+		..account
+	});
 
 	Ok(())
 }
 
 #[reducer]
-/// Unbinds an external account from an internal account
-pub fn unlink_foreign_account(
-	ctx: &ReducerContext, ext_account_id: ForeignAccountId,
+/// Binds a foreign account to a local account
+pub fn link_foreign_account(
+	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	if let Some(ext_account) = ctx.db.foreign_account().id().find(ext_account_id) {
-		if let Some(_) = ctx.db.local_account().id().find(ctx.sender) {
-			ctx.db.foreign_account().id().update(ForeignAccount {
-				owner_id: None,
-				..ext_account
-			});
-		} else {
-			return Err(format!("{} does not have an internal account.", ctx.sender));
-		}
-	} else {
+	let local_account = ctx.db.local_account().id().find(ctx.sender).ok_or(format!(
+		"Identity {id} does not have an account.",
+		id = ctx.sender
+	))?;
+
+	let foreign_account = ctx
+		.db
+		.foreign_account()
+		.id()
+		.find(reference.to_string())
+		.ok_or(format!(
+			"Foreign account {reference} is not registered in the system."
+		))?;
+
+	ctx.db.foreign_account().id().update(ForeignAccount {
+		owner_id: Some(local_account.id),
+		..foreign_account
+	});
+
+	Ok(())
+}
+
+#[reducer]
+/// Unbinds a foreign account from a local account
+pub fn unlink_foreign_account(
+	ctx: &ReducerContext, reference: ForeignAccountReference,
+) -> Result<(), String> {
+	let local_account = ctx.db.local_account().id().find(ctx.sender).ok_or(format!(
+		"Identity {id} does not have an account.",
+		id = ctx.sender
+	))?;
+
+	let foreign_account = ctx
+		.db
+		.foreign_account()
+		.id()
+		.find(reference.to_string())
+		.ok_or(format!(
+			"Foreign account {reference} is not registered in the system."
+		))?;
+
+	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != local_account.id {
 		return Err(format!(
-			"External account {} not found in the system.",
-			ctx.sender
+			"Identity {id} does not own foreign account {reference}.",
+			id = ctx.sender,
 		));
 	}
+
+	ctx.db.foreign_account().id().update(ForeignAccount {
+		owner_id: None,
+		..foreign_account
+	});
 
 	Ok(())
 }

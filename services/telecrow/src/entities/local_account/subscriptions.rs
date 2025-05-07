@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crowcomm::crowd_core::{
 	DbConnection, EventContext, LocalAccount, LocalAccountTableAccess, ReducerEventContext,
-	set_callsign,
+	set_account_callsign,
 };
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
@@ -80,5 +80,5 @@ fn on_callsign_set(ctx: &ReducerEventContext, callsign: &String) {
 
 pub fn subscribe(core_ctx: &DbConnection) {
 	core_ctx.db.local_account().on_insert(on_account_inserted);
-	core_ctx.reducers.on_set_callsign(on_callsign_set);
+	core_ctx.reducers.on_set_account_callsign(on_callsign_set);
 }

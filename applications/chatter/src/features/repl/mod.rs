@@ -1,4 +1,4 @@
-use crowcomm::crowd_core::{self, send_message, set_callsign};
+use crowcomm::crowd_core::{self, send_message, set_account_callsign};
 
 pub fn start(ctx: &crowd_core::DbConnection) {
 	for line in std::io::stdin().lines() {
@@ -7,7 +7,9 @@ pub fn start(ctx: &crowd_core::DbConnection) {
 		};
 
 		if let Some(callsign) = line.strip_prefix("/callsign ") {
-			ctx.reducers.set_callsign(callsign.to_string()).unwrap();
+			ctx.reducers
+				.set_account_callsign(callsign.to_string())
+				.unwrap();
 		} else {
 			ctx.reducers.send_message(line).unwrap();
 		}
