@@ -1,4 +1,7 @@
-use std::str::FromStr;
+use std::{
+	io::{self, BufRead},
+	str::FromStr,
+};
 
 use crowcomm::crowd_core::{DbConnection, send_message};
 
@@ -6,9 +9,16 @@ use crate::entities::command::{AccountCommand, on_account_command};
 
 /// Starts REPL loop to handle commands and messages.
 pub fn start(ctx: &DbConnection) {
-	for line in std::io::stdin().lines() {
-		let Ok(line) = line else {
-			panic!("Failed to read from stdin.");
+	let stdin = io::stdin();
+	let handle = stdin.lock();
+
+	for line in handle.lines() {
+		let line = match line {
+			| Ok(line) => line,
+			| Err(e) => {
+				eprintln!("Error reading from stdin: {}", e);
+				continue;
+			},
 		};
 
 		// Detect command marker
@@ -37,7 +47,9 @@ pub fn start(ctx: &DbConnection) {
 			}
 		} else {
 			// Not a command, send as a message
-			ctx.reducers.send_message(line).unwrap();
+			if let Err(e) = ctx.reducers.send_message(line) {
+				println!("Error sending message: {}", e);
+			}
 		}
 	}
 }

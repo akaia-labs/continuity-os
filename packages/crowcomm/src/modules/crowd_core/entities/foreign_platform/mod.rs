@@ -1,3 +1,3 @@
-mod model;
+mod name;
 
-pub use model::*;
+pub use name::*;
