@@ -1,13 +1,9 @@
 use std::sync::Arc;
 
 use crowcomm::crowd_core::{
-	DbConnection, ForeignAccountTableAccess,
-	account::ForeignAccountImport,
-	import_foreign_account, import_message,
-	profile::{ProfileImport, ProfileRetrieval},
-	send_message, update_foreign_account,
+	DbConnection, account::ForeignAccountImport, import_message, send_message,
 };
-use teloxide::types::{Message, User};
+use teloxide::types::Message;
 
 pub fn on_message(core_ctx: Arc<DbConnection>, msg: Message) {
 	if let Some(text) = msg.text() {
