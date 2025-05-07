@@ -1,7 +1,7 @@
-use std::{pin::Pin, sync::Arc};
+use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowcomm::{
-	crowd_core::{DbConnection, Message},
+	crowd_core::{DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport},
 	telegram,
 };
 use teloxide::{
@@ -49,29 +49,46 @@ pub enum UserCommand {
 
 pub fn user_handler(
 	core_ctx: Arc<DbConnection>,
-) -> impl Fn(Bot, Message, UserCommand) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
-{
-	move |bot: Bot, msg: Message, cmd: UserCommand| {
+) -> impl Fn(
+	Bot,
+	telegram::Message,
+	UserCommand,
+) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
+	move |bot: Bot, msg: telegram::Message, cmd: UserCommand| {
 		let ctx = core_ctx.clone();
-		let user = msg.from();
+		let user = msg.from;
 
-		if let Some(user) = user {
-			match cmd {
-				| UserCommand::MyAccountId => {
-					if let Some(message_thread_id) = msg.thread_id {
-						bot.send_message(msg.chat.id, msg.from.unwrap().id.to_string())
-							.message_thread_id(message_thread_id)
-							.await?
-					} else {
-						bot.send_message(msg.chat.id, msg.from.unwrap().id.to_string())
-							.await?
-					}
-				},
-			};
+		Box::pin(async move {
+			if let Some(user) = user {
+				// Here you can interact with the database via ctx before replying
+				// For example, look up user information, update preferences, etc.
+				// Example: let user_data = ctx.db.some_table().find_by_id(user.id.0).await;
 
-			respond(())
-		} else {
-			Box::pin(async move { respond(()) })
-		}
+				let foreign_account = ctx
+					.db
+					.foreign_account()
+					.id()
+					.find(&user.into_account_reference().to_string())
+					.ok_or(format!("Foreign account is not registered in the system."));
+
+				match cmd {
+					| UserCommand::MyAccountId => {
+						// You can use ctx here to perform database operations
+						// before responding to the user
+
+						// Now send the response
+						if let Some(message_thread_id) = msg.thread_id {
+							bot.send_message(msg.chat.id, user.id.to_string())
+								.message_thread_id(message_thread_id)
+								.await?
+						} else {
+							bot.send_message(msg.chat.id, user.id.to_string()).await?
+						}
+					},
+				};
+			}
+
+			Ok(())
+		})
 	}
 }
