@@ -1,6 +1,7 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowcomm::{
+	PLATFORM_NAME,
 	crowd_core::{DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport},
 	telegram,
 };
@@ -60,29 +61,42 @@ pub fn user_handler(
 
 		Box::pin(async move {
 			if let Some(user) = user {
-				// Here you can interact with the database via ctx before replying
-				// For example, look up user information, update preferences, etc.
-				// Example: let user_data = ctx.db.some_table().find_by_id(user.id.0).await;
-
 				let foreign_account = ctx
 					.db
 					.foreign_account()
 					.id()
-					.find(&user.into_account_reference().to_string())
-					.ok_or(format!("Foreign account is not registered in the system."));
+					.find(&user.into_account_reference().to_string());
 
 				match cmd {
 					| UserCommand::MyAccountId => {
 						// You can use ctx here to perform database operations
 						// before responding to the user
 
-						// Now send the response
-						if let Some(message_thread_id) = msg.thread_id {
-							bot.send_message(msg.chat.id, user.id.to_string())
-								.message_thread_id(message_thread_id)
+						if !msg.chat.is_private() {
+							bot.send_message(
+								msg.chat.id,
+								"This command can only be used as a DM to the bot.",
+							)
+							.await?;
+
+							return Ok(());
+						}
+
+						let response_text = if let Some(foreign_account) = foreign_account {
+							format!("Your account id is `{}`", foreign_account.id)
+						} else {
+							format!(
+								"Your Telegram account is not registered in this {PLATFORM_NAME} \
+								 instance."
+							)
+						};
+
+						if let Some(thread_id) = msg.thread_id {
+							bot.send_message(msg.chat.id, response_text)
+								.message_thread_id(thread_id)
 								.await?
 						} else {
-							bot.send_message(msg.chat.id, user.id.to_string()).await?
+							bot.send_message(msg.chat.id, response_text).await?
 						}
 					},
 				};

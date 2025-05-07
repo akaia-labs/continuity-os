@@ -11,7 +11,8 @@ use teloxide::{
 	Bot,
 	dispatching::{HandlerExt, UpdateFilterExt},
 	dptree,
-	prelude::Dispatcher,
+	prelude::{Dispatcher, RequesterExt},
+	types::ParseMode,
 };
 
 use crate::{
@@ -28,7 +29,10 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let async_handler = runtime::new_async_handler();
 	let core_connection = Arc::new(crowd_core_client::connect());
-	let telegram_relay_bot = Bot::from_env();
+
+	let telegram_bridge = Bot::from_env()
+		.parse_mode(ParseMode::MarkdownV2)
+		.into_inner();
 
 	println!("⏳ Initializing subscriptions...\n");
 	crowd_core_client::subscribe(&core_connection);
@@ -39,7 +43,7 @@ async fn main() -> Result<(), TelecrowError> {
 	telegram_relay::subscribe(
 		&core_connection,
 		async_handler.clone(),
-		telegram_relay_bot.clone(),
+		telegram_bridge.clone(),
 	);
 
 	let telegram_relay_handler = dptree::entry()
@@ -61,7 +65,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	println!("⌛ Starting Telegram bot dispatcher...\n");
 
-	Dispatcher::builder(telegram_relay_bot, telegram_relay_handler)
+	Dispatcher::builder(telegram_bridge, telegram_relay_handler)
 		.build()
 		.dispatch()
 		.await;

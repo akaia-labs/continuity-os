@@ -28,3 +28,5 @@ pub fn get_env_config() -> Option<CrowcommEnvConfig> {
 		None
 	}
 }
+
+pub const PLATFORM_NAME: &str = "Crow.d";
