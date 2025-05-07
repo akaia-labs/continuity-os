@@ -46,7 +46,7 @@ async fn main() -> Result<(), TelecrowError> {
 		telegram_bridge.clone(),
 	);
 
-	let telegram_relay_handler = dptree::entry()
+	let telegram_bridge_handler = dptree::entry()
 		.branch(
 			telegram::Update::filter_message()
 				.filter_command::<telegram_command::BasicCommand>()
@@ -54,8 +54,8 @@ async fn main() -> Result<(), TelecrowError> {
 		)
 		.branch(
 			telegram::Update::filter_message()
-				.filter_command::<telegram_command::DmCommand>()
-				.endpoint(telegram_command::dm_handler(core_connection.clone())),
+				.filter_command::<telegram_command::PrivateCommand>()
+				.endpoint(telegram_command::private_handler(core_connection.clone())),
 		)
 		.branch(
 			dptree::entry()
@@ -63,9 +63,9 @@ async fn main() -> Result<(), TelecrowError> {
 				.endpoint(telegram_update::root_handler(core_connection.clone())),
 		);
 
-	println!("⌛ Starting Telegram bot dispatcher...\n");
+	println!("⌛ Starting Telegram bridge...\n");
 
-	Dispatcher::builder(telegram_bridge, telegram_relay_handler)
+	Dispatcher::builder(telegram_bridge, telegram_bridge_handler)
 		.build()
 		.dispatch()
 		.await;

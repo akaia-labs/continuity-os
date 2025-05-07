@@ -1,3 +1,6 @@
+mod message;
+mod user;
+
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowcomm::crowd_core::DbConnection;
@@ -6,7 +9,7 @@ use teloxide::{
 	types::{Update, UpdateKind},
 };
 
-use super::subscriptions::{on_message, on_user_update};
+use self::{message::on_message, user::on_user_update};
 use crate::BotInstanceType;
 
 pub fn root_handler(
