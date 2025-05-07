@@ -3,11 +3,11 @@ use std::sync::Arc;
 use crowcomm::crowd_core::{
 	DbConnection, ForeignAccountTableAccess,
 	account::ForeignAccountImport,
-	import_foreign_account, import_message,
+	import_foreign_account,
 	profile::{ProfileImport, ProfileRetrieval},
-	send_message, update_foreign_account,
+	update_foreign_account,
 };
-use teloxide::types::{Message, User};
+use teloxide::types::User;
 
 pub fn on_user_update(core_ctx: Arc<DbConnection>, user_data: User) {
 	let username = user_data.clone().username;

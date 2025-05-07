@@ -1,12 +1,11 @@
-use crate::{
-	crowd_core::{
-		AccountProfileMetadata, AccountProfileName, ForeignAccountReference, ForeignPlatformName,
-		account::ForeignAccountImport, profile::ProfileImport,
-	},
-	telegram,
+use teloxide::types::User;
+
+use crate::crowd_core::{
+	AccountProfileMetadata, AccountProfileName, ForeignAccountReference, ForeignPlatformName,
+	account::ForeignAccountImport, profile::ProfileImport,
 };
 
-impl ForeignAccountImport for telegram::User {
+impl ForeignAccountImport for User {
 	fn into_account_reference(&self) -> ForeignAccountReference {
 		ForeignAccountReference {
 			id:            self.id.to_string(),
@@ -15,7 +14,7 @@ impl ForeignAccountImport for telegram::User {
 	}
 }
 
-impl ProfileImport for telegram::User {
+impl ProfileImport for User {
 	fn into_profile_metadata(&self) -> AccountProfileMetadata {
 		AccountProfileMetadata {
 			name: AccountProfileName {
@@ -23,7 +22,7 @@ impl ProfileImport for telegram::User {
 				name_extension: self.last_name.clone(),
 			},
 
-			// TODO: figure out how to retrieve bio
+			// TODO: Implement bio retrieval
 			bio: "".to_string(),
 		}
 	}

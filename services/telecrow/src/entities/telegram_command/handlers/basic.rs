@@ -1,8 +1,8 @@
-use crowcomm::telegram;
 use teloxide::{
 	payloads::SendMessageSetters,
 	prelude::{Requester, ResponseResult},
 	sugar::request::RequestReplyExt,
+	types::Message,
 	utils::command::BotCommands,
 };
 
@@ -18,7 +18,7 @@ pub enum BasicCommand {
 }
 
 pub async fn on_basic_command(
-	bot: BotInstanceType, msg: telegram::Message, cmd: BasicCommand,
+	bot: BotInstanceType, msg: Message, cmd: BasicCommand,
 ) -> ResponseResult<()> {
 	match cmd {
 		| BasicCommand::Help => {

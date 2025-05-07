@@ -1,14 +1,11 @@
 use std::sync::Arc;
 
-use crowcomm::{
-	crowd_core::{DbConnection, LocalAccountTableAccess},
-	telegram,
-};
+use crowcomm::crowd_core::{DbConnection, LocalAccountTableAccess};
 use spacetimedb_sdk::TableWithPrimaryKey;
 use teloxide::{
 	payloads::SendMessageSetters,
 	prelude::Requester,
-	types::{MessageEntity, MessageEntityKind},
+	types::{ChatId, MessageEntity, MessageEntityKind, MessageId, ThreadId},
 };
 use tokio::sync::mpsc;
 
@@ -37,13 +34,13 @@ pub fn subscribe(
 			let message_text = format!("{}{}", message_header, req.message_text);
 
 			let _ = telegram_transmitter
-				.send_message(telegram::ChatId(req.chat_id), message_text)
+				.send_message(ChatId(req.chat_id), message_text)
 				.entities([MessageEntity::new(
 					MessageEntityKind::Bold,
 					0,
 					message_header_length,
 				)])
-				.message_thread_id(telegram::ThreadId(telegram::MessageId(3315)))
+				.message_thread_id(ThreadId(MessageId(3315)))
 				.await
 				.map_err(|err| println!("{:?}", err));
 		}

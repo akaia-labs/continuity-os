@@ -4,7 +4,6 @@ pub mod features;
 
 use std::sync::Arc;
 
-use crowcomm::telegram;
 use dotenvy::dotenv;
 use entities::{telegram_command, telegram_update};
 use teloxide::{
@@ -13,7 +12,7 @@ use teloxide::{
 	dispatching::{HandlerExt, UpdateFilterExt},
 	dptree,
 	prelude::{Dispatcher, RequesterExt},
-	types::ParseMode,
+	types::{ParseMode, Update},
 };
 
 use crate::{
@@ -48,18 +47,18 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let telegram_bridge_handler = dptree::entry()
 		.branch(
-			telegram::Update::filter_message()
+			Update::filter_message()
 				.filter_command::<telegram_command::BasicCommand>()
 				.endpoint(telegram_command::on_basic_command),
 		)
 		.branch(
-			telegram::Update::filter_message()
+			Update::filter_message()
 				.filter_command::<telegram_command::PrivateCommand>()
 				.endpoint(telegram_command::private_handler(core_connection.clone())),
 		)
 		.branch(
 			dptree::entry()
-				.filter_map(|update: telegram::Update| update.from().cloned())
+				.filter_map(|update: Update| update.from().cloned())
 				.endpoint(telegram_update::root_handler(core_connection.clone())),
 		);
 

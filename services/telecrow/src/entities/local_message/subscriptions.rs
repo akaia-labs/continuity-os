@@ -1,13 +1,11 @@
 use std::sync::Arc;
 
-use crowcomm::{
-	crowd_core::{
-		DbConnection, EventContext, LocalAccountTableAccess, Message, ReducerEventContext,
-		send_message, traits::DisplayName,
-	},
-	telegram,
+use crowcomm::crowd_core::{
+	DbConnection, EventContext, LocalAccountTableAccess, Message, ReducerEventContext,
+	send_message, traits::DisplayName,
 };
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
+use teloxide::types::Message as TelegramMessage;
 use tokio::sync::mpsc;
 
 use crate::common::runtime::AsyncHandler;
@@ -56,7 +54,7 @@ pub fn handle_telegram_forward(
 	};
 }
 
-pub fn on_tg_message_received(core_ctx: &DbConnection, msg: telegram::Message) {
+pub fn on_tg_message_received(core_ctx: &DbConnection, msg: TelegramMessage) {
 	if let Some(text) = msg.text() {
 		core_ctx.reducers.send_message(text.to_owned()).unwrap();
 	}
