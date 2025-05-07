@@ -1,6 +1,9 @@
-use std::fmt::{self, Display, Formatter};
+use std::{
+	fmt::{self, Display, Formatter},
+	str::FromStr,
+};
 
-use crate::crowd_core::ForeignAccountReference;
+use crate::crowd_core::{ForeignAccountReference, ForeignPlatformName};
 
 // TODO: figure out how to reduce the reimplementation overhead
 
@@ -18,5 +21,24 @@ impl Display for ForeignAccountReference {
 			// ! Temporarily hardcoded
 			"telegram".to_string()
 		)
+	}
+}
+
+impl FromStr for ForeignAccountReference {
+	type Err = &'static str;
+
+	fn from_str(s: &str) -> Result<Self, Self::Err> {
+		let mut parts = s.rsplitn(2, Self::DELIMITER);
+		let platform_name_str = parts.next().ok_or("missing platform name")?;
+		let id = parts.next().ok_or("missing id")?;
+
+		let platform_name = platform_name_str
+			.parse::<ForeignPlatformName>()
+			.map_err(|_| "invalid or unsupported platform specifier")?;
+
+		Ok(ForeignAccountReference {
+			id: id.to_owned(),
+			platform_name,
+		})
 	}
 }

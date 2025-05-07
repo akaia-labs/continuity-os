@@ -249,6 +249,8 @@ dependencies = [
  "dotenvy",
  "hex",
  "spacetimedb-sdk",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]
@@ -316,6 +318,8 @@ version = "0.1.0"
 dependencies = [
  "hex",
  "spacetimedb-sdk",
+ "strum",
+ "strum_macros",
  "teloxide",
 ]
 

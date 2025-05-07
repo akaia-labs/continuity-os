@@ -1,6 +1,6 @@
-use crowcomm::crowd_core::{self, send_message, set_account_callsign};
+use crowcomm::crowd_core::{DbConnection, send_message, set_account_callsign};
 
-pub fn start(ctx: &crowd_core::DbConnection) {
+pub fn start(ctx: &DbConnection) {
 	for line in std::io::stdin().lines() {
 		let Ok(line) = line else {
 			panic!("Failed to read from stdin.");

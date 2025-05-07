@@ -18,3 +18,5 @@ crowcomm.workspace = true
 dotenvy.workspace = true
 hex.workspace = true
 spacetimedb-sdk.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
