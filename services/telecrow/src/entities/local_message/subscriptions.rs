@@ -1,8 +1,9 @@
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 
 use crowdcomm::corvidx::{
-	DbConnection, EventContext, LocalAccountTableAccess, Message, ReducerEventContext,
-	send_message, traits::DisplayName,
+	DbConnection, EventContext, ForeignAccountReference, ForeignPlatformName,
+	LocalAccountTableAccess, Message, MessageAuthorId, ReducerEventContext, send_message,
+	traits::DisplayName,
 };
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use teloxide::types::Message as TelegramMessage;
@@ -24,8 +25,21 @@ pub fn handle_telegram_forward(
 	let handle = async_handler.handle();
 
 	return move |corvidx: &EventContext, message: &Message| {
-		// Ignore messages inserted by the service itself
-		if message.sender != corvidx.identity() {
+		let foreign_platform_name = match &message.author_id {
+			| MessageAuthorId::ForeignAccountId(account_id) => {
+				ForeignAccountReference::from_str(&account_id)
+					.map_or(None, |r| Some(r.platform_name))
+			},
+
+			| MessageAuthorId::LocalAccountId(_)
+			| MessageAuthorId::System
+			| MessageAuthorId::Unknown => None,
+		};
+
+		// Ignore messages imported from Telegram
+		if foreign_platform_name.is_none()
+			|| foreign_platform_name.is_some_and(|fpn| fpn != ForeignPlatformName::Telegram)
+		{
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {
 				let sender_name = corvidx

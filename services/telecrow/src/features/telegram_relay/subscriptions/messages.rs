@@ -11,7 +11,7 @@ use tokio::sync::mpsc;
 
 use crate::{BotInstanceType, common::runtime::AsyncHandler, entities::local_message};
 
-/// Sets up message forwarding from crowchat to Telegram.
+/// Sets up message forwarding from corvidx to Telegram.
 ///
 /// This function:
 /// 1. Creates the channel for forwarding messages
