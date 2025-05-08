@@ -1,4 +1,4 @@
-# Akaia Labs Crow.d
+# Akaia Labs Corvi.d
 
 🐦‍⬛ AI-powered local-first community hub built on [SpacetimeDB](https://github.com/clockworklabs/SpacetimeDB.git)
 

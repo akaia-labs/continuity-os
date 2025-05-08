@@ -1,6 +1,6 @@
 use std::process;
 
-use crowcomm::{
+use crowdcomm::{
 	crowd_core::{
 		self, AccountProfileTableAccess, ForeignAccountTableAccess, LocalAccountTableAccess,
 		MessageAuthorId, MessageTableAccess, traits::DisplayName,

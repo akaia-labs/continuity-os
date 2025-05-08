@@ -1,6 +1,6 @@
 use std::process;
 
-use crowcomm::crowd_core::{DbConnection, ErrorContext, SubscriptionEventContext};
+use crowdcomm::crowd_core::{DbConnection, ErrorContext, SubscriptionEventContext};
 use spacetimedb_sdk::{Error, Identity};
 
 use super::authentication;

@@ -2,7 +2,7 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
-use crowcomm::crowd_core::{
+use crowdcomm::crowd_core::{
 	self, LocalAccountTableAccess, MessageTableAccess, send_message, set_account_callsign,
 };
 use entities::{foreign_account, message};

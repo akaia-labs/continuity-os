@@ -245,7 +245,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 name = "chatter"
 version = "0.1.0"
 dependencies = [
- "crowcomm",
+ "crowdcomm",
  "dotenvy",
  "hex",
  "spacetimedb-sdk",
@@ -313,17 +313,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "crowcomm"
-version = "0.1.0"
-dependencies = [
- "hex",
- "spacetimedb-sdk",
- "strum",
- "strum_macros",
- "teloxide",
-]
-
-[[package]]
 name = "crowd_core"
 version = "0.2.0"
 dependencies = [
@@ -332,6 +321,17 @@ dependencies = [
  "spacetimedb",
  "strum",
  "strum_macros",
+]
+
+[[package]]
+name = "crowdcomm"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "spacetimedb-sdk",
+ "strum",
+ "strum_macros",
+ "teloxide",
 ]
 
 [[package]]
@@ -2166,7 +2166,7 @@ checksum = "20f34339676cdcab560c9a82300c4c2581f68b9369aedf0fae86f2ff9565ff3e"
 name = "telecrow"
 version = "0.1.0"
 dependencies = [
- "crowcomm",
+ "crowdcomm",
  "dotenvy",
  "hex",
  "log",

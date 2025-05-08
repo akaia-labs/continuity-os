@@ -3,7 +3,7 @@ mod user;
 
 use std::{future::Future, pin::Pin, sync::Arc};
 
-use crowcomm::crowd_core::DbConnection;
+use crowdcomm::crowd_core::DbConnection;
 use teloxide::{
 	RequestError, respond,
 	types::{Update, UpdateKind},

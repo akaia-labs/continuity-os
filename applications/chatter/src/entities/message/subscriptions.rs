@@ -1,4 +1,4 @@
-use crowcomm::crowd_core;
+use crowdcomm::crowd_core;
 use spacetimedb_sdk::{Event, Status};
 
 use crate::common::clients::crowd_core_client;

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowcomm::crowd_core::{
+use crowdcomm::crowd_core::{
 	DbConnection, EventContext, LocalAccount, LocalAccountTableAccess, ReducerEventContext,
 	set_account_callsign,
 };

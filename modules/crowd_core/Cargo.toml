@@ -1,7 +1,7 @@
 [package]
 publish = false
 name = "crowd_core"
-description = "Akaia Labs crow.d core SpacetimeDB server module"
+description = "Akaia Labs corvi.d core SpacetimeDB server module"
 version = "0.2.0"
 edition = "2024"
 

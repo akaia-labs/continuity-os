@@ -1,25 +1,25 @@
 use std::env;
 
-pub struct CrowcommModuleConfig {
+pub struct CrowdcommModuleConfig {
 	pub name: String,
 }
 
-pub struct CrowcommModules {
-	pub crowspace: CrowcommModuleConfig,
+pub struct CrowdcommModules {
+	pub crowspace: CrowdcommModuleConfig,
 }
 
-pub struct CrowcommEnvConfig {
+pub struct CrowdcommEnvConfig {
 	pub host:    String,
-	pub modules: CrowcommModules,
+	pub modules: CrowdcommModules,
 }
 
-pub fn get_env_config() -> Option<CrowcommEnvConfig> {
+pub fn get_env_config() -> Option<CrowdcommEnvConfig> {
 	if env::var("CROWD_HOST").is_ok() && env::var("CROWD_CORE_MODULE_NAME").is_ok() {
-		Some(CrowcommEnvConfig {
+		Some(CrowdcommEnvConfig {
 			host: env::var("CROWD_HOST").unwrap(),
 
-			modules: CrowcommModules {
-				crowspace: CrowcommModuleConfig {
+			modules: CrowdcommModules {
+				crowspace: CrowdcommModuleConfig {
 					name: env::var("CROWD_CORE_MODULE_NAME").unwrap(),
 				},
 			},

@@ -4,7 +4,7 @@ resolver = "3"
 members = [
 	"applications/chatter",
 	"modules/crowd_core",
-	"packages/crowcomm",
+	"packages/crowdcomm",
 	"services/telecrow",
 ]
 
@@ -23,8 +23,8 @@ overflow-checks = true
 
 
 [workspace.dependencies]
-# crow.d
-crowcomm = { path = "packages/crowcomm" }
+# corvi.d
+crowdcomm = { path = "packages/crowdcomm" }
 
 # External packages
 dotenvy = "0.15.7"

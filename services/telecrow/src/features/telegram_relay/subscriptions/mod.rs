@@ -3,7 +3,7 @@ mod messages;
 
 use std::sync::Arc;
 
-use crowcomm::crowd_core::DbConnection;
+use crowdcomm::crowd_core::DbConnection;
 
 use crate::{BotInstanceType, common::runtime::AsyncHandler};
 

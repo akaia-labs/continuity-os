@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowcomm::crowd_core::{
+use crowdcomm::crowd_core::{
 	DbConnection, account::ForeignAccountImport, import_message, send_message,
 };
 use teloxide::types::Message;

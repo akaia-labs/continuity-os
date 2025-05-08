@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowcomm::crowd_core::{DbConnection, LocalAccountTableAccess};
+use crowdcomm::crowd_core::{DbConnection, LocalAccountTableAccess};
 use spacetimedb_sdk::TableWithPrimaryKey;
 use teloxide::{
 	payloads::SendMessageSetters,

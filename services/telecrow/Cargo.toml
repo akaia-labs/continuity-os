@@ -1,6 +1,6 @@
 [package]
 name = "telecrow"
-description = "Akaia Labs crow.d Rust telegram bridge"
+description = "Akaia Labs corvi.d Rust telegram bridge"
 version = "0.1.0"
 edition = "2024"
 default-run = "telecrow"
@@ -12,8 +12,8 @@ path = "src/main.rs"
 
 
 [dependencies]
-# crow.d
-crowcomm.workspace = true
+# corvi.d
+crowdcomm.workspace = true
 
 # External packages
 dotenvy.workspace = true

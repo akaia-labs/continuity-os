@@ -25,7 +25,7 @@ local-dblogs-core:
 generate-module_bindings:
 	spacetime generate --lang rust \
 		--project-path modules/crowd_core \
-		--out-dir packages/crowcomm/src/modules/crowd_core/common/_generated_bindings
+		--out-dir packages/crowdcomm/src/modules/crowd_core/common/_generated_bindings
 
 
 local-publish: local-publish-core

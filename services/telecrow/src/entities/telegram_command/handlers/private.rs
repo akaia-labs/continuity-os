@@ -1,6 +1,6 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
-use crowcomm::{
+use crowdcomm::{
 	PLATFORM_NAME,
 	crowd_core::{DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport},
 };

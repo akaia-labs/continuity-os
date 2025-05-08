@@ -1,4 +1,4 @@
-use crowcomm::crowd_core;
+use crowdcomm::crowd_core;
 use spacetimedb_sdk::Status;
 
 /// If the account is online, prints a notification.

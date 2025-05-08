@@ -1,6 +1,6 @@
 [package]
 name = "chatter"
-description = "Simple terminal chat client for crow.d written in Rust"
+description = "Simple terminal chat client for corvi.d written in Rust"
 version = "0.1.0"
 edition = "2024"
 
@@ -11,8 +11,8 @@ path = "src/main.rs"
 
 
 [dependencies]
-# crow.d
-crowcomm.workspace = true
+# corvi.d
+crowdcomm.workspace = true
 
 # External packages
 dotenvy.workspace = true
