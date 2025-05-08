@@ -8,6 +8,7 @@
 		"corvi.d",
 		"corvid",
 		"corvidx",
+		"corvutils",
 		"creds",
 		"crowdcomm",
 		"dbcall",
@@ -43,6 +44,7 @@
 		"stdb",
 		"telecrow",
 		"tsup",
+		"userspace",
 		"vfio"
 	]
 }

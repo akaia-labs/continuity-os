@@ -2,11 +2,11 @@
 resolver = "3"
 
 members = [
-	"applications/jayterm",
-	"applications/magpie",
-	"modules/corvidx",
-	"packages/crowdcomm",
-	"services/telecrow",
+	"libraries/*",
+	"modules/*",
+	"packages/*",
+	"services/*",
+	"userspace/applications/*",
 ]
 
 

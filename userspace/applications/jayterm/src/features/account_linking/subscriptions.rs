@@ -33,15 +33,21 @@ fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAcc
 }
 
 fn on_unlink_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
+	let ForeignAccountReference {
+		id: external_identifier,
+		platform_name,
+	} = reference;
+
 	match &corvidx.event.status {
 		| Status::Committed => {
 			print!(
-				"\nForeign account {reference} has been successfully unlinked from your account.\n"
+				"\n{platform_name} account {external_identifier} has been successfully unlinked \
+				 from your account.\n"
 			)
 		},
 
 		| Status::Failed(err) => {
-			eprintln!("\nUnable to unlink foreign account {reference}: {}\n", err)
+			eprintln!("\nUnable to unlink {external_identifier} {platform_name} account: {err}\n",)
 		},
 
 		| _ => {},
@@ -56,10 +62,17 @@ fn on_mirror_foreign_profile(corvidx: &ReducerEventContext, reference: &ForeignA
 
 	match &corvidx.event.status {
 		| Status::Committed => {
-			print!(
-				"\nYour profile has been updated to match the appearance of {external_identifier} \
-				 {platform_name} account.\n",
+			let message = format!(
+				r#"
+					Your profile has been updated to match the appearance of
+					{external_identifier} {platform_name} account.
+				"#
 			)
+			.split_whitespace()
+			.collect::<Vec<_>>()
+			.join(" ");
+
+			print!("\n{message}\n")
 		},
 
 		| Status::Failed(err) => {

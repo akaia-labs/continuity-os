@@ -17,7 +17,7 @@ telecrow-inspect:
     (cd services/telecrow && RUST_LOG=trace cargo run)
 
 jayterm-dev:
-    (cd applications/jayterm && cargo run)
+    (cd userspace/applications/jayterm && cargo run)
 
 generate-module_bindings:
     spacetime generate --lang rust \
@@ -26,6 +26,12 @@ generate-module_bindings:
 
 generate: generate-module_bindings
     (echo "✅ DONE.")
+
+
+#* TESTS
+
+corvutils-test:
+    (cd libraries/corvutils && cargo test)
 
 
 #* DATABASE ADMINISTRATION
