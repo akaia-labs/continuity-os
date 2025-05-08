@@ -20,13 +20,30 @@ pub fn subscribe(corvidx: &DbConnection) {
 }
 
 fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
+	let ForeignAccountReference {
+		id: external_identifier,
+		platform_name,
+	} = reference;
+
 	match &corvidx.event.status {
 		| Status::Committed => {
-			print!("\nForeign account {reference} has been successfully linked to your account.\n")
+			let message = format!(
+				r#"
+					{platform_name} account {external_identifier}
+					has been successfully linked to your account.
+				"#
+			)
+			.squash_whitespace()
+			.padded();
+
+			println!("{message}")
 		},
 
 		| Status::Failed(err) => {
-			eprintln!("\nUnable to link foreign account {reference}: {}\n", err)
+			let message =
+				format!("Unable to link {external_identifier} {platform_name} account:").padded();
+
+			eprintln!("{message}\n{err}",)
 		},
 
 		| _ => {},
@@ -41,14 +58,23 @@ fn on_unlink_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignA
 
 	match &corvidx.event.status {
 		| Status::Committed => {
-			print!(
-				"\n{platform_name} account {external_identifier} has been successfully unlinked \
-				 from your account.\n"
+			let message = format!(
+				r#"
+					{platform_name} account {external_identifier}
+					has been successfully unlinked from your account.
+				"#
 			)
+			.squash_whitespace()
+			.padded();
+
+			println!("{message}")
 		},
 
 		| Status::Failed(err) => {
-			eprintln!("\nUnable to unlink {external_identifier} {platform_name} account: {err}\n",)
+			let message =
+				format!("Unable to unlink {external_identifier} {platform_name} account:").padded();
+
+			eprintln!("{message}\n{err}",)
 		},
 
 		| _ => {},
@@ -69,16 +95,17 @@ fn on_mirror_foreign_profile(corvidx: &ReducerEventContext, reference: &ForeignA
 					{external_identifier} {platform_name} account.
 				"#
 			)
-			.squash_whitespace();
+			.squash_whitespace()
+			.padded();
 
-			print!("\n{message}\n")
+			println!("{message}")
 		},
 
 		| Status::Failed(err) => {
-			eprintln!(
-				"\nUnable to mirror {external_identifier} {platform_name} profile: {}\n",
-				err
-			)
+			let message =
+				format!("Unable to mirror {external_identifier} {platform_name} profile:").padded();
+
+			eprintln!("{message}\n{err}")
 		},
 
 		| _ => {},
