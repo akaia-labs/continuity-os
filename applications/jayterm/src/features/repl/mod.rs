@@ -3,7 +3,7 @@ use std::{
 	str::FromStr,
 };
 
-use crowdcomm::crowd_core::{DbConnection, send_message};
+use crowdcomm::corvidx::{DbConnection, send_message};
 
 use crate::entities::command::{AccountCommand, on_account_command};
 

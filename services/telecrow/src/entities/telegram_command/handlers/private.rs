@@ -2,7 +2,7 @@ use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowdcomm::{
 	PLATFORM_NAME,
-	crowd_core::{DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport},
+	corvidx::{DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport},
 };
 use teloxide::{
 	RequestError, payloads::SendMessageSetters, prelude::Requester,

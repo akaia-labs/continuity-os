@@ -3,7 +3,7 @@ mod subscriptions;
 
 use core::panic;
 
-use crowdcomm::{crowd_core::DbConnection, get_env_config};
+use crowdcomm::{corvidx::DbConnection, get_env_config};
 use spacetimedb_sdk::DbContext;
 
 /// Loads credentials from a file and connects to the database.

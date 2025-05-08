@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use strum_macros::{Display, EnumString};
 
-use crate::crowd_core::ForeignPlatformName;
+use crate::corvidx::ForeignPlatformName;
 
 #[derive(Debug, Clone, PartialEq, Display, EnumString)]
 #[strum(serialize_all = "lowercase")]

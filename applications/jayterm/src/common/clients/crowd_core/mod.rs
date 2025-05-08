@@ -1,7 +1,7 @@
 use std::process;
 
 use crowdcomm::{
-	crowd_core::{
+	corvidx::{
 		self, AccountProfileTableAccess, ForeignAccountTableAccess, LocalAccountTableAccess,
 		MessageAuthorId, MessageTableAccess, traits::DisplayName,
 	},
@@ -9,7 +9,7 @@ use crowdcomm::{
 };
 use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};
 
-pub fn print_message(ctx: &impl crowd_core::RemoteDbContext, message: &crowd_core::Message) {
+pub fn print_message(ctx: &impl corvidx::RemoteDbContext, message: &corvidx::Message) {
 	let sender = match &message.author_id {
 		| MessageAuthorId::LocalAccountId(author_id) => ctx
 			.db()
@@ -39,9 +39,9 @@ fn creds_store() -> credentials::File {
 }
 
 /// Load credentials from a file and connect to the database.
-pub fn connect_to_db() -> crowd_core::DbConnection {
+pub fn connect_to_db() -> corvidx::DbConnection {
 	if let Some(env_config) = get_env_config() {
-		crowd_core::DbConnection::builder()
+		corvidx::DbConnection::builder()
 		.on_connect(on_connected)
 		.on_connect_error(on_connect_error)
 		.on_disconnect(on_disconnected)
@@ -61,20 +61,20 @@ pub fn connect_to_db() -> crowd_core::DbConnection {
 }
 
 /// Saves client account credentials to a file.
-fn on_connected(_ctx: &crowd_core::DbConnection, _identity: Identity, token: &str) {
+fn on_connected(_ctx: &corvidx::DbConnection, _identity: Identity, token: &str) {
 	if let Err(e) = creds_store().save(token) {
 		eprintln!("Failed to save credentials: {:?}", e);
 	}
 }
 
 /// Prints the error, then exits the process.
-fn on_connect_error(_ctx: &crowd_core::ErrorContext, err: Error) {
+fn on_connect_error(_ctx: &corvidx::ErrorContext, err: Error) {
 	eprintln!("Connection error: {:?}", err);
 	process::exit(1);
 }
 
 /// Prints a note, then exits the process.
-fn on_disconnected(_ctx: &crowd_core::ErrorContext, err: Option<Error>) {
+fn on_disconnected(_ctx: &corvidx::ErrorContext, err: Option<Error>) {
 	if let Some(err) = err {
 		eprintln!("Disconnected: {}", err);
 		process::exit(1);
@@ -84,7 +84,7 @@ fn on_disconnected(_ctx: &crowd_core::ErrorContext, err: Option<Error>) {
 	}
 }
 
-fn on_sub_applied(ctx: &crowd_core::SubscriptionEventContext) {
+fn on_sub_applied(ctx: &corvidx::SubscriptionEventContext) {
 	let mut messages = ctx.db.message().iter().collect::<Vec<_>>();
 
 	messages.sort_by_key(|m| m.sent_at);
@@ -110,12 +110,12 @@ fn on_sub_applied(ctx: &crowd_core::SubscriptionEventContext) {
 }
 
 /// Prints the error, then exits the process.
-fn on_sub_error(_ctx: &crowd_core::ErrorContext, err: Error) {
+fn on_sub_error(_ctx: &corvidx::ErrorContext, err: Error) {
 	eprintln!("Subscription failed: {}", err);
 	std::process::exit(1);
 }
 
-pub fn subscribe_to_tables(ctx: &crowd_core::DbConnection) {
+pub fn subscribe_to_tables(ctx: &corvidx::DbConnection) {
 	ctx.subscription_builder()
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)

@@ -4,7 +4,7 @@ resolver = "3"
 members = [
 	"applications/jayterm",
 	"applications/magpie",
-	"modules/crowd_core",
+	"modules/corvidx",
 	"packages/crowdcomm",
 	"services/telecrow",
 ]

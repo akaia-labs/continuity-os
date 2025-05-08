@@ -16,7 +16,7 @@ use teloxide::{
 };
 
 use crate::{
-	common::{clients::crowd_core_client, runtime, runtime::TelecrowError},
+	common::{clients::corvidx_client, runtime, runtime::TelecrowError},
 	entities::{local_account, local_message},
 	features::telegram_relay,
 };
@@ -30,11 +30,11 @@ async fn main() -> Result<(), TelecrowError> {
 	println!("\n⏳ Initializing clients...\n");
 
 	let async_handler = runtime::new_async_handler();
-	let core_connection = Arc::new(crowd_core_client::connect());
+	let core_connection = Arc::new(corvidx_client::connect());
 	let telegram_bridge: BotInstanceType = Bot::from_env().parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
-	crowd_core_client::subscribe(&core_connection);
+	corvidx_client::subscribe(&core_connection);
 	local_account::subscribe(&core_connection);
 	local_message::subscribe(&core_connection);
 	core_connection.run_threaded();

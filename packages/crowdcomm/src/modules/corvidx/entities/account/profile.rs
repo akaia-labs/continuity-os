@@ -1,4 +1,4 @@
-use crate::crowd_core::{
+use crate::corvidx::{
 	AccountProfile, AccountProfileTableAccess, ForeignAccount, LocalAccount,
 	LocalAccountTableAccess, RemoteDbContext,
 	profile::ProfileRetrieval,

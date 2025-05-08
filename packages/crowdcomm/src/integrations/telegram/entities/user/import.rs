@@ -1,6 +1,6 @@
 use teloxide::types::User;
 
-use crate::crowd_core::{
+use crate::corvidx::{
 	AccountProfileMetadata, AccountProfileName, ForeignAccountReference, ForeignPlatformName,
 	account::ForeignAccountImport, profile::ProfileImport,
 };

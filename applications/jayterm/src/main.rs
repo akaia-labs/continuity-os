@@ -2,15 +2,15 @@ pub mod common;
 pub mod entities;
 pub mod features;
 
-use crowdcomm::crowd_core::{
+use crowdcomm::corvidx::{
 	self, LocalAccountTableAccess, MessageTableAccess, send_message, set_account_callsign,
 };
 use entities::{foreign_account, message};
 use spacetimedb_sdk::{Table, TableWithPrimaryKey};
 
-use crate::{common::clients::crowd_core_client, entities::local_account, features::repl};
+use crate::{common::clients::corvidx_client, entities::local_account, features::repl};
 
-fn register_callbacks(ctx: &crowd_core::DbConnection) {
+fn register_callbacks(ctx: &corvidx::DbConnection) {
 	ctx.db
 		.local_account()
 		.on_insert(local_account::on_account_inserted);
@@ -31,10 +31,10 @@ fn main() {
 	let _ = dotenvy::dotenv();
 
 	// Connect to the database
-	let ctx = crowd_core_client::connect_to_db();
+	let ctx = corvidx_client::connect_to_db();
 
 	register_callbacks(&ctx);
-	crowd_core_client::subscribe_to_tables(&ctx);
+	corvidx_client::subscribe_to_tables(&ctx);
 	foreign_account::subscribe(&ctx);
 	ctx.run_threaded();
 

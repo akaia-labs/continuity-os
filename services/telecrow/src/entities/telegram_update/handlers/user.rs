@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowdcomm::crowd_core::{
+use crowdcomm::corvidx::{
 	DbConnection, ForeignAccountTableAccess,
 	account::ForeignAccountImport,
 	import_foreign_account,
