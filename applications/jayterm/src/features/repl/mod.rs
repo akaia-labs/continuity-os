@@ -8,7 +8,7 @@ use crowdcomm::corvidx::{DbConnection, send_message};
 use crate::entities::command::{AccountCommand, on_account_command};
 
 /// Starts REPL loop to handle commands and messages.
-pub fn start(ctx: &DbConnection) {
+pub fn start(corvidx: &DbConnection) {
 	let stdin = io::stdin();
 	let handle = stdin.lock();
 
@@ -38,7 +38,7 @@ pub fn start(ctx: &DbConnection) {
 					Vec::new()
 				};
 
-				match on_account_command(ctx, &command, args) {
+				match on_account_command(corvidx, &command, args) {
 					| Ok(_) => println!("\n\n"),
 					| Err(e) => println!("Command error: {}", e),
 				}
@@ -47,7 +47,7 @@ pub fn start(ctx: &DbConnection) {
 			}
 		} else {
 			// Not a command, send as a message
-			if let Err(e) = ctx.reducers.send_message(line) {
+			if let Err(e) = corvidx.reducers.send_message(line) {
 				println!("Error sending message: {}", e);
 			}
 		}

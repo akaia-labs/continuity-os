@@ -23,17 +23,17 @@ pub fn handle_telegram_forward(
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |core_ctx: &EventContext, message: &Message| {
+	return move |corvidx: &EventContext, message: &Message| {
 		// Ignore messages inserted by the service itself
-		if message.sender != core_ctx.identity() {
+		if message.sender != corvidx.identity() {
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {
-				let sender_name = core_ctx
+				let sender_name = corvidx
 					.db()
 					.local_account()
 					.id()
 					.find(&message.sender.clone())
-					.map(|account| account.display_name(core_ctx))
+					.map(|account| account.display_name(corvidx))
 					.unwrap_or(format!("{}", message.sender));
 
 				let request = TelegramForwardRequest {
@@ -54,19 +54,19 @@ pub fn handle_telegram_forward(
 	};
 }
 
-pub fn on_tg_message_received(core_ctx: &DbConnection, msg: TelegramMessage) {
+pub fn on_tg_message_received(corvidx: &DbConnection, msg: TelegramMessage) {
 	if let Some(text) = msg.text() {
-		core_ctx.reducers.send_message(text.to_owned()).unwrap();
+		corvidx.reducers.send_message(text.to_owned()).unwrap();
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_message_sent(core_ctx: &ReducerEventContext, text: &String) {
-	if let Status::Failed(err) = &core_ctx.event.status {
+fn on_message_sent(corvidx: &ReducerEventContext, text: &String) {
+	if let Status::Failed(err) = &corvidx.event.status {
 		eprintln!("Failed to send message {:?}: {}", text, err);
 	}
 }
 
-pub fn subscribe(core_ctx: &DbConnection) {
-	core_ctx.reducers.on_send_message(on_message_sent);
+pub fn subscribe(corvidx: &DbConnection) {
+	corvidx.reducers.on_send_message(on_message_sent);
 }

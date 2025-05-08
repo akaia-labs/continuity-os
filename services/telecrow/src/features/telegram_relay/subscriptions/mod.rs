@@ -9,8 +9,8 @@ use crate::{BotInstanceType, common::runtime::AsyncHandler};
 
 /// Aggregates all crowchat subscriptions
 pub fn subscribe(
-	core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
+	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
-	events::subscribe(&core_ctx, async_handler.clone(), telegram_bot.clone());
-	messages::subscribe(&core_ctx, async_handler.clone(), telegram_bot.clone());
+	events::subscribe(&corvidx, async_handler.clone(), telegram_bot.clone());
+	messages::subscribe(&corvidx, async_handler.clone(), telegram_bot.clone());
 }

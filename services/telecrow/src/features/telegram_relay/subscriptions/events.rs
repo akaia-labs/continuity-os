@@ -18,7 +18,7 @@ use crate::{BotInstanceType, common::runtime::AsyncHandler, entities::local_acco
 /// 2. Spawns a background task that processes events from the channel
 /// 3. Registers the event handler
 pub fn subscribe(
-	core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
+	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<local_account::StatusTelegramForwardRequest>(100);
@@ -41,7 +41,7 @@ pub fn subscribe(
 	});
 
 	// Registering the event handler
-	core_ctx
+	corvidx
 		.db
 		.local_account()
 		.on_update(local_account::handle_status_telegram_forward(

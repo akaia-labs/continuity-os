@@ -9,22 +9,22 @@ use crowdcomm::{
 };
 use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};
 
-pub fn print_message(ctx: &impl corvidx::RemoteDbContext, message: &corvidx::Message) {
+pub fn print_message(corvidx: &impl corvidx::RemoteDbContext, message: &corvidx::Message) {
 	let sender = match &message.author_id {
-		| MessageAuthorId::LocalAccountId(author_id) => ctx
+		| MessageAuthorId::LocalAccountId(author_id) => corvidx
 			.db()
 			.local_account()
 			.id()
 			.find(&author_id)
-			.map(|account| account.display_name(ctx))
+			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
 
-		| MessageAuthorId::ForeignAccountId(author_id) => ctx
+		| MessageAuthorId::ForeignAccountId(author_id) => corvidx
 			.db()
 			.foreign_account()
 			.id()
 			.find(&author_id)
-			.map(|account| account.display_name(ctx))
+			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
 
 		| MessageAuthorId::System => "system".to_string(),
@@ -61,20 +61,20 @@ pub fn connect_to_db() -> corvidx::DbConnection {
 }
 
 /// Saves client account credentials to a file.
-fn on_connected(_ctx: &corvidx::DbConnection, _identity: Identity, token: &str) {
+fn on_connected(_corvidx: &corvidx::DbConnection, _identity: Identity, token: &str) {
 	if let Err(e) = creds_store().save(token) {
 		eprintln!("Failed to save credentials: {:?}", e);
 	}
 }
 
 /// Prints the error, then exits the process.
-fn on_connect_error(_ctx: &corvidx::ErrorContext, err: Error) {
+fn on_connect_error(_corvidx: &corvidx::ErrorContext, err: Error) {
 	eprintln!("Connection error: {:?}", err);
 	process::exit(1);
 }
 
 /// Prints a note, then exits the process.
-fn on_disconnected(_ctx: &corvidx::ErrorContext, err: Option<Error>) {
+fn on_disconnected(_corvidx: &corvidx::ErrorContext, err: Option<Error>) {
 	if let Some(err) = err {
 		eprintln!("Disconnected: {}", err);
 		process::exit(1);
@@ -84,25 +84,25 @@ fn on_disconnected(_ctx: &corvidx::ErrorContext, err: Option<Error>) {
 	}
 }
 
-fn on_sub_applied(ctx: &corvidx::SubscriptionEventContext) {
-	let mut messages = ctx.db.message().iter().collect::<Vec<_>>();
+fn on_sub_applied(corvidx: &corvidx::SubscriptionEventContext) {
+	let mut messages = corvidx.db.message().iter().collect::<Vec<_>>();
 
 	messages.sort_by_key(|m| m.sent_at);
 
 	for message in messages {
-		print_message(ctx, &message);
+		print_message(corvidx, &message);
 	}
 
 	println!("\nFully connected and all subscriptions applied.");
 	println!("Use /callsign to set your callsign, or type a message!\n");
 
-	let foreign_accounts = ctx.db.foreign_account().iter().collect::<Vec<_>>();
+	let foreign_accounts = corvidx.db.foreign_account().iter().collect::<Vec<_>>();
 
 	for account in foreign_accounts {
 		println!("\n{:?}", account)
 	}
 
-	let profiles = ctx.db.account_profile().iter().collect::<Vec<_>>();
+	let profiles = corvidx.db.account_profile().iter().collect::<Vec<_>>();
 
 	for profile in profiles {
 		println!("\n{:?}", profile)
@@ -110,13 +110,14 @@ fn on_sub_applied(ctx: &corvidx::SubscriptionEventContext) {
 }
 
 /// Prints the error, then exits the process.
-fn on_sub_error(_ctx: &corvidx::ErrorContext, err: Error) {
+fn on_sub_error(_corvidx: &corvidx::ErrorContext, err: Error) {
 	eprintln!("Subscription failed: {}", err);
 	std::process::exit(1);
 }
 
-pub fn subscribe_to_tables(ctx: &corvidx::DbConnection) {
-	ctx.subscription_builder()
+pub fn subscribe_to_tables(corvidx: &corvidx::DbConnection) {
+	corvidx
+		.subscription_builder()
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
 		.subscribe([

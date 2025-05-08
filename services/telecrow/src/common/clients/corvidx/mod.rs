@@ -31,8 +31,8 @@ pub fn connect() -> DbConnection {
 }
 
 /// Registers subscriptions to tables.
-pub fn subscribe(core_ctx: &DbConnection) {
-	core_ctx
+pub fn subscribe(corvidx: &DbConnection) {
+	corvidx
 		.subscription_builder()
 		.on_applied(subscriptions::on_sub_applied)
 		.on_error(subscriptions::on_sub_error)

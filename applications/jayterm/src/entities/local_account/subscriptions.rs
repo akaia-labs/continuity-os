@@ -1,17 +1,15 @@
-use crowdcomm::corvidx;
+use crowdcomm::corvidx::{EventContext, LocalAccount, ReducerEventContext};
 use spacetimedb_sdk::Status;
 
 /// If the account is online, prints a notification.
-pub fn on_account_inserted(_ctx: &corvidx::EventContext, account: &corvidx::LocalAccount) {
+pub fn on_account_inserted(_corvidx: &EventContext, account: &LocalAccount) {
 	if account.is_online {
 		println!("\nAccount {} connected.\n", account.callsign);
 	}
 }
 
 /// Prints a notification about callsign and status changes.
-pub fn on_account_updated(
-	_ctx: &corvidx::EventContext, old: &corvidx::LocalAccount, new: &corvidx::LocalAccount,
-) {
+pub fn on_account_updated(_corvidx: &EventContext, old: &LocalAccount, new: &LocalAccount) {
 	if old.callsign != new.callsign {
 		println!(
 			"Account {} changed callsign from {} to {}.",
@@ -29,8 +27,8 @@ pub fn on_account_updated(
 }
 
 /// Prints a warning if the reducer failed.
-pub fn on_callsign_set(ctx: &corvidx::ReducerEventContext, callsign: &String) {
-	if let Status::Failed(err) = &ctx.event.status {
+pub fn on_callsign_set(corvidx: &ReducerEventContext, callsign: &String) {
+	if let Status::Failed(err) = &corvidx.event.status {
 		eprintln!("Failed to change callsign to {:?}: {}", callsign, err);
 	}
 }

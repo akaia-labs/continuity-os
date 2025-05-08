@@ -13,11 +13,11 @@ use self::{message::on_message, user::on_user_update};
 use crate::BotInstanceType;
 
 pub fn root_handler(
-	core_ctx: Arc<DbConnection>,
+	corvidx: Arc<DbConnection>,
 ) -> impl Fn(Update, BotInstanceType) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
 {
 	move |update: Update, _bot: BotInstanceType| {
-		let ctx = core_ctx.clone();
+		let ctx = corvidx.clone();
 		let user = update.from();
 
 		if let Some(user) = user {

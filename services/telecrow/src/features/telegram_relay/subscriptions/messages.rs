@@ -18,7 +18,7 @@ use crate::{BotInstanceType, common::runtime::AsyncHandler, entities::local_mess
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
 pub fn subscribe(
-	core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
+	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<local_message::TelegramForwardRequest>(100);
@@ -41,7 +41,7 @@ pub fn subscribe(
 	});
 
 	// Registering the message handler
-	core_ctx
+	corvidx
 		.db
 		.message()
 		.on_insert(local_message::handle_telegram_forward(
