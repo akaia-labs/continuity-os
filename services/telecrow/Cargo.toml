@@ -1,4 +1,5 @@
 [package]
+publish = false
 name = "telecrow"
 description = "Akaia Labs corvi.d Rust telegram bridge"
 version = "0.3.0"

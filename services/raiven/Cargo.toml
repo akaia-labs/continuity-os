@@ -1,4 +1,5 @@
 [package]
+publish = false
 name = "raiven"
 description = "AkaiaLabs Corvi.d AI provider service"
 version = "0.1.0"
