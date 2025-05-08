@@ -30,17 +30,17 @@ async fn main() -> Result<(), TelecrowError> {
 	println!("\n⏳ Initializing clients...\n");
 
 	let async_handler = runtime::new_async_handler();
-	let core_connection = Arc::new(corvidx_client::connect());
+	let corvidx_connection = Arc::new(corvidx_client::connect());
 	let telegram_bridge: BotInstanceType = Bot::from_env().parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
-	corvidx_client::subscribe(&core_connection);
-	local_account::subscribe(&core_connection);
-	local_message::subscribe(&core_connection);
-	core_connection.run_threaded();
+	corvidx_client::subscribe(&corvidx_connection);
+	local_account::subscribe(&corvidx_connection);
+	local_message::subscribe(&corvidx_connection);
+	corvidx_connection.run_threaded();
 
 	telegram_relay::subscribe(
-		&core_connection,
+		&corvidx_connection,
 		async_handler.clone(),
 		telegram_bridge.clone(),
 	);
@@ -54,12 +54,14 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(
 			Update::filter_message()
 				.filter_command::<telegram_command::PrivateCommand>()
-				.endpoint(telegram_command::private_handler(core_connection.clone())),
+				.endpoint(telegram_command::private_handler(
+					corvidx_connection.clone(),
+				)),
 		)
 		.branch(
 			dptree::entry()
 				.filter_map(|update: Update| update.from().cloned())
-				.endpoint(telegram_update::root_handler(core_connection.clone())),
+				.endpoint(telegram_update::root_handler(corvidx_connection.clone())),
 		);
 
 	println!("⌛ Starting Telegram bridge...\n");
