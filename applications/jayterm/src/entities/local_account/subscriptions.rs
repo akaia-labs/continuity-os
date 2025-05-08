@@ -1,13 +1,22 @@
 use crowdcomm::corvidx::{
-	DbConnection, EventContext, LocalAccount, LocalAccountTableAccess, ReducerEventContext,
-	set_account_callsign,
+	DbConnection, EventContext, ForeignAccountReference, LocalAccount, LocalAccountTableAccess,
+	ReducerEventContext, link_foreign_account, set_account_callsign, unlink_foreign_account,
 };
 use spacetimedb_sdk::{Status, Table, TableWithPrimaryKey};
 
 pub fn subscribe(corvidx: &DbConnection) {
 	corvidx.db.local_account().on_insert(on_insert);
 	corvidx.db.local_account().on_update(on_update);
+
 	corvidx.reducers.on_set_account_callsign(on_callsign_set);
+
+	corvidx
+		.reducers
+		.on_link_foreign_account(on_link_foreign_account);
+
+	corvidx
+		.reducers
+		.on_unlink_foreign_account(on_unlink_foreign_account);
 }
 
 /// If the account is online, prints a notification.
@@ -42,16 +51,30 @@ fn on_callsign_set(corvidx: &ReducerEventContext, callsign: &String) {
 	}
 }
 
-fn on_link_foreign_account(
-	corvidx: &ReducerEventContext, reference: &ForeignAccountReference, callsign: &Option<String>,
-	metadata: &Option<AccountProfileMetadata>,
-) {
-	// TODO: Error handling
+fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
+	match &corvidx.event.status {
+		| Status::Committed => {
+			print!("\nForeign account {reference} successfully linked to your account.\n")
+		},
+
+		| Status::Failed(err) => {
+			eprintln!("\nUnable to link foreign account {reference}: {}\n", err)
+		},
+
+		| _ => {},
+	}
 }
 
-fn on_unlink_foreign_account(
-	corvidx: &ReducerEventContext, reference: &ForeignAccountReference, callsign: &Option<String>,
-	metadata: &Option<AccountProfileMetadata>,
-) {
-	// TODO: Error handling
+fn on_unlink_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
+	match &corvidx.event.status {
+		| Status::Committed => {
+			print!("\nForeign account {reference} successfully unlinked from your account.\n")
+		},
+
+		| Status::Failed(err) => {
+			eprintln!("\nUnable to unlink foreign account {reference}: {}\n", err)
+		},
+
+		| _ => {},
+	}
 }
