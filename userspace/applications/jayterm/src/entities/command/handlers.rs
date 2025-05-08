@@ -28,7 +28,8 @@ pub fn on_account_command(
 			let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse foreign account id: {e}"))?;
 
-			corvidx.reducers
+			corvidx
+				.reducers
 				.link_foreign_account(foreign_account_ref)
 				.map_err(|e| e.to_string())
 		},
@@ -37,7 +38,8 @@ pub fn on_account_command(
 			let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse foreign account id: {e}"))?;
 
-			corvidx.reducers
+			corvidx
+				.reducers
 				.unlink_foreign_account(foreign_account_ref)
 				.map_err(|e| e.to_string())
 		},
@@ -46,7 +48,8 @@ pub fn on_account_command(
 			let foreign_account_ref = ForeignAccountReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse foreign account id: {e}"))?;
 
-			corvidx.reducers
+			corvidx
+				.reducers
 				.mirror_foreign_profile(foreign_account_ref)
 				.map_err(|e| e.to_string())
 		},

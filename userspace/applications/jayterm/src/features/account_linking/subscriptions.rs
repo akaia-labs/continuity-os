@@ -41,9 +41,10 @@ fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAcc
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to link {external_identifier} {platform_name} account:").padded();
+				format!("Unable to link {external_identifier} {platform_name} account:\n{err}")
+					.padded();
 
-			eprintln!("{message}{error}", error = err.to_string().padded())
+			eprintln!("{message}")
 		},
 
 		| _ => {},
@@ -72,9 +73,10 @@ fn on_unlink_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignA
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to unlink {external_identifier} {platform_name} account:").padded();
+				format!("Unable to unlink {external_identifier} {platform_name} account:\n{err}")
+					.padded();
 
-			eprintln!("{message}{error}", error = err.to_string().padded())
+			eprintln!("{message}")
 		},
 
 		| _ => {},
@@ -103,9 +105,10 @@ fn on_mirror_foreign_profile(corvidx: &ReducerEventContext, reference: &ForeignA
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to mirror {external_identifier} {platform_name} profile:").padded();
+				format!("Unable to mirror {external_identifier} {platform_name} profile:\n{err}")
+					.padded();
 
-			eprintln!("{message}{error}", error = err.to_string().padded())
+			eprintln!("{message}")
 		},
 
 		| _ => {},

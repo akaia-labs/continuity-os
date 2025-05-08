@@ -3,6 +3,7 @@ use std::{
 	str::FromStr,
 };
 
+use corvutils::StringExtensions;
 use crowdcomm::corvidx::{DbConnection, send_message};
 
 use crate::entities::command::{AccountCommand, on_account_command};
@@ -15,8 +16,11 @@ pub fn start(corvidx: &DbConnection) {
 	for line in handle.lines() {
 		let line = match line {
 			| Ok(line) => line,
+
 			| Err(e) => {
-				eprintln!("Error reading from stdin: {}", e);
+				let response = format!("Error reading from stdin:\n{e}").padded();
+
+				println!("{response}");
 				continue;
 			},
 		};
@@ -26,7 +30,9 @@ pub fn start(corvidx: &DbConnection) {
 			let parts: Vec<&str> = line[1 ..].splitn(2, " ").collect();
 
 			if parts.is_empty() {
-				println!("Invalid command format");
+				let response = format!("Invalid command format").padded();
+
+				println!("{response}");
 				continue;
 			}
 
@@ -39,16 +45,25 @@ pub fn start(corvidx: &DbConnection) {
 				};
 
 				match on_account_command(corvidx, &command, args) {
-					| Ok(_) => println!("\n\n"),
-					| Err(e) => println!("Command error: {}", e),
+					| Ok(_) => (),
+
+					| Err(err) => {
+						let response = format!("Command error:\n{err}").padded();
+
+						println!("{response}")
+					},
 				}
 			} else {
-				println!("Unknown command: {}", parts[0]);
+				let response = format!("Unknown command:\n{}", parts[0]).padded();
+
+				println!("{response}");
 			}
 		} else {
 			// Not a command, send as a message
-			if let Err(e) = corvidx.reducers.send_message(line) {
-				println!("Error sending message: {}", e);
+			if let Err(err) = corvidx.reducers.send_message(line) {
+				let response = format!("Error sending message:\n{err}").padded();
+
+				println!("{response}");
 			}
 		}
 	}
