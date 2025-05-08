@@ -2,7 +2,7 @@
 resolver = "3"
 
 members = [
-	"applications/chatter",
+	"applications/jayterm",
 	"applications/magpie",
 	"modules/crowd_core",
 	"packages/crowdcomm",

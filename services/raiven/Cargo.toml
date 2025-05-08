@@ -1,6 +1,6 @@
 [package]
 name = "raiven"
-description = "Akaia Labs corvi.d AI service"
+description = "AkaiaLabs Corvi.d AI provider service"
 version = "0.1.0"
 edition = "2024"
 default-run = "raiven"

@@ -1,12 +1,12 @@
 [package]
-name = "chatter"
+name = "corvid_jayterm"
 description = "Chat TUI for AkaiaLabs Corvi.d written in Rust"
 version = "0.3.0"
 edition = "2024"
 
 
 [[bin]]
-name = "chatter"
+name = "jayterm"
 path = "src/main.rs"
 
 

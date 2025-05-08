@@ -242,18 +242,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "chatter"
-version = "0.3.0"
-dependencies = [
- "crowdcomm",
- "dotenvy",
- "hex",
- "spacetimedb-sdk",
- "strum",
- "strum_macros",
-]
-
-[[package]]
 name = "chrono"
 version = "0.4.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -293,6 +281,30 @@ name = "core-foundation-sys"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
+
+[[package]]
+name = "corvid_jayterm"
+version = "0.3.0"
+dependencies = [
+ "crowdcomm",
+ "dotenvy",
+ "hex",
+ "spacetimedb-sdk",
+ "strum",
+ "strum_macros",
+]
+
+[[package]]
+name = "corvid_magpie"
+version = "0.1.0"
+dependencies = [
+ "crowdcomm",
+ "dotenvy",
+ "hex",
+ "spacetimedb-sdk",
+ "strum",
+ "strum_macros",
+]
 
 [[package]]
 name = "cpufeatures"
@@ -1173,18 +1185,6 @@ name = "log"
 version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
-
-[[package]]
-name = "magpie"
-version = "0.1.0"
-dependencies = [
- "crowdcomm",
- "dotenvy",
- "hex",
- "spacetimedb-sdk",
- "strum",
- "strum_macros",
-]
 
 [[package]]
 name = "memchr"

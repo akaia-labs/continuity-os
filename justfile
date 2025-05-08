@@ -1,5 +1,5 @@
-subsystem-dev:
-	(cd subsystem && ./rvvm/rvvm_arm64)
+corvid-dev:
+	(cd subsystems/corvi.d && ./rvvm/rvvm_arm64)
 
 
 # `curl -sSf https://install.spacetimedb.com | sh` ?
@@ -46,5 +46,5 @@ telecrow-inspect:
 	(cd services/telecrow && RUST_LOG=trace cargo run)
 
 
-chatter-dev:
-	(cd applications/chatter && cargo run)
+jayterm-dev:
+	(cd applications/jayterm && cargo run)
