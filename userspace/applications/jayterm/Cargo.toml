@@ -12,6 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 # corvi.d
+corvutils.workspace = true
 crowdcomm.workspace = true
 
 # External packages

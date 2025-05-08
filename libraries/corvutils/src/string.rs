@@ -1,12 +1,12 @@
-pub fn to_single_line(s: &str) -> String {
-	// 1. Trim only indentation (e.g. via `unindent`)
-	let dedented = unindent::unindent(s);
+pub trait StringExtensions {
+	/// Converts a multi-line string to a single-line string.
+	fn squash_whitespace(self) -> String;
+}
 
-	// 2. Collapse all adjacent whitespace to single spaces
-	let collapsed = whitespace_sifter::collapse(&dedented);
-
-	// 3. Re-attach outer newlines
-	format!("{}", collapsed.trim(),)
+impl StringExtensions for String {
+	fn squash_whitespace(self) -> String {
+		self.split_whitespace().collect::<Vec<_>>().join(" ")
+	}
 }
 
 #[cfg(test)]
@@ -14,20 +14,22 @@ mod tests {
 	use super::*;
 
 	#[test]
-	fn test_to_single_line() {
+	fn test_squash_whitespace() {
 		let external_identifier = "@username:example.com";
 		let platform_name = "matrix";
 
-		let formatted_example = to_single_line(format!(
+		let formatted_example = format!(
 			r#"
 				Your profile has been updated to match the appearance of 
 				{external_identifier} {platform_name} account.
 			"#
-		));
+		)
+		.squash_whitespace();
 
 		let expected_output = "Your profile has been updated to match the appearance of \
 		                       @username:example.com matrix account.";
 
+		dbg!(formatted_example.clone());
 		assert_eq!(formatted_example, expected_output);
 	}
 }

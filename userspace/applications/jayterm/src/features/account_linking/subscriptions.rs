@@ -1,3 +1,4 @@
+use corvutils::StringExtensions;
 use crowdcomm::corvidx::{
 	DbConnection, ForeignAccountReference, ReducerEventContext, link_foreign_account,
 	mirror_foreign_profile, unlink_foreign_account,
@@ -68,9 +69,7 @@ fn on_mirror_foreign_profile(corvidx: &ReducerEventContext, reference: &ForeignA
 					{external_identifier} {platform_name} account.
 				"#
 			)
-			.split_whitespace()
-			.collect::<Vec<_>>()
-			.join(" ");
+			.squash_whitespace();
 
 			print!("\n{message}\n")
 		},

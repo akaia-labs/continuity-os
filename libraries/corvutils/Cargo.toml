@@ -1,7 +1,7 @@
 [package]
 name = "corvutils"
-description = "Common utils for Akaia Labs Rust projects"
-version = "0.3.0"
+description = "Common utils for AkaiaLabs Rust projects"
+version = "0.1.0"
 edition = "2024"
 
 
@@ -12,5 +12,3 @@ path = "src/lib.rs"
 
 [dependencies]
 hex.workspace = true
-unindent = "0.2.4"
-whitespace-sifter = "2.3.5"

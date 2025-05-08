@@ -25,6 +25,7 @@ overflow-checks = true
 
 [workspace.dependencies]
 # corvi.d
+corvutils = { path = "libraries/corvutils" }
 crowdcomm = { path = "packages/crowdcomm" }
 
 # External packages

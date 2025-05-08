@@ -33,6 +33,9 @@ generate: generate-module_bindings
 corvutils-test:
     (cd libraries/corvutils && cargo test)
 
+corvutils-test-dbg:
+    (cd libraries/corvutils && cargo test -- --show-output)
+
 
 #* DATABASE ADMINISTRATION
 
