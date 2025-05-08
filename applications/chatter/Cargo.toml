@@ -1,7 +1,7 @@
 [package]
 name = "chatter"
 description = "Chat TUI for AkaiaLabs Corvi.d written in Rust"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2024"
 
 

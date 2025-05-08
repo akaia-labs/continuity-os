@@ -1,7 +1,7 @@
 [package]
 name = "crowdcomm"
 description = "Akaia Labs corvi.d client SDK in Rust"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2024"
 
 
