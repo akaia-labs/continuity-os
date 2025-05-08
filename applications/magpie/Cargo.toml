@@ -1,12 +1,12 @@
 [package]
-name = "chatter"
-description = "Chat TUI for AkaiaLabs Corvi.d written in Rust"
+name = "magpie"
+description = "Chat GUI for AkaiaLabs Corvi.d written in Rust"
 version = "0.1.0"
 edition = "2024"
 
 
 [[bin]]
-name = "chatter"
+name = "magpie"
 path = "src/main.rs"
 
 
