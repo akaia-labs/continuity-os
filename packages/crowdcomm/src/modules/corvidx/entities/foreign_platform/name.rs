@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 use strum_macros::{Display, EnumString};
 
@@ -20,6 +20,15 @@ impl From<SupportedForeignPlatformName> for ForeignPlatformName {
 	}
 }
 
+impl Into<SupportedForeignPlatformName> for ForeignPlatformName {
+	fn into(self) -> SupportedForeignPlatformName {
+		match self {
+			| ForeignPlatformName::Telegram => SupportedForeignPlatformName::Telegram,
+			| ForeignPlatformName::Unknown => SupportedForeignPlatformName::Unknown,
+		}
+	}
+}
+
 impl FromStr for ForeignPlatformName {
 	type Err = &'static str;
 
@@ -30,5 +39,11 @@ impl FromStr for ForeignPlatformName {
 				| Err(_) => SupportedForeignPlatformName::Unknown,
 			},
 		))
+	}
+}
+
+impl Display for ForeignPlatformName {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{}", Into::<SupportedForeignPlatformName>::into(*self))
 	}
 }
