@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use crowcomm::crowd_core::{
+use crowdcomm::corvidx::{
 	DbConnection, EventContext, LocalAccount, LocalAccountTableAccess, ReducerEventContext,
-	set_callsign,
+	set_account_callsign,
 };
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
@@ -54,7 +54,7 @@ pub fn handle_status_telegram_forward(
 
 /// @deprecated
 /// Prints a notification about callsign and status changes.
-fn _on_account_updated(_ctx: &EventContext, old: &LocalAccount, new: &LocalAccount) {
+fn _on_account_updated(_corvidx: &EventContext, old: &LocalAccount, new: &LocalAccount) {
 	if old.is_online && !new.is_online {
 		println!("Account {} disconnected.", old.callsign);
 	}
@@ -65,20 +65,20 @@ fn _on_account_updated(_ctx: &EventContext, old: &LocalAccount, new: &LocalAccou
 }
 
 /// If the account is online, prints a notification.
-fn on_account_inserted(_ctx: &EventContext, account: &LocalAccount) {
+fn on_account_inserted(_corvidx: &EventContext, account: &LocalAccount) {
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_callsign_set(ctx: &ReducerEventContext, callsign: &String) {
-	if let Status::Failed(err) = &ctx.event.status {
+fn on_callsign_set(corvidx: &ReducerEventContext, callsign: &String) {
+	if let Status::Failed(err) = &corvidx.event.status {
 		eprintln!("Failed to change callsign to {:?}: {}", callsign, err);
 	}
 }
 
-pub fn subscribe(core_ctx: &DbConnection) {
-	core_ctx.db.local_account().on_insert(on_account_inserted);
-	core_ctx.reducers.on_set_callsign(on_callsign_set);
+pub fn subscribe(corvidx: &DbConnection) {
+	corvidx.db.local_account().on_insert(on_account_inserted);
+	corvidx.reducers.on_set_account_callsign(on_callsign_set);
 }

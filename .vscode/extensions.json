@@ -3,6 +3,7 @@
 		"aaron-bond.better-comments",
 		"gruntfuggly.todo-tree",
 		"rust-lang.rust-analyzer",
-		"cordx56.rustowl-vscode"
+		"cordx56.rustowl-vscode",
+		"nefrob.vscode-just-syntax"
 	]
 }

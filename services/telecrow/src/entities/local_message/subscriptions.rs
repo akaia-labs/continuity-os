@@ -1,13 +1,12 @@
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 
-use crowcomm::{
-	crowd_core::{
-		DbConnection, EventContext, LocalAccountTableAccess, Message, ReducerEventContext,
-		send_message, traits::DisplayName,
-	},
-	telegram,
+use crowdcomm::corvidx::{
+	DbConnection, EventContext, ForeignAccountReference, ForeignPlatformTag,
+	LocalAccountTableAccess, Message, MessageAuthorId, ReducerEventContext, send_message,
+	traits::DisplayName,
 };
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
+use teloxide::types::Message as TelegramMessage;
 use tokio::sync::mpsc;
 
 use crate::common::runtime::AsyncHandler;
@@ -25,21 +24,34 @@ pub fn handle_telegram_forward(
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |core_ctx: &EventContext, message: &Message| {
-		// Ignore messages inserted by the service itself
-		if message.sender != core_ctx.identity() {
+	return move |corvidx: &EventContext, message: &Message| {
+		let foreign_platform_name = match &message.author_id {
+			| MessageAuthorId::ForeignAccountId(account_id) => {
+				ForeignAccountReference::from_str(&account_id)
+					.map_or(None, |r| Some(r.platform_tag))
+			},
+
+			| MessageAuthorId::LocalAccountId(_)
+			| MessageAuthorId::System
+			| MessageAuthorId::Unknown => None,
+		};
+
+		// Ignore messages imported from Telegram
+		if foreign_platform_name.is_none()
+			|| foreign_platform_name.is_some_and(|fpn| fpn != ForeignPlatformTag::Telegram)
+		{
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {
-				let sender_name = core_ctx
+				let sender_name = corvidx
 					.db()
 					.local_account()
 					.id()
 					.find(&message.sender.clone())
-					.map(|account| account.display_name(core_ctx))
+					.map(|account| account.display_name(corvidx))
 					.unwrap_or(format!("{}", message.sender));
 
 				let request = TelegramForwardRequest {
-					// TODO: The chat id must be taken from crowspace::TextChannel
+					// TODO: The chat id must be taken from crowdcomm::TextChannel
 					chat_id: -1001544271932,
 					sender_name,
 					message_text: message.text.clone(),
@@ -56,19 +68,19 @@ pub fn handle_telegram_forward(
 	};
 }
 
-pub fn on_tg_message_received(core_ctx: &DbConnection, msg: telegram::Message) {
+pub fn on_tg_message_received(corvidx: &DbConnection, msg: TelegramMessage) {
 	if let Some(text) = msg.text() {
-		core_ctx.reducers.send_message(text.to_owned()).unwrap();
+		corvidx.reducers.send_message(text.to_owned()).unwrap();
 	}
 }
 
 /// Prints a warning if the reducer failed.
-fn on_message_sent(core_ctx: &ReducerEventContext, text: &String) {
-	if let Status::Failed(err) = &core_ctx.event.status {
+fn on_message_sent(corvidx: &ReducerEventContext, text: &String) {
+	if let Status::Failed(err) = &corvidx.event.status {
 		eprintln!("Failed to send message {:?}: {}", text, err);
 	}
 }
 
-pub fn subscribe(core_ctx: &DbConnection) {
-	core_ctx.reducers.on_send_message(on_message_sent);
+pub fn subscribe(corvidx: &DbConnection) {
+	corvidx.reducers.on_send_message(on_message_sent);
 }

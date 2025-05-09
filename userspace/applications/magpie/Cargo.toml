@@ -1,0 +1,22 @@
+[package]
+name = "corvid_magpie"
+description = "Chat GUI for AkaiaLabs Corvi.d written in Rust"
+version = "0.1.0"
+edition = "2024"
+
+
+[[bin]]
+name = "magpie"
+path = "src/main.rs"
+
+
+[dependencies]
+# corvi.d
+crowdcomm.workspace = true
+
+# External packages
+dotenvy.workspace = true
+hex.workspace = true
+spacetimedb-sdk.workspace = true
+strum.workspace = true
+strum_macros.workspace = true

@@ -1,6 +1,7 @@
 [package]
+publish = false
 name = "raiven"
-description = "Akaia Labs crow.d AI service"
+description = "AkaiaLabs Corvi.d AI provider service"
 version = "0.1.0"
 edition = "2024"
 default-run = "raiven"
@@ -12,8 +13,8 @@ path = "src/main.rs"
 
 
 [dependencies]
-# crow.d
-crowcomm.workspace = true
+# corvi.d
+crowdcomm.workspace = true
 
 # External packages
 dotenvy.workspace = true

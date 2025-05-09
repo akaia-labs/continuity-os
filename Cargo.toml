@@ -2,10 +2,11 @@
 resolver = "3"
 
 members = [
-	"applications/chatter",
-	"modules/crowd_core",
-	"packages/crowcomm",
-	"services/telecrow",
+	"libraries/*",
+	"modules/*",
+	"packages/*",
+	"services/*",
+	"userspace/applications/*",
 ]
 
 
@@ -23,10 +24,12 @@ overflow-checks = true
 
 
 [workspace.dependencies]
-# crow.d
-crowcomm = { path = "packages/crowcomm" }
+# corvi.d
+corvutils = { path = "libraries/corvutils" }
+crowdcomm = { path = "packages/crowdcomm" }
 
 # External packages
+capitalize = "0.3.4"
 dotenvy = "0.15.7"
 hex = "0.4"
 log = "0.4"

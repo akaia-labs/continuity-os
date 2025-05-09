@@ -1,27 +1,25 @@
 use std::sync::Arc;
 
-use crowcomm::{
-	crowd_core::{DbConnection, MessageTableAccess},
-	telegram,
-};
+use crowdcomm::corvidx::{DbConnection, MessageTableAccess};
 use spacetimedb_sdk::Table;
 use teloxide::{
-	Bot,
 	payloads::SendMessageSetters,
 	prelude::Requester,
-	types::{MessageEntity, MessageEntityKind},
+	types::{ChatId, MessageId, ThreadId},
 };
 use tokio::sync::mpsc;
 
-use crate::{common::runtime::AsyncHandler, entities::local_message};
+use crate::{BotInstanceType, common::runtime::AsyncHandler, entities::local_message};
 
-/// Sets up message forwarding from crowchat to Telegram.
+/// Sets up message forwarding from corvidx to Telegram.
 ///
 /// This function:
 /// 1. Creates the channel for forwarding messages
 /// 2. Spawns a background task that processes messages from the channel
 /// 3. Registers the message handler
-pub fn subscribe(core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: Bot) {
+pub fn subscribe(
+	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
+) {
 	let (forward_transmitter, mut forward_receiver) =
 		mpsc::channel::<local_message::TelegramForwardRequest>(100);
 
@@ -31,25 +29,19 @@ pub fn subscribe(core_ctx: &DbConnection, async_handler: Arc<AsyncHandler>, tele
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(req) = forward_receiver.recv().await {
-			let message_header = format!("💬 {}\n\n", req.sender_name);
-			let message_header_length = message_header.encode_utf16().count();
+			let message_header = format!("💬 <strong>{}</strong>\n\n", req.sender_name);
 			let message_text = format!("{}{}", message_header, req.message_text);
 
 			let _ = telegram_transmitter
-				.send_message(telegram::ChatId(req.chat_id), &message_text)
-				.entities([MessageEntity::new(
-					MessageEntityKind::Bold,
-					0,
-					message_header_length,
-				)])
-				.message_thread_id(telegram::ThreadId(telegram::MessageId(3315)))
+				.send_message(ChatId(req.chat_id), &message_text)
+				.message_thread_id(ThreadId(MessageId(3315)))
 				.await
-				.map_err(|err| println!("{:?}", err));
+				.map_err(|err| eprintln!("{:?}", err));
 		}
 	});
 
 	// Registering the message handler
-	core_ctx
+	corvidx
 		.db
 		.message()
 		.on_insert(local_message::handle_telegram_forward(

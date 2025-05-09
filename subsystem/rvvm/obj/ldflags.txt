@@ -1,1 +1,0 @@
-PREV_LDFLAGS := ld 13.3.0 -lpthread -lrt -ldl -Wl,-rpath,/usr/lib/aarch64-linux-gnu -lm

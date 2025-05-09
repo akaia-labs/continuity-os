@@ -1,0 +1,14 @@
+[package]
+name = "corvutils"
+description = "Common utils for AkaiaLabs Rust projects"
+version = "0.1.0"
+edition = "2024"
+
+
+[lib]
+name = "corvutils"
+path = "src/lib.rs"
+
+
+[dependencies]
+hex.workspace = true
