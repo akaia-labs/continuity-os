@@ -42,6 +42,27 @@ pub fn import_foreign_account(
 }
 
 #[reducer]
+pub fn update_foreign_account_callsign(
+	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,
+) -> Result<(), String> {
+	let account = ctx
+		.db
+		.foreign_account()
+		.id()
+		.find(reference.to_string())
+		.ok_or(format!(
+			"Foreign account {reference} is not registered in the system."
+		))?;
+
+	ctx.db.foreign_account().id().update(ForeignAccount {
+		callsign,
+		..account
+	});
+
+	Ok(())
+}
+
+#[reducer]
 /// Updates the representation of a 3rd party platform account in the database.
 pub fn update_foreign_account(
 	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,

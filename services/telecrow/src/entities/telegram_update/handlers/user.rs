@@ -11,29 +11,46 @@ use teloxide::types::User;
 
 pub fn on_user_update(corvidx: Arc<DbConnection>, user_data: User) {
 	let username = user_data.clone().username;
-	let account_reference = user_data.into_account_reference();
-	let account_metadata = user_data.into_profile_metadata();
+	let tg_account_reference = user_data.into_account_reference();
+	let tg_profile_metadata = user_data.into_profile_metadata();
 
-	if let Some(account) = corvidx
+	let foreign_account = corvidx
 		.db
 		.foreign_account()
 		.id()
-		.find(&account_reference.to_string())
-	{
-		if account.profile(&*corvidx).is_some_and(|profile| {
-			profile.metadata != account_metadata || account.callsign != username
-		}) {
-			let _result = corvidx.reducers.update_foreign_account(
-				account_reference,
+		.find(&tg_account_reference.to_string());
+
+	if let Some(account) = foreign_account {
+		let profile = account.profile(&*corvidx);
+
+		if account.callsign != username
+			|| profile.is_none()
+			|| profile.is_some_and(|profile| profile.metadata != tg_profile_metadata)
+		{
+			let result = corvidx.reducers.update_foreign_account(
+				tg_account_reference,
 				username,
-				Some(account_metadata),
+				Some(tg_profile_metadata),
 			);
-		}
+		};
 	} else {
-		let _result = corvidx.reducers.import_foreign_account(
-			account_reference,
-			username,
-			Some(account_metadata),
-		);
+		let result = corvidx
+			.reducers
+			.import_foreign_account(
+				tg_account_reference.clone(),
+				username,
+				Some(tg_profile_metadata),
+			)
+			.map_err(|e| e.to_string());
+
+		match result {
+			| Ok(_) => {
+				println!("Account {tg_account_reference} has been successfully imported.")
+			},
+
+			| Err(e) => {
+				eprintln!("Unable to import account {tg_account_reference}: {e}")
+			},
+		}
 	}
 }
