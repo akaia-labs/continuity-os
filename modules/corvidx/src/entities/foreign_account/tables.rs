@@ -5,16 +5,16 @@ use std::{
 
 use spacetimedb::{Identity, SpacetimeType, table};
 
-use crate::entities::{account_profile::AccountProfileId, foreign_platform::ForeignPlatformName};
+use crate::entities::{account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag};
 
-/// "{String}@{ForeignPlatformName}"
+/// "{String}@{ForeignPlatformTag}"
 pub type ForeignAccountId = String;
 
 #[table(name = foreign_account, public)]
 /// Locally recognized format for third-party accounts
 pub struct ForeignAccount {
 	#[primary_key]
-	/// "{String}@{ForeignPlatformName}"
+	/// "{String}@{ForeignPlatformTag}"
 	pub id:         ForeignAccountId,
 	#[index(btree)]
 	/// Holds username, handle, or any other identifier
@@ -27,10 +27,10 @@ pub struct ForeignAccount {
 	pub profile_id: Option<AccountProfileId>,
 }
 
-#[derive(SpacetimeType)]
+#[derive(SpacetimeType, Clone)]
 pub struct ForeignAccountReference {
-	pub id:            String,
-	pub platform_name: ForeignPlatformName,
+	pub id:           String,
+	pub platform_tag: ForeignPlatformTag,
 }
 
 impl ForeignAccountReference {
@@ -44,7 +44,7 @@ impl Display for ForeignAccountReference {
 			"{}{}{}",
 			self.id,
 			Self::DELIMITER,
-			self.platform_name // uses Display from strum
+			self.platform_tag // uses Display from strum
 		)
 	}
 }
@@ -57,13 +57,13 @@ impl FromStr for ForeignAccountReference {
 		let platform_name_str = parts.next().ok_or("missing platform name")?;
 		let id = parts.next().ok_or("missing id")?;
 
-		let platform_name = platform_name_str
-			.parse::<ForeignPlatformName>()
+		let platform_tag = platform_name_str
+			.parse::<ForeignPlatformTag>()
 			.map_err(|_| "invalid or unsupported platform specifier")?;
 
 		Ok(ForeignAccountReference {
 			id: id.to_owned(),
-			platform_name,
+			platform_tag,
 		})
 	}
 }

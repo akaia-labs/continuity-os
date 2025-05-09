@@ -7,12 +7,12 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 #[derive(Copy, Eq, Hash)]
-pub enum ForeignPlatformName {
+pub enum ForeignPlatformTag {
 	Telegram,
 
 	Unknown,
 }
 
-impl __sdk::InModule for ForeignPlatformName {
+impl __sdk::InModule for ForeignPlatformTag {
 	type Module = super::RemoteModule;
 }

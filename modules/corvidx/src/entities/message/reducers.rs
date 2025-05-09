@@ -1,3 +1,4 @@
+use capitalize::Capitalize;
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{tables::*, validation::*};
@@ -36,35 +37,34 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 pub fn import_message(
 	ctx: &ReducerContext, author_reference: ForeignAccountReference, text: String,
 ) -> Result<(), String> {
-	let author_id: MessageAuthorId = if let Some(author_foreign_account) = ctx
+	let ForeignAccountReference {
+		id: external_author_id,
+		platform_tag,
+	} = author_reference.clone();
+
+	let author_account = ctx
 		.db
 		.foreign_account()
 		.id()
 		.find(author_reference.to_string())
-	{
-		if let Some(author_account_id) = author_foreign_account.owner_id {
-			MessageAuthorId::LocalAccountId(author_account_id)
-		} else {
-			MessageAuthorId::ForeignAccountId(author_foreign_account.id)
-		}
-	} else {
-		MessageAuthorId::Unknown
-	};
+		.ok_or(format!(
+			"{platform_name} account {external_author_id} is not registered in the system.",
+			platform_name = platform_tag.to_string().capitalize(),
+		))?;
 
-	let sender = match author_id {
-		| MessageAuthorId::LocalAccountId(identity) => identity,
-		| _ => ctx.sender,
+	let sender = if let Some(local_account_id) = author_account.owner_id {
+		local_account_id
+	} else {
+		ctx.sender
 	};
 
 	let text = validate_message(text)?;
-
-	log::info!("{}", text);
 
 	ctx.db.message().insert(Message {
 		id: 0,
 		sender,
 		sent_at: ctx.timestamp,
-		author_id,
+		author_id: MessageAuthorId::ForeignAccountId(author_account.id),
 		text,
 	});
 

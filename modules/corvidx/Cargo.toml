@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
+capitalize.workspace = true
 log.workspace = true
 serde.workspace = true
 spacetimedb.workspace = true

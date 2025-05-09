@@ -55,7 +55,7 @@ pub use client_disconnected_reducer::{
 pub use foreign_account_reference_type::ForeignAccountReference;
 pub use foreign_account_table::*;
 pub use foreign_account_type::ForeignAccount;
-pub use foreign_platform_name_type::ForeignPlatformName;
+pub use foreign_platform_name_type::ForeignPlatformTag;
 pub use import_foreign_account_reducer::{
 	ImportForeignAccountCallbackId, import_foreign_account, set_flags_for_import_foreign_account,
 };

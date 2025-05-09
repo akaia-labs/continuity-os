@@ -3,7 +3,7 @@ use std::{
 	str::FromStr,
 };
 
-use crate::corvidx::{ForeignAccountReference, ForeignPlatformName};
+use crate::corvidx::{ForeignAccountReference, ForeignPlatformTag};
 
 // TODO: figure out how to reduce the reimplementation overhead
 
@@ -32,13 +32,13 @@ impl FromStr for ForeignAccountReference {
 		let platform_name_str = parts.next().ok_or("missing platform name")?;
 		let id = parts.next().ok_or("missing id")?;
 
-		let platform_name = platform_name_str
-			.parse::<ForeignPlatformName>()
+		let platform_tag = platform_name_str
+			.parse::<ForeignPlatformTag>()
 			.map_err(|_| "invalid or unsupported platform specifier")?;
 
 		Ok(ForeignAccountReference {
 			id: id.to_owned(),
-			platform_name,
+			platform_tag,
 		})
 	}
 }

@@ -29,6 +29,7 @@ corvutils = { path = "libraries/corvutils" }
 crowdcomm = { path = "packages/crowdcomm" }
 
 # External packages
+capitalize = "0.3.4"
 dotenvy = "0.15.7"
 hex = "0.4"
 log = "0.4"

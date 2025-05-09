@@ -1,7 +1,7 @@
 use std::{str::FromStr, sync::Arc};
 
 use crowdcomm::corvidx::{
-	DbConnection, EventContext, ForeignAccountReference, ForeignPlatformName,
+	DbConnection, EventContext, ForeignAccountReference, ForeignPlatformTag,
 	LocalAccountTableAccess, Message, MessageAuthorId, ReducerEventContext, send_message,
 	traits::DisplayName,
 };
@@ -28,7 +28,7 @@ pub fn handle_telegram_forward(
 		let foreign_platform_name = match &message.author_id {
 			| MessageAuthorId::ForeignAccountId(account_id) => {
 				ForeignAccountReference::from_str(&account_id)
-					.map_or(None, |r| Some(r.platform_name))
+					.map_or(None, |r| Some(r.platform_tag))
 			},
 
 			| MessageAuthorId::LocalAccountId(_)
@@ -38,7 +38,7 @@ pub fn handle_telegram_forward(
 
 		// Ignore messages imported from Telegram
 		if foreign_platform_name.is_none()
-			|| foreign_platform_name.is_some_and(|fpn| fpn != ForeignPlatformName::Telegram)
+			|| foreign_platform_name.is_some_and(|fpn| fpn != ForeignPlatformTag::Telegram)
 		{
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {

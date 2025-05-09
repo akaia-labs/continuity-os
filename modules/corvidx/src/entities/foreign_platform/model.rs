@@ -3,7 +3,7 @@ use strum_macros::{Display, EnumString};
 
 #[derive(SpacetimeType, Debug, Clone, PartialEq, Display, EnumString)]
 #[strum(serialize_all = "lowercase")]
-pub enum ForeignPlatformName {
+pub enum ForeignPlatformTag {
 	Telegram,
 	Unknown,
 }

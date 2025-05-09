@@ -22,14 +22,14 @@ pub fn subscribe(corvidx: &DbConnection) {
 fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
 	let ForeignAccountReference {
 		id: external_identifier,
-		platform_name,
+		platform_tag,
 	} = reference;
 
 	match &corvidx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				r#"
-					{platform_name} account {external_identifier}
+					{platform_tag} account {external_identifier}
 					has been successfully linked to your account.
 				"#
 			)
@@ -41,7 +41,7 @@ fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAcc
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to link {external_identifier} {platform_name} account:\n{err}")
+				format!("Unable to link {external_identifier} {platform_tag} account:\n{err}")
 					.padded();
 
 			eprintln!("{message}")
@@ -54,14 +54,14 @@ fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAcc
 fn on_unlink_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
 	let ForeignAccountReference {
 		id: external_identifier,
-		platform_name,
+		platform_tag,
 	} = reference;
 
 	match &corvidx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				r#"
-					{platform_name} account {external_identifier}
+					{platform_tag} account {external_identifier}
 					has been successfully unlinked from your account.
 				"#
 			)
@@ -73,7 +73,7 @@ fn on_unlink_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignA
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to unlink {external_identifier} {platform_name} account:\n{err}")
+				format!("Unable to unlink {external_identifier} {platform_tag} account:\n{err}")
 					.padded();
 
 			eprintln!("{message}")
@@ -86,7 +86,7 @@ fn on_unlink_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignA
 fn on_mirror_foreign_profile(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
 	let ForeignAccountReference {
 		id: external_identifier,
-		platform_name,
+		platform_tag,
 	} = reference;
 
 	match &corvidx.event.status {
@@ -94,7 +94,7 @@ fn on_mirror_foreign_profile(corvidx: &ReducerEventContext, reference: &ForeignA
 			let message = format!(
 				r#"
 					Your profile has been updated to match the appearance of
-					{external_identifier} {platform_name} account.
+					{external_identifier} {platform_tag} account.
 				"#
 			)
 			.squash_whitespace()
@@ -105,7 +105,7 @@ fn on_mirror_foreign_profile(corvidx: &ReducerEventContext, reference: &ForeignA
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to mirror {external_identifier} {platform_name} profile:\n{err}")
+				format!("Unable to mirror {external_identifier} {platform_tag} profile:\n{err}")
 					.padded();
 
 			eprintln!("{message}")
