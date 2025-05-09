@@ -20,10 +20,9 @@ pub fn on_user_update(corvidx: Arc<DbConnection>, user_data: User) {
 		.id()
 		.find(&account_reference.to_string())
 	{
-		if account
-			.profile(&*corvidx)
-			.is_some_and(|profile| profile.metadata != account_metadata)
-		{
+		if account.profile(&*corvidx).is_some_and(|profile| {
+			profile.metadata != account_metadata || account.callsign != username
+		}) {
 			let _result = corvidx.reducers.update_foreign_account(
 				account_reference,
 				username,

@@ -9,6 +9,18 @@ pub fn import_foreign_account(
 	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,
 	metadata: Option<AccountProfileMetadata>,
 ) -> Result<(), String> {
+	if ctx
+		.db
+		.foreign_account()
+		.id()
+		.find(reference.to_string())
+		.is_some()
+	{
+		return Err(format!(
+			"Foreign account {reference} is already registered in the system.",
+		));
+	}
+
 	let account = ctx.db.foreign_account().insert(ForeignAccount {
 		id: reference.to_string(),
 		callsign,
