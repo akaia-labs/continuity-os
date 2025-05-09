@@ -4,7 +4,7 @@ use super::{ForeignAccount, ForeignAccountReference, foreign_account};
 use crate::entities::account_profile::{AccountProfile, AccountProfileMetadata, account_profile};
 
 #[reducer]
-/// Registers a representation of a 3rd party platform account in the database.
+/// Registers a local representation of the given 3rd party platform account.
 pub fn import_foreign_account(
 	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,
 	metadata: Option<AccountProfileMetadata>,
@@ -42,6 +42,8 @@ pub fn import_foreign_account(
 }
 
 #[reducer]
+/// Updates the local representation
+/// of a 3rd party platform account handle / username.
 pub fn update_foreign_account_callsign(
 	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,
 ) -> Result<(), String> {
@@ -63,9 +65,9 @@ pub fn update_foreign_account_callsign(
 }
 
 #[reducer]
-/// Updates the representation of a 3rd party platform account in the database.
-pub fn update_foreign_account(
-	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,
+/// Updates the local representation of a 3rd party platform account profile.
+pub fn update_foreign_account_profile(
+	ctx: &ReducerContext, reference: ForeignAccountReference,
 	metadata: Option<AccountProfileMetadata>,
 ) -> Result<(), String> {
 	let account = ctx
@@ -89,20 +91,10 @@ pub fn update_foreign_account(
 		})
 	};
 
-	let account_update = if callsign != account.callsign {
-		ForeignAccount {
-			callsign,
-			profile_id: Some(profile.id),
-			..account
-		}
-	} else {
-		ForeignAccount {
-			profile_id: Some(profile.id),
-			..account
-		}
-	};
-
-	ctx.db.foreign_account().id().update(account_update);
+	ctx.db.foreign_account().id().update(ForeignAccount {
+		profile_id: Some(profile.id),
+		..account
+	});
 
 	Ok(())
 }

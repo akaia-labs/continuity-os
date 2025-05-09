@@ -8,14 +8,13 @@ pub mod account_profile_metadata_type;
 pub mod account_profile_name_type;
 pub mod account_profile_table;
 pub mod account_profile_type;
-pub mod admin_link_foreign_account_reducer;
 pub mod admin_set_account_role_reducer;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
 pub mod foreign_account_reference_type;
 pub mod foreign_account_table;
 pub mod foreign_account_type;
-pub mod foreign_platform_name_type;
+pub mod foreign_platform_tag_type;
 pub mod import_foreign_account_reducer;
 pub mod import_message_reducer;
 pub mod link_foreign_account_reducer;
@@ -33,16 +32,13 @@ pub mod set_account_callsign_reducer;
 pub mod text_channel_table;
 pub mod text_channel_type;
 pub mod unlink_foreign_account_reducer;
-pub mod update_foreign_account_reducer;
+pub mod update_foreign_account_callsign_reducer;
+pub mod update_foreign_account_profile_reducer;
 
 pub use account_profile_metadata_type::AccountProfileMetadata;
 pub use account_profile_name_type::AccountProfileName;
 pub use account_profile_table::*;
 pub use account_profile_type::AccountProfile;
-pub use admin_link_foreign_account_reducer::{
-	AdminLinkForeignAccountCallbackId, admin_link_foreign_account,
-	set_flags_for_admin_link_foreign_account,
-};
 pub use admin_set_account_role_reducer::{
 	AdminSetAccountRoleCallbackId, admin_set_account_role, set_flags_for_admin_set_account_role,
 };
@@ -55,7 +51,7 @@ pub use client_disconnected_reducer::{
 pub use foreign_account_reference_type::ForeignAccountReference;
 pub use foreign_account_table::*;
 pub use foreign_account_type::ForeignAccount;
-pub use foreign_platform_name_type::ForeignPlatformTag;
+pub use foreign_platform_tag_type::ForeignPlatformTag;
 pub use import_foreign_account_reducer::{
 	ImportForeignAccountCallbackId, import_foreign_account, set_flags_for_import_foreign_account,
 };
@@ -85,8 +81,13 @@ pub use text_channel_type::TextChannel;
 pub use unlink_foreign_account_reducer::{
 	UnlinkForeignAccountCallbackId, set_flags_for_unlink_foreign_account, unlink_foreign_account,
 };
-pub use update_foreign_account_reducer::{
-	UpdateForeignAccountCallbackId, set_flags_for_update_foreign_account, update_foreign_account,
+pub use update_foreign_account_callsign_reducer::{
+	UpdateForeignAccountCallsignCallbackId, set_flags_for_update_foreign_account_callsign,
+	update_foreign_account_callsign,
+};
+pub use update_foreign_account_profile_reducer::{
+	UpdateForeignAccountProfileCallbackId, set_flags_for_update_foreign_account_profile,
+	update_foreign_account_profile,
 };
 
 #[derive(Clone, PartialEq, Debug)]
@@ -97,10 +98,6 @@ pub use update_foreign_account_reducer::{
 /// events to indicate which reducer caused the event.
 
 pub enum Reducer {
-	AdminLinkForeignAccount {
-		account_id:     __sdk::Identity,
-		ext_account_id: String,
-	},
 	AdminSetAccountRole {
 		account_id: __sdk::Identity,
 		role:       LocalAccountRole,
@@ -131,9 +128,12 @@ pub enum Reducer {
 	UnlinkForeignAccount {
 		reference: ForeignAccountReference,
 	},
-	UpdateForeignAccount {
+	UpdateForeignAccountCallsign {
 		reference: ForeignAccountReference,
 		callsign:  Option<String>,
+	},
+	UpdateForeignAccountProfile {
+		reference: ForeignAccountReference,
 		metadata:  Option<AccountProfileMetadata>,
 	},
 }
@@ -145,7 +145,6 @@ impl __sdk::InModule for Reducer {
 impl __sdk::Reducer for Reducer {
 	fn reducer_name(&self) -> &'static str {
 		match self {
-			| Reducer::AdminLinkForeignAccount { .. } => "admin_link_foreign_account",
 			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
@@ -156,7 +155,8 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetAccountCallsign { .. } => "set_account_callsign",
 			| Reducer::UnlinkForeignAccount { .. } => "unlink_foreign_account",
-			| Reducer::UpdateForeignAccount { .. } => "update_foreign_account",
+			| Reducer::UpdateForeignAccountCallsign { .. } => "update_foreign_account_callsign",
+			| Reducer::UpdateForeignAccountProfile { .. } => "update_foreign_account_profile",
 		}
 	}
 }
@@ -165,10 +165,6 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 
 	fn try_from(value: __ws::ReducerCallInfo<__ws::BsatnFormat>) -> __sdk::Result<Self> {
 		match &value.reducer_name[..] {
-			| "admin_link_foreign_account" => Ok(__sdk::parse_reducer_args::<
-				admin_link_foreign_account_reducer::AdminLinkForeignAccountArgs,
-			>("admin_link_foreign_account", &value.args)?
-			.into()),
 			| "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<
 				admin_set_account_role_reducer::AdminSetAccountRoleArgs,
 			>("admin_set_account_role", &value.args)?
@@ -209,10 +205,18 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 				unlink_foreign_account_reducer::UnlinkForeignAccountArgs,
 			>("unlink_foreign_account", &value.args)?
 			.into()),
-			| "update_foreign_account" => Ok(__sdk::parse_reducer_args::<
-				update_foreign_account_reducer::UpdateForeignAccountArgs,
-			>("update_foreign_account", &value.args)?
-			.into()),
+			| "update_foreign_account_callsign" => {
+				Ok(__sdk::parse_reducer_args::<
+					update_foreign_account_callsign_reducer::UpdateForeignAccountCallsignArgs,
+				>("update_foreign_account_callsign", &value.args)?
+				.into())
+			},
+			| "update_foreign_account_profile" => {
+				Ok(__sdk::parse_reducer_args::<
+					update_foreign_account_profile_reducer::UpdateForeignAccountProfileArgs,
+				>("update_foreign_account_profile", &value.args)?
+				.into())
+			},
 			| unknown => {
 				Err(
 					__sdk::InternalError::unknown_name("reducer", unknown, "ReducerCallInfo")

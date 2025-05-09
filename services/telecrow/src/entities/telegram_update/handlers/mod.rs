@@ -10,7 +10,10 @@ use teloxide::{
 };
 
 use self::{message::on_message, user::on_user_update};
-use crate::BotInstanceType;
+use crate::{
+	BotInstanceType,
+	common::utils::{print_error, print_success},
+};
 
 pub fn root_handler(
 	corvidx: Arc<DbConnection>,
@@ -24,7 +27,7 @@ pub fn root_handler(
 			let user_data = user.clone();
 
 			Box::pin(async move {
-				on_user_update(ctx.clone(), user_data);
+				on_user_update(ctx.clone(), user_data, print_success, print_error);
 
 				match update.kind {
 					| UpdateKind::Message(msg) => on_message(ctx.clone(), msg),
