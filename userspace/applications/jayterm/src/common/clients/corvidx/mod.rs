@@ -126,6 +126,6 @@ pub fn subscribe_to_tables(corvidx: &corvidx::DbConnection) {
 			"SELECT * FROM account_profile",
 			// "SELECT * FROM account_linking_request",
 			"SELECT * FROM message",
-			"SELECT * FROM message_channel",
+			// "SELECT * FROM message_channel",
 		]);
 }
