@@ -67,9 +67,19 @@ pub async fn on_basic_command(
 					msg.chat.id,
 					vec![
 						format!("Chat type: <code>{chat_type}</code>"),
-						format!("Chat title: {}", msg.chat.title().unwrap_or("not set")),
-						format!("Chat ID: {}", msg.chat.id),
-						format!("Chat handle: {}", msg.chat.username().unwrap_or("not set")),
+						format!(
+							"Chat title: {}",
+							msg.chat
+								.title()
+								.map_or("not set".to_string(), |t| format!("<code>{t}</code>"))
+						),
+						format!("Chat ID: <code>{}</code>", msg.chat.id),
+						format!(
+							"Chat handle: {}",
+							msg.chat
+								.username()
+								.map_or("not set".to_string(), |h| format!("<code>@{h}</code>"))
+						),
 					]
 					.format_list(),
 				)
