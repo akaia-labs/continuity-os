@@ -12,11 +12,11 @@ use teloxide::{
 use crate::BotInstanceType;
 
 #[derive(BotCommands, Clone)]
-#[command(rename_rule = "snake_case")]
+#[command(rename_rule = "lowercase")]
 pub enum PrivateCommand {
-	#[command(aliases = ["myaccountid"])]
-	/// Display id of the foreign account
-	/// associated with the caller's Telegram account.
+	#[command()]
+	/// ℹ️ Display id of the Corvi.d account record
+	/// associated with your Telegram account.
 	MyAccountId,
 }
 

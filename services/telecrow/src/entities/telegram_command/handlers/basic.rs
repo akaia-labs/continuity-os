@@ -7,18 +7,18 @@ use teloxide::{
 	utils::command::BotCommands,
 };
 
-use super::PrivateCommand;
+use super::{super::CommandDescriptionsFormat, PrivateCommand};
 use crate::BotInstanceType;
 
 #[derive(BotCommands, Clone)]
 #[command(rename_rule = "lowercase")]
 pub enum BasicCommand {
 	#[command(aliases = ["h", "?"])]
-	/// Display this text.
+	/// ℹ️ Display this text.
 	Help,
 
 	#[command()]
-	/// Get basic information about the current chat
+	/// ℹ️ Get basic information about the current chat
 	ChatInfo,
 }
 
@@ -31,10 +31,10 @@ pub async fn on_basic_command(
 				.send_message(
 					msg.chat.id,
 					vec![
-						"Basic commands:".to_string(),
-						BasicCommand::descriptions().to_string(),
-						"Private (DM-only) commands:".to_string(),
-						PrivateCommand::descriptions().to_string(),
+						"⚙️ Basic commands:".to_string(),
+						BasicCommand::descriptions().format_list(),
+						"🔒 Private (DM-only) commands:".to_string(),
+						PrivateCommand::descriptions().format_list(),
 					]
 					.format_list(),
 				)
