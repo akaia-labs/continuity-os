@@ -1,3 +1,3 @@
-pub mod crowd_core;
+pub mod corvidx;
 
-pub use crowd_core as corvidx_client;
+pub use corvidx as corvidx_client;

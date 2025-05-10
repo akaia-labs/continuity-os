@@ -1,11 +1,11 @@
 use std::process;
 
 use crowdcomm_sdk::{
+	corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	corvidx::{
 		self, AccountProfileTableAccess, ForeignAccountTableAccess, LocalAccountTableAccess,
 		MessageAuthorId, MessageTableAccess, traits::DisplayName,
 	},
-	get_env_config,
 };
 use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};
 
@@ -40,8 +40,13 @@ fn creds_store() -> credentials::File {
 
 /// Load credentials from a file and connect to the database.
 pub fn connect_to_db() -> corvidx::DbConnection {
-	if let Some(env_config) = get_env_config() {
-		corvidx::DbConnection::builder()
+	let CorvidSubsystemConfig {
+		module_host,
+		components,
+		..
+	} = corvid_subsystem_config::get();
+
+	corvidx::DbConnection::builder()
 		.on_connect(on_connected)
 		.on_connect_error(on_connect_error)
 		.on_disconnect(on_disconnected)
@@ -49,15 +54,10 @@ pub fn connect_to_db() -> corvidx::DbConnection {
 		// In that case, we'll load it and pass it to `with_token`,
 		// so we can re-authenticate as the same `Identity`.
 		.with_token(creds_store().load().expect("Error loading credentials"))
-		.with_module_name(env_config.modules.corvidx.name)
-		.with_uri(env_config.host)
+		.with_module_name(components.corvidx.db_name)
+		.with_uri(module_host)
 		.build()
 		.expect("Failed to connect")
-	} else {
-		panic!(
-			"❌ Missing environment variables! Check your .env file and .env.example reference."
-		);
-	}
 }
 
 /// Saves client account credentials to a file.
