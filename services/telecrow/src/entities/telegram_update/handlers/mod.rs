@@ -3,6 +3,7 @@ mod user;
 
 use std::{future::Future, pin::Pin, sync::Arc};
 
+use corvutils::{print_error, print_success};
 use crowdcomm::corvidx::DbConnection;
 use teloxide::{
 	RequestError, respond,
@@ -10,10 +11,7 @@ use teloxide::{
 };
 
 use self::{message::on_message, user::on_user_update};
-use crate::{
-	BotInstanceType,
-	common::utils::{print_error, print_success},
-};
+use crate::BotInstanceType;
 
 pub fn root_handler(
 	corvidx: Arc<DbConnection>,
