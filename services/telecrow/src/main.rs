@@ -18,7 +18,7 @@ use teloxide::{
 use crate::{
 	common::{clients::corvidx_client, runtime, runtime::TelecrowError},
 	entities::{local_account, local_message},
-	features::telegram_relay,
+	features::telegram_bridge,
 };
 
 pub type BotInstanceType = DefaultParseMode<Bot>;
@@ -31,7 +31,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let async_handler = runtime::new_async_handler();
 	let corvidx_connection = Arc::new(corvidx_client::connect());
-	let telegram_bridge: BotInstanceType = Bot::from_env().parse_mode(ParseMode::Html);
+	let telegram_bridge_bot: BotInstanceType = Bot::from_env().parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
 	corvidx_client::subscribe(&corvidx_connection);
@@ -39,13 +39,13 @@ async fn main() -> Result<(), TelecrowError> {
 	local_message::subscribe(&corvidx_connection);
 	corvidx_connection.run_threaded();
 
-	telegram_relay::subscribe(
+	telegram_bridge::subscribe(
 		&corvidx_connection,
 		async_handler.clone(),
-		telegram_bridge.clone(),
+		telegram_bridge_bot.clone(),
 	);
 
-	let telegram_bridge_handler = dptree::entry()
+	let telegram_bridge_event_handler = dptree::entry()
 		.branch(
 			Update::filter_message()
 				.filter_command::<telegram_command::BasicCommand>()
@@ -66,7 +66,7 @@ async fn main() -> Result<(), TelecrowError> {
 
 	println!("⌛ Starting Telegram bridge...\n");
 
-	Dispatcher::builder(telegram_bridge, telegram_bridge_handler)
+	Dispatcher::builder(telegram_bridge_bot, telegram_bridge_event_handler)
 		.build()
 		.dispatch()
 		.await;
