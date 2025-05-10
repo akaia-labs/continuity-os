@@ -17,8 +17,8 @@ use teloxide::{
 
 use crate::{
 	common::{clients::corvidx_client, runtime, runtime::TelecrowError},
-	entities::{local_account, local_message},
-	features::telegram_bridge,
+	entities::{corvidx_account, corvidx_message},
+	features::telegram_group_bridge,
 };
 
 pub type BotInstanceType = DefaultParseMode<Bot>;
@@ -35,17 +35,17 @@ async fn main() -> Result<(), TelecrowError> {
 
 	println!("⏳ Initializing subscriptions...\n");
 	corvidx_client::subscribe(&corvidx_connection);
-	local_account::subscribe(&corvidx_connection);
-	local_message::subscribe(&corvidx_connection);
+	corvidx_account::subscribe(&corvidx_connection);
+	corvidx_message::subscribe(&corvidx_connection);
 	corvidx_connection.run_threaded();
 
-	telegram_bridge::subscribe(
+	telegram_group_bridge::subscribe(
 		&corvidx_connection,
 		async_handler.clone(),
 		telegram_bridge_bot.clone(),
 	);
 
-	let telegram_bridge_event_handler = dptree::entry()
+	let telegram_bridge_bot_handler = dptree::entry()
 		.branch(
 			Update::filter_message()
 				.filter_command::<telegram_command::BasicCommand>()
@@ -64,9 +64,9 @@ async fn main() -> Result<(), TelecrowError> {
 				.endpoint(telegram_update::root_handler(corvidx_connection.clone())),
 		);
 
-	println!("⌛ Starting Telegram bridge...\n");
+	println!("⌛ Starting Telegram bridge bot...\n");
 
-	Dispatcher::builder(telegram_bridge_bot, telegram_bridge_event_handler)
+	Dispatcher::builder(telegram_bridge_bot, telegram_bridge_bot_handler)
 		.build()
 		.dispatch()
 		.await;
