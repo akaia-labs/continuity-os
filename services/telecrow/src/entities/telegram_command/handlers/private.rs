@@ -1,15 +1,12 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
-use crowdcomm::{
-	PLATFORM_NAME,
-	corvidx::{DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport},
-};
+use crowdcomm::corvidx::{DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport};
 use teloxide::{
 	RequestError, payloads::SendMessageSetters, prelude::Requester,
 	sugar::request::RequestReplyExt, types::Message, utils::command::BotCommands,
 };
 
-use crate::BotInstanceType;
+use crate::{BotInstanceType, common::constants::ROOT_SUBSYSTEM_CANONICAL_NAME};
 
 #[derive(BotCommands, Clone)]
 #[command(rename_rule = "lowercase")]
@@ -60,8 +57,10 @@ pub fn private_handler(
 							format!("Your account id is <code>{}</code>", foreign_account.id)
 						} else {
 							format!(
-								"Your Telegram account is not registered in this {PLATFORM_NAME} \
-								 instance."
+								r#"
+									Your Telegram account is not registered
+									in this {ROOT_SUBSYSTEM_CANONICAL_NAME} instance.
+								"#,
 							)
 						};
 

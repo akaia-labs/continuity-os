@@ -13,11 +13,11 @@ path = "src/main.rs"
 
 
 [dependencies]
-# corvi.d
+# Internal dependencies
 corvutils.workspace = true
 crowdcomm.workspace = true
 
-# External packages
+# External dependencies
 capitalize.workspace = true
 dotenvy.workspace = true
 hex.workspace = true

@@ -24,7 +24,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e89da841a80418a9b391ebaea17f5c112ffaaa96f621d2c285b5174da76b9011"
 dependencies = [
  "cfg-if",
- "getrandom 0.2.16",
  "once_cell",
  "version_check",
  "zerocopy 0.7.35",
@@ -297,8 +296,8 @@ dependencies = [
  "dotenvy",
  "hex",
  "spacetimedb-sdk",
- "strum",
- "strum_macros",
+ "strum 0.27.1",
+ "strum_macros 0.27.1",
 ]
 
 [[package]]
@@ -309,8 +308,8 @@ dependencies = [
  "dotenvy",
  "hex",
  "spacetimedb-sdk",
- "strum",
- "strum_macros",
+ "strum 0.27.1",
+ "strum_macros 0.27.1",
 ]
 
 [[package]]
@@ -321,8 +320,8 @@ dependencies = [
  "log",
  "serde",
  "spacetimedb",
- "strum",
- "strum_macros",
+ "strum 0.27.1",
+ "strum_macros 0.27.1",
 ]
 
 [[package]]
@@ -355,10 +354,14 @@ dependencies = [
 name = "crowdcomm"
 version = "0.3.0"
 dependencies = [
+ "corvutils",
+ "dotenvy",
  "hex",
+ "serde",
+ "serde-env",
  "spacetimedb-sdk",
- "strum",
- "strum_macros",
+ "strum 0.27.1",
+ "strum_macros 0.27.1",
  "teloxide",
 ]
 
@@ -1807,6 +1810,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-env"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d13536c0c431652192b75c7d5afa83dedae98f91d7e687ff30a009e9d15284fb"
+dependencies = [
+ "anyhow",
+ "serde",
+]
+
+[[package]]
 name = "serde_derive"
 version = "1.0.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1934,9 +1947,9 @@ dependencies = [
 
 [[package]]
 name = "spacetimedb"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3af9382ff04f966f39e3e1b475ee5de16ecc53b2ce9549b15a2fec9dcf82b319"
+checksum = "41cfbca6e4796309179af17942f37f5e1a7297e7a91fa33d2a20ccad48f50e35"
 dependencies = [
  "bytemuck",
  "derive_more 0.99.20",
@@ -1952,9 +1965,9 @@ dependencies = [
 
 [[package]]
 name = "spacetimedb-bindings-macro"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af99d92f47ec82a929ef2b790c4e6a192929bb4b336447afbcff79d21f56a0c4"
+checksum = "1c60767c5e80fb1d0753834b894c9c3f9eb0ddba351ef4681fe714ff1024e727"
 dependencies = [
  "heck 0.4.1",
  "humantime",
@@ -1966,9 +1979,9 @@ dependencies = [
 
 [[package]]
 name = "spacetimedb-bindings-sys"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98f20547ab6205b3604819236c574c0144b12ba418deff986ceb1d5ee45c89c0"
+checksum = "4b5f6d06e1df203c97ecb7cd404e6a9a1920bfc3b7e16b40d650be6bfabe3292"
 dependencies = [
  "spacetimedb-primitives",
 ]
@@ -1993,15 +2006,15 @@ dependencies = [
  "spacetimedb-lib",
  "spacetimedb-primitives",
  "spacetimedb-sats",
- "strum",
+ "strum 0.25.0",
  "thiserror 1.0.69",
 ]
 
 [[package]]
 name = "spacetimedb-data-structures"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb2e73d36e70f961f10b337d8e1fc56a1b51520bf3dcfe19b9924c8ee157ed7a"
+checksum = "f857c5f4ea6c3d13f9d78d3aaa36fd31d1879331fdd15d3f1de0ecbc4e6e1968"
 dependencies = [
  "ahash",
  "hashbrown 0.15.2",
@@ -2012,9 +2025,9 @@ dependencies = [
 
 [[package]]
 name = "spacetimedb-lib"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0daf9e273bff482f13df676f91670ce3eb22a980a0e8e000cb6be007df7f6f67"
+checksum = "69e1c1bac730f946c8ac07d9e71aee934eb1a82c02dcb6757a3763cdab808d1f"
 dependencies = [
  "anyhow",
  "bitflags",
@@ -2035,9 +2048,9 @@ dependencies = [
 
 [[package]]
 name = "spacetimedb-metrics"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3756d61c158aee43820540899e2e5acd6397bc4f9c8ca5678facddf161caabad"
+checksum = "68f8d70c3f417131b9d9fc0e5c929a374d8e98e1039161b140f4153174d46daf"
 dependencies = [
  "arrayvec",
  "itertools 0.12.1",
@@ -2047,9 +2060,9 @@ dependencies = [
 
 [[package]]
 name = "spacetimedb-primitives"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e00f410fae725b19c85dee268bf75d498229e9fefa5dcc3595262a4eb48edf78"
+checksum = "f149b0933112064b4d3424bfae9b6dc694d4bc2e3ca80b6974a0628e81b61c70"
 dependencies = [
  "bitflags",
  "either",
@@ -2059,9 +2072,9 @@ dependencies = [
 
 [[package]]
 name = "spacetimedb-sats"
-version = "1.1.1"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8bc6ace4942e4f477ddaef7e23204d8e8eed01e79119fb4e4f99d3eb3a462db3"
+checksum = "e0e4739251061b529df194318f78c85482dff282d41175eeefe1a1f9c5ce556f"
 dependencies = [
  "anyhow",
  "arrayvec",
@@ -2145,7 +2158,16 @@ version = "0.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "290d54ea6f91c969195bdbcd7442c8c2a2ba87da8bf60a7ee86a235d4bc1e125"
 dependencies = [
- "strum_macros",
+ "strum_macros 0.25.3",
+]
+
+[[package]]
+name = "strum"
+version = "0.27.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f64def088c51c9510a8579e3c5d67c65349dcf755e5479ad3d010aa6454e2c32"
+dependencies = [
+ "strum_macros 0.27.1",
 ]
 
 [[package]]
@@ -2155,6 +2177,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23dc1fa9ac9c169a78ba62f0b841814b7abae11bdd047b9c58f893439e309ea0"
 dependencies = [
  "heck 0.4.1",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn",
+]
+
+[[package]]
+name = "strum_macros"
+version = "0.27.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c77a8c5abcaf0f9ce05d62342b7d298c346515365c36b673df4ebe3ced01fde8"
+dependencies = [
+ "heck 0.5.0",
  "proc-macro2",
  "quote",
  "rustversion",
@@ -2396,9 +2431,9 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.44.2"
+version = "1.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6b88822cbe49de4185e3a4cbf8321dd487cf5fe0c5c65695fef6346371e9c48"
+checksum = "2513ca694ef9ede0fb23fe71a4ee4107cb102b9dc1930f6d0fd77aae068ae165"
 dependencies = [
  "backtrace",
  "bytes",

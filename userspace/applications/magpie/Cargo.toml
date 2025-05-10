@@ -11,10 +11,10 @@ path = "src/main.rs"
 
 
 [dependencies]
-# corvi.d
+# Internal dependencies
 crowdcomm.workspace = true
 
-# External packages
+# External dependencies
 dotenvy.workspace = true
 hex.workspace = true
 spacetimedb-sdk.workspace = true

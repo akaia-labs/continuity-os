@@ -49,7 +49,7 @@ pub fn connect_to_db() -> corvidx::DbConnection {
 		// In that case, we'll load it and pass it to `with_token`,
 		// so we can re-authenticate as the same `Identity`.
 		.with_token(creds_store().load().expect("Error loading credentials"))
-		.with_module_name(env_config.modules.crowspace.name)
+		.with_module_name(env_config.modules.corvidx.name)
 		.with_uri(env_config.host)
 		.build()
 		.expect("Failed to connect")

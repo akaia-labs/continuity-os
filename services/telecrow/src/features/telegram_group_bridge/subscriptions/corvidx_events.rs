@@ -9,7 +9,7 @@ use teloxide::{
 };
 use tokio::sync::mpsc;
 
-use crate::{BotInstanceType, common::runtime::AsyncHandler, entities::local_account};
+use crate::{BotInstanceType, common::runtime::AsyncHandler, entities::corvidx_account};
 
 /// Sets up event forwarding from corvidx to Telegram.
 ///
@@ -21,7 +21,7 @@ pub fn subscribe(
 	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
 	let (forward_transmitter, mut forward_receiver) =
-		mpsc::channel::<local_account::StatusTelegramForwardRequest>(100);
+		mpsc::channel::<corvidx_account::StatusTelegramForwardRequest>(100);
 
 	// Telegram bot instance for the background task
 	let telegram_transmitter = telegram_bot.clone();
@@ -44,7 +44,7 @@ pub fn subscribe(
 	corvidx
 		.db
 		.local_account()
-		.on_update(local_account::handle_status_telegram_forward(
+		.on_update(corvidx_account::handle_status_telegram_forward(
 			forward_transmitter,
 			async_handler,
 		));
