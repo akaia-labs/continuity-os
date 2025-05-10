@@ -123,7 +123,9 @@ pub fn subscribe_to_tables(corvidx: &corvidx::DbConnection) {
 		.subscribe([
 			"SELECT * FROM local_account",
 			"SELECT * FROM foreign_account",
-			"SELECT * FROM message",
 			"SELECT * FROM account_profile",
+			// "SELECT * FROM account_linking_request",
+			"SELECT * FROM message",
+			"SELECT * FROM message_channel",
 		]);
 }

@@ -43,5 +43,6 @@ pub fn subscribe(corvidx: &DbConnection) {
 			"SELECT * FROM account_profile",
 			// "SELECT * FROM account_linking_request",
 			"SELECT * FROM message",
+			"SELECT * FROM message_channel",
 		]);
 }
