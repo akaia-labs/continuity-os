@@ -1,5 +1,5 @@
 mod logging;
-mod string;
+mod strings;
 
 pub use logging::*;
-pub use string::*;
+pub use strings::*;

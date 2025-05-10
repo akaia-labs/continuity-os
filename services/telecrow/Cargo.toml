@@ -26,3 +26,4 @@ pretty_env_logger.workspace = true
 spacetimedb-sdk.workspace = true
 teloxide.workspace = true
 tokio.workspace = true
+unicode-segmentation.workspace = true

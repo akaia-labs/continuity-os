@@ -41,4 +41,5 @@ strum = { version = "0.25.0", features = ["derive"] }
 strum_macros = "0.25.3"
 teloxide = { version = "0.15.0", features = ["macros"] }
 tokio = { version = "1.8", features = ["rt-multi-thread", "macros"] }
+unicode-segmentation = "1.12.0"
 # wasm-opt = "0.116.1"
