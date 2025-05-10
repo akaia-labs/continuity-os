@@ -1,6 +1,6 @@
 use std::{str::FromStr, sync::Arc};
 
-use crowdcomm::corvidx::{
+use crowdcomm_sdk::corvidx::{
 	DbConnection, EventContext, ForeignAccountReference, ForeignPlatformTag,
 	LocalAccountTableAccess, Message, MessageAuthorId, ReducerEventContext, send_message,
 	traits::DisplayName,
@@ -51,7 +51,7 @@ pub fn handle_telegram_forward(
 					.unwrap_or(format!("{}", message.sender));
 
 				let request = TelegramForwardRequest {
-					// TODO: The chat id must be taken from crowdcomm::TextChannel
+					// TODO: The chat id must be taken from crowdcomm_sdk::TextChannel
 					chat_id: -1001544271932,
 					sender_name,
 					message_text: message.text.clone(),

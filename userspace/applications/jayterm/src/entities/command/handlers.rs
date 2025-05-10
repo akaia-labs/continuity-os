@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crowdcomm::corvidx::{
+use crowdcomm_sdk::corvidx::{
 	DbConnection, ForeignAccountReference, link_foreign_account, mirror_foreign_profile,
 	set_account_callsign, unlink_foreign_account,
 };

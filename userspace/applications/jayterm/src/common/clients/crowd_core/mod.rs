@@ -1,6 +1,6 @@
 use std::process;
 
-use crowdcomm::{
+use crowdcomm_sdk::{
 	corvidx::{
 		self, AccountProfileTableAccess, ForeignAccountTableAccess, LocalAccountTableAccess,
 		MessageAuthorId, MessageTableAccess, traits::DisplayName,

@@ -26,8 +26,6 @@ pub mod message_table;
 pub mod message_type;
 pub mod mirror_foreign_profile_reducer;
 pub mod send_message_reducer;
-pub mod service_table;
-pub mod service_type;
 pub mod set_account_callsign_reducer;
 pub mod text_channel_table;
 pub mod text_channel_type;
@@ -71,8 +69,6 @@ pub use mirror_foreign_profile_reducer::{
 	MirrorForeignProfileCallbackId, mirror_foreign_profile, set_flags_for_mirror_foreign_profile,
 };
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
-pub use service_table::*;
-pub use service_type::Service;
 pub use set_account_callsign_reducer::{
 	SetAccountCallsignCallbackId, set_account_callsign, set_flags_for_set_account_callsign,
 };
@@ -235,7 +231,6 @@ pub struct DbUpdate {
 	foreign_account: __sdk::TableUpdate<ForeignAccount>,
 	local_account:   __sdk::TableUpdate<LocalAccount>,
 	message:         __sdk::TableUpdate<Message>,
-	service:         __sdk::TableUpdate<Service>,
 	text_channel:    __sdk::TableUpdate<TextChannel>,
 }
 
@@ -258,7 +253,6 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 					db_update.local_account = local_account_table::parse_table_update(table_update)?
 				},
 				| "message" => db_update.message = message_table::parse_table_update(table_update)?,
-				| "service" => db_update.service = service_table::parse_table_update(table_update)?,
 				| "text_channel" => {
 					db_update.text_channel = text_channel_table::parse_table_update(table_update)?
 				},
@@ -299,7 +293,6 @@ impl __sdk::DbUpdate for DbUpdate {
 		diff.message = cache
 			.apply_diff_to_table::<Message>("message", &self.message)
 			.with_updates_by_pk(|row| &row.id);
-		diff.service = cache.apply_diff_to_table::<Service>("service", &self.service);
 		diff.text_channel = cache
 			.apply_diff_to_table::<TextChannel>("text_channel", &self.text_channel)
 			.with_updates_by_pk(|row| &row.id);
@@ -316,7 +309,6 @@ pub struct AppliedDiff<'r> {
 	foreign_account: __sdk::TableAppliedDiff<'r, ForeignAccount>,
 	local_account:   __sdk::TableAppliedDiff<'r, LocalAccount>,
 	message:         __sdk::TableAppliedDiff<'r, Message>,
-	service:         __sdk::TableAppliedDiff<'r, Service>,
 	text_channel:    __sdk::TableAppliedDiff<'r, TextChannel>,
 }
 
@@ -344,7 +336,6 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 			event,
 		);
 		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
-		callbacks.invoke_table_row_callbacks::<Service>("service", &self.service, event);
 		callbacks.invoke_table_row_callbacks::<TextChannel>(
 			"text_channel",
 			&self.text_channel,
@@ -983,7 +974,6 @@ impl __sdk::SpacetimeModule for RemoteModule {
 		foreign_account_table::register_table(client_cache);
 		local_account_table::register_table(client_cache);
 		message_table::register_table(client_cache);
-		service_table::register_table(client_cache);
 		text_channel_table::register_table(client_cache);
 	}
 }

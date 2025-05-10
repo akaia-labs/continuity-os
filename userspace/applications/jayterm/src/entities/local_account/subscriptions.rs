@@ -1,4 +1,4 @@
-use crowdcomm::corvidx::{
+use crowdcomm_sdk::corvidx::{
 	DbConnection, EventContext, LocalAccount, LocalAccountTableAccess, ReducerEventContext,
 	set_account_callsign,
 };

@@ -37,7 +37,7 @@ overflow-checks = true
 [workspace.dependencies]
 # Internal dependencies
 corvutils = { path = "libraries/corvutils" }
-crowdcomm = { path = "packages/crowdcomm" }
+crowdcomm_sdk = { path = "packages/crowdcomm_sdk" }
 
 # External dependencies
 capitalize = "0.3.4"

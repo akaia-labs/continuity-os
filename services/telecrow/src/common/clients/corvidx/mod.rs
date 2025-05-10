@@ -1,7 +1,7 @@
 mod authentication;
 mod subscriptions;
 
-use crowdcomm::{
+use crowdcomm_sdk::{
 	corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	corvidx::DbConnection,
 };

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowdcomm::corvidx::{DbConnection, MessageTableAccess};
+use crowdcomm_sdk::corvidx::{DbConnection, MessageTableAccess};
 use spacetimedb_sdk::Table;
 use teloxide::{
 	payloads::SendMessageSetters,

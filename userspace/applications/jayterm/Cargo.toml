@@ -13,7 +13,7 @@ path = "src/main.rs"
 [dependencies]
 # Internal dependencies
 corvutils.workspace = true
-crowdcomm.workspace = true
+crowdcomm_sdk.workspace = true
 
 # External dependencies
 dotenvy.workspace = true

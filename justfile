@@ -22,7 +22,7 @@ jayterm-dev:
 generate-module_bindings:
     spacetime generate --lang rust \
     	--project-path modules/corvidx \
-    	--out-dir packages/crowdcomm/src/modules/corvidx/common/_generated_bindings
+    	--out-dir packages/crowdcomm_sdk/src/modules/corvidx/common/_generated_bindings
 
 generate: generate-module_bindings
     (echo "✅ DONE.")

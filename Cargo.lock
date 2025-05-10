@@ -292,7 +292,7 @@ name = "corvid_jayterm"
 version = "0.3.0"
 dependencies = [
  "corvutils",
- "crowdcomm",
+ "crowdcomm_sdk",
  "dotenvy",
  "hex",
  "spacetimedb-sdk",
@@ -304,7 +304,7 @@ dependencies = [
 name = "corvid_magpie"
 version = "0.1.0"
 dependencies = [
- "crowdcomm",
+ "crowdcomm_sdk",
  "dotenvy",
  "hex",
  "spacetimedb-sdk",
@@ -351,7 +351,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "crowdcomm"
+name = "crowdcomm_sdk"
 version = "0.3.0"
 dependencies = [
  "corvutils",
@@ -1521,7 +1521,7 @@ checksum = "74765f6d916ee2faa39bc8e68e4f3ed8949b48cccdac59983d287a7cb71ce9c5"
 name = "raiven"
 version = "0.1.0"
 dependencies = [
- "crowdcomm",
+ "crowdcomm_sdk",
  "dotenvy",
  "hex",
  "log",
@@ -2245,7 +2245,7 @@ version = "0.3.0"
 dependencies = [
  "capitalize",
  "corvutils",
- "crowdcomm",
+ "crowdcomm_sdk",
  "dotenvy",
  "hex",
  "log",

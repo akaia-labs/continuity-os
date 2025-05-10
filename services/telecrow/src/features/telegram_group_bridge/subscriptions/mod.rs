@@ -3,7 +3,7 @@ mod corvidx_messages;
 
 use std::sync::Arc;
 
-use crowdcomm::corvidx::DbConnection;
+use crowdcomm_sdk::corvidx::DbConnection;
 
 use crate::{BotInstanceType, common::runtime::AsyncHandler};
 

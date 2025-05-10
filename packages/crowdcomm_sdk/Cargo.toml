@@ -1,12 +1,12 @@
 [package]
-name = "crowdcomm"
-description = "Akaia Labs corvi.d client SDK in Rust"
+name = "crowdcomm_sdk"
+description = "Akaia Labs subsystem SDK"
 version = "0.3.0"
 edition = "2024"
 
 
 [lib]
-name = "crowdcomm"
+name = "crowdcomm_sdk"
 path = "src/lib.rs"
 
 

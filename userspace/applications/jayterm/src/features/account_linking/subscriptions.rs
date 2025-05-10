@@ -1,5 +1,5 @@
 use corvutils::StringExtensions;
-use crowdcomm::corvidx::{
+use crowdcomm_sdk::corvidx::{
 	DbConnection, ForeignAccountReference, ReducerEventContext, link_foreign_account,
 	mirror_foreign_profile, unlink_foreign_account,
 };

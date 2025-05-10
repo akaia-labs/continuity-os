@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use capitalize::Capitalize;
-use crowdcomm::corvidx::{
+use crowdcomm_sdk::corvidx::{
 	DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
 	account::ForeignAccountImport,
 	import_foreign_account,

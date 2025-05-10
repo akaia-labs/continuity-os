@@ -1,4 +1,4 @@
-use crowdcomm::corvidx::{
+use crowdcomm_sdk::corvidx::{
 	AccountProfileMetadata, DbConnection, ForeignAccountReference, ReducerEventContext,
 	import_foreign_account, update_foreign_account_profile,
 };
