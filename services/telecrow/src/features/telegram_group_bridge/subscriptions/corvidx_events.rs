@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowdcomm_sdk::corvidx::{DbConnection, LocalAccountTableAccess};
+use crowdcomm_sdk::corvidx::{DbConnection, NativeAccountTableAccess};
 use spacetimedb_sdk::TableWithPrimaryKey;
 use teloxide::{
 	payloads::SendMessageSetters,
@@ -43,7 +43,7 @@ pub fn subscribe(
 	// Registering the event handler
 	corvidx
 		.db
-		.local_account()
+		.native_account()
 		.on_update(corvidx_account::handle_status_telegram_forward(
 			forward_transmitter,
 			async_handler,

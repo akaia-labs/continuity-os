@@ -6,16 +6,13 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub enum MessageAuthorId {
-	System,
-
-	NativeAccountId(__sdk::Identity),
-
-	ForeignAccountId(String),
-
-	Unknown,
+pub struct AccountLinkRequest {
+	pub id:         i128,
+	pub requester:  __sdk::Identity,
+	pub created_at: __sdk::Timestamp,
+	pub expires_at: __sdk::Timestamp,
 }
 
-impl __sdk::InModule for MessageAuthorId {
+impl __sdk::InModule for AccountLinkRequest {
 	type Module = super::RemoteModule;
 }

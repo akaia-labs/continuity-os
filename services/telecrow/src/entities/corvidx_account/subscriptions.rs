@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crowdcomm_sdk::corvidx::{
-	DbConnection, EventContext, LocalAccount, LocalAccountTableAccess, ReducerEventContext,
+	DbConnection, EventContext, NativeAccount, NativeAccountTableAccess, ReducerEventContext,
 	set_account_callsign,
 };
 use spacetimedb_sdk::{Status, Table, Timestamp};
@@ -18,13 +18,13 @@ pub struct StatusTelegramForwardRequest {
 /// Logs event on Telegram using a channel.
 pub fn handle_status_telegram_forward(
 	transmitter: mpsc::Sender<StatusTelegramForwardRequest>, async_handler: Arc<AsyncHandler>,
-) -> impl FnMut(&EventContext, &LocalAccount, &LocalAccount) {
+) -> impl FnMut(&EventContext, &NativeAccount, &NativeAccount) {
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
 	return move |_crowspace_ctx: &EventContext,
-	             outdated_account_data: &LocalAccount,
-	             updated_account_data: &LocalAccount| {
+	             outdated_account_data: &NativeAccount,
+	             updated_account_data: &NativeAccount| {
 		// Only forward events registered after handler initialization
 		if subscribed_at.le(&updated_account_data.updated_at) {
 			if outdated_account_data.callsign != updated_account_data.callsign {
@@ -54,7 +54,7 @@ pub fn handle_status_telegram_forward(
 
 /// @deprecated
 /// Prints a notification about callsign and status changes.
-fn _on_account_updated(_corvidx: &EventContext, old: &LocalAccount, new: &LocalAccount) {
+fn _on_account_updated(_corvidx: &EventContext, old: &NativeAccount, new: &NativeAccount) {
 	if old.is_online && !new.is_online {
 		println!("Account {} disconnected.", old.callsign);
 	}
@@ -65,7 +65,7 @@ fn _on_account_updated(_corvidx: &EventContext, old: &LocalAccount, new: &LocalA
 }
 
 /// If the account is online, prints a notification.
-fn on_account_inserted(_corvidx: &EventContext, account: &LocalAccount) {
+fn on_account_inserted(_corvidx: &EventContext, account: &NativeAccount) {
 	if account.is_online {
 		println!("Account {} connected.", account.callsign);
 	}
@@ -79,6 +79,6 @@ fn on_callsign_set(corvidx: &ReducerEventContext, callsign: &String) {
 }
 
 pub fn subscribe(corvidx: &DbConnection) {
-	corvidx.db.local_account().on_insert(on_account_inserted);
+	corvidx.db.native_account().on_insert(on_account_inserted);
 	corvidx.reducers.on_set_account_callsign(on_callsign_set);
 }

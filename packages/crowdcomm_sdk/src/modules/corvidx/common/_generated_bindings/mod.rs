@@ -4,6 +4,8 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+pub mod account_link_request_table;
+pub mod account_link_request_type;
 pub mod account_profile_metadata_type;
 pub mod account_profile_name_type;
 pub mod account_profile_table;
@@ -18,13 +20,13 @@ pub mod foreign_platform_tag_type;
 pub mod import_foreign_account_reducer;
 pub mod import_message_reducer;
 pub mod link_foreign_account_reducer;
-pub mod local_account_role_type;
-pub mod local_account_table;
-pub mod local_account_type;
 pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
 pub mod mirror_foreign_profile_reducer;
+pub mod native_account_local_role_type;
+pub mod native_account_table;
+pub mod native_account_type;
 pub mod send_message_reducer;
 pub mod set_account_callsign_reducer;
 pub mod text_channel_table;
@@ -33,6 +35,8 @@ pub mod unlink_foreign_account_reducer;
 pub mod update_foreign_account_callsign_reducer;
 pub mod update_foreign_account_profile_reducer;
 
+pub use account_link_request_table::*;
+pub use account_link_request_type::AccountLinkRequest;
 pub use account_profile_metadata_type::AccountProfileMetadata;
 pub use account_profile_name_type::AccountProfileName;
 pub use account_profile_table::*;
@@ -59,15 +63,15 @@ pub use import_message_reducer::{
 pub use link_foreign_account_reducer::{
 	LinkForeignAccountCallbackId, link_foreign_account, set_flags_for_link_foreign_account,
 };
-pub use local_account_role_type::LocalAccountRole;
-pub use local_account_table::*;
-pub use local_account_type::LocalAccount;
 pub use message_author_id_type::MessageAuthorId;
 pub use message_table::*;
 pub use message_type::Message;
 pub use mirror_foreign_profile_reducer::{
 	MirrorForeignProfileCallbackId, mirror_foreign_profile, set_flags_for_mirror_foreign_profile,
 };
+pub use native_account_local_role_type::NativeAccountLocalRole;
+pub use native_account_table::*;
+pub use native_account_type::NativeAccount;
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
 pub use set_account_callsign_reducer::{
 	SetAccountCallsignCallbackId, set_account_callsign, set_flags_for_set_account_callsign,
@@ -96,7 +100,7 @@ pub use update_foreign_account_profile_reducer::{
 pub enum Reducer {
 	AdminSetAccountRole {
 		account_id: __sdk::Identity,
-		role:       LocalAccountRole,
+		role:       NativeAccountLocalRole,
 	},
 	ClientConnected,
 	ClientDisconnected,
@@ -227,11 +231,12 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct DbUpdate {
-	account_profile: __sdk::TableUpdate<AccountProfile>,
-	foreign_account: __sdk::TableUpdate<ForeignAccount>,
-	local_account:   __sdk::TableUpdate<LocalAccount>,
-	message:         __sdk::TableUpdate<Message>,
-	text_channel:    __sdk::TableUpdate<TextChannel>,
+	account_link_request: __sdk::TableUpdate<AccountLinkRequest>,
+	account_profile:      __sdk::TableUpdate<AccountProfile>,
+	foreign_account:      __sdk::TableUpdate<ForeignAccount>,
+	message:              __sdk::TableUpdate<Message>,
+	native_account:       __sdk::TableUpdate<NativeAccount>,
+	text_channel:         __sdk::TableUpdate<TextChannel>,
 }
 
 impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
@@ -241,6 +246,10 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 		let mut db_update = DbUpdate::default();
 		for table_update in raw.tables {
 			match &table_update.table_name[..] {
+				| "account_link_request" => {
+					db_update.account_link_request =
+						account_link_request_table::parse_table_update(table_update)?
+				},
 				| "account_profile" => {
 					db_update.account_profile =
 						account_profile_table::parse_table_update(table_update)?
@@ -249,10 +258,11 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 					db_update.foreign_account =
 						foreign_account_table::parse_table_update(table_update)?
 				},
-				| "local_account" => {
-					db_update.local_account = local_account_table::parse_table_update(table_update)?
-				},
 				| "message" => db_update.message = message_table::parse_table_update(table_update)?,
+				| "native_account" => {
+					db_update.native_account =
+						native_account_table::parse_table_update(table_update)?
+				},
 				| "text_channel" => {
 					db_update.text_channel = text_channel_table::parse_table_update(table_update)?
 				},
@@ -281,17 +291,23 @@ impl __sdk::DbUpdate for DbUpdate {
 	) -> AppliedDiff<'_> {
 		let mut diff = AppliedDiff::default();
 
+		diff.account_link_request = cache
+			.apply_diff_to_table::<AccountLinkRequest>(
+				"account_link_request",
+				&self.account_link_request,
+			)
+			.with_updates_by_pk(|row| &row.id);
 		diff.account_profile = cache
 			.apply_diff_to_table::<AccountProfile>("account_profile", &self.account_profile)
 			.with_updates_by_pk(|row| &row.id);
 		diff.foreign_account = cache
 			.apply_diff_to_table::<ForeignAccount>("foreign_account", &self.foreign_account)
 			.with_updates_by_pk(|row| &row.id);
-		diff.local_account = cache
-			.apply_diff_to_table::<LocalAccount>("local_account", &self.local_account)
-			.with_updates_by_pk(|row| &row.id);
 		diff.message = cache
 			.apply_diff_to_table::<Message>("message", &self.message)
+			.with_updates_by_pk(|row| &row.id);
+		diff.native_account = cache
+			.apply_diff_to_table::<NativeAccount>("native_account", &self.native_account)
 			.with_updates_by_pk(|row| &row.id);
 		diff.text_channel = cache
 			.apply_diff_to_table::<TextChannel>("text_channel", &self.text_channel)
@@ -305,11 +321,12 @@ impl __sdk::DbUpdate for DbUpdate {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct AppliedDiff<'r> {
-	account_profile: __sdk::TableAppliedDiff<'r, AccountProfile>,
-	foreign_account: __sdk::TableAppliedDiff<'r, ForeignAccount>,
-	local_account:   __sdk::TableAppliedDiff<'r, LocalAccount>,
-	message:         __sdk::TableAppliedDiff<'r, Message>,
-	text_channel:    __sdk::TableAppliedDiff<'r, TextChannel>,
+	account_link_request: __sdk::TableAppliedDiff<'r, AccountLinkRequest>,
+	account_profile:      __sdk::TableAppliedDiff<'r, AccountProfile>,
+	foreign_account:      __sdk::TableAppliedDiff<'r, ForeignAccount>,
+	message:              __sdk::TableAppliedDiff<'r, Message>,
+	native_account:       __sdk::TableAppliedDiff<'r, NativeAccount>,
+	text_channel:         __sdk::TableAppliedDiff<'r, TextChannel>,
 }
 
 impl __sdk::InModule for AppliedDiff<'_> {
@@ -320,6 +337,11 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 	fn invoke_row_callbacks(
 		&self, event: &EventContext, callbacks: &mut __sdk::DbCallbacks<RemoteModule>,
 	) {
+		callbacks.invoke_table_row_callbacks::<AccountLinkRequest>(
+			"account_link_request",
+			&self.account_link_request,
+			event,
+		);
 		callbacks.invoke_table_row_callbacks::<AccountProfile>(
 			"account_profile",
 			&self.account_profile,
@@ -330,12 +352,12 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 			&self.foreign_account,
 			event,
 		);
-		callbacks.invoke_table_row_callbacks::<LocalAccount>(
-			"local_account",
-			&self.local_account,
+		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
+		callbacks.invoke_table_row_callbacks::<NativeAccount>(
+			"native_account",
+			&self.native_account,
 			event,
 		);
-		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
 		callbacks.invoke_table_row_callbacks::<TextChannel>(
 			"text_channel",
 			&self.text_channel,
@@ -970,10 +992,11 @@ impl __sdk::SpacetimeModule for RemoteModule {
 	type SubscriptionHandle = SubscriptionHandle;
 
 	fn register_tables(client_cache: &mut __sdk::ClientCache<Self>) {
+		account_link_request_table::register_table(client_cache);
 		account_profile_table::register_table(client_cache);
 		foreign_account_table::register_table(client_cache);
-		local_account_table::register_table(client_cache);
 		message_table::register_table(client_cache);
+		native_account_table::register_table(client_cache);
 		text_channel_table::register_table(client_cache);
 	}
 }

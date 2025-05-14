@@ -38,7 +38,7 @@ pub fn subscribe(corvidx: &DbConnection) {
 		.on_error(subscriptions::on_sub_error)
 		// Facilitating creation of a local partial replica of the database.
 		.subscribe([
-			"SELECT * FROM local_account",
+			"SELECT * FROM native_account",
 			"SELECT * FROM foreign_account",
 			"SELECT * FROM account_profile",
 			// "SELECT * FROM account_linking_request",

@@ -3,17 +3,17 @@ use std::process;
 use crowdcomm_sdk::{
 	corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	corvidx::{
-		self, AccountProfileTableAccess, ForeignAccountTableAccess, LocalAccountTableAccess,
-		MessageAuthorId, MessageTableAccess, traits::DisplayName,
+		self, AccountProfileTableAccess, ForeignAccountTableAccess, MessageAuthorId,
+		MessageTableAccess, NativeAccountTableAccess, traits::DisplayName,
 	},
 };
 use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};
 
 pub fn print_message(corvidx: &impl corvidx::RemoteDbContext, message: &corvidx::Message) {
 	let sender = match &message.author_id {
-		| MessageAuthorId::LocalAccountId(author_id) => corvidx
+		| MessageAuthorId::NativeAccountId(author_id) => corvidx
 			.db()
-			.local_account()
+			.native_account()
 			.id()
 			.find(&author_id)
 			.map(|account| account.display_name(corvidx))
@@ -121,7 +121,7 @@ pub fn subscribe_to_tables(corvidx: &corvidx::DbConnection) {
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
 		.subscribe([
-			"SELECT * FROM local_account",
+			"SELECT * FROM native_account",
 			"SELECT * FROM foreign_account",
 			"SELECT * FROM account_profile",
 			// "SELECT * FROM account_linking_request",

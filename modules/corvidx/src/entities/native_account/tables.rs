@@ -2,25 +2,25 @@ use spacetimedb::{Identity, SpacetimeType, Timestamp, table};
 
 use crate::entities::account_profile::AccountProfileId;
 
-pub type LocalAccountId = Identity;
+pub type NativeAccountId = Identity;
 
 #[derive(PartialEq, SpacetimeType)]
-pub enum LocalAccountRole {
+pub enum NativeAccountLocalRole {
 	Service,
 	Admin,
 	Interactor,
 }
 
-#[table(name = local_account, public)]
-pub struct LocalAccount {
+#[table(name = native_account, public)]
+pub struct NativeAccount {
 	#[primary_key]
-	pub id:           LocalAccountId,
+	pub id:           NativeAccountId,
 	#[unique]
 	#[index(btree)]
-	/// An authentic counterpart to "usernames" or "handles" on other platforms.
+	/// An authentic counterpart to "username" or "handle" on other platforms.
 	pub callsign:     String,
 	#[index(btree)]
-	pub role:         LocalAccountRole,
+	pub role:         NativeAccountLocalRole,
 	pub is_online:    bool,
 	pub created_at:   Timestamp,
 	pub updated_at:   Timestamp,

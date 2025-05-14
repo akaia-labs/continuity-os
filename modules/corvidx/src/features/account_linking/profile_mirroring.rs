@@ -3,7 +3,7 @@ use spacetimedb::{ReducerContext, reducer};
 use crate::entities::{
 	account_profile::{AccountProfile, account_profile},
 	foreign_account::{ForeignAccountReference, foreign_account},
-	local_account::local_account,
+	native_account::native_account,
 };
 
 #[reducer]
@@ -12,7 +12,7 @@ use crate::entities::{
 pub fn mirror_foreign_profile(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let local_account = ctx.db.local_account().id().find(ctx.sender).ok_or(format!(
+	let native_account = ctx.db.native_account().id().find(ctx.sender).ok_or(format!(
 		"Identity {id} does not have an account.",
 		id = ctx.sender
 	))?;
@@ -26,7 +26,7 @@ pub fn mirror_foreign_profile(
 			"Foreign account {reference} is not registered in the system."
 		))?;
 
-	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != local_account.id {
+	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != native_account.id {
 		return Err(format!(
 			"Account {id} is not linked to the foreign account {reference}.",
 			id = ctx.sender,
@@ -43,7 +43,7 @@ pub fn mirror_foreign_profile(
 	))?;
 
 	ctx.db.account_profile().id().update(AccountProfile {
-		id:       local_account.profile_id,
+		id:       native_account.profile_id,
 		metadata: foreign_profile.metadata,
 	});
 

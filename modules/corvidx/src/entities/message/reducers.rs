@@ -4,15 +4,15 @@ use spacetimedb::{ReducerContext, Table, reducer};
 use super::{tables::*, validation::*};
 use crate::entities::{
 	foreign_account::{ForeignAccountReference, foreign_account},
-	local_account::local_account,
+	native_account::native_account,
 };
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 	let author_id: MessageAuthorId =
-		if let Some(author_account) = ctx.db.local_account().id().find(ctx.sender) {
-			MessageAuthorId::LocalAccountId(author_account.id)
+		if let Some(author_account) = ctx.db.native_account().id().find(ctx.sender) {
+			MessageAuthorId::NativeAccountId(author_account.id)
 		} else {
 			MessageAuthorId::System
 		};
@@ -52,8 +52,8 @@ pub fn import_message(
 			platform_name = platform_tag.to_string().capitalize(),
 		))?;
 
-	let sender = if let Some(local_account_id) = author_account.owner_id {
-		local_account_id
+	let sender = if let Some(native_account_id) = author_account.owner_id {
+		native_account_id
 	} else {
 		ctx.sender
 	};

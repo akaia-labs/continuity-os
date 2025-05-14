@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, reducer};
 
 use crate::entities::{
 	foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
-	local_account::local_account,
+	native_account::native_account,
 };
 
 #[reducer]
@@ -10,7 +10,7 @@ use crate::entities::{
 pub fn link_foreign_account(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let local_account = ctx.db.local_account().id().find(ctx.sender).ok_or(format!(
+	let native_account = ctx.db.native_account().id().find(ctx.sender).ok_or(format!(
 		"Identity {id} does not have an account.",
 		id = ctx.sender
 	))?;
@@ -25,7 +25,7 @@ pub fn link_foreign_account(
 		))?;
 
 	ctx.db.foreign_account().id().update(ForeignAccount {
-		owner_id: Some(local_account.id),
+		owner_id: Some(native_account.id),
 		..foreign_account
 	});
 
@@ -37,7 +37,7 @@ pub fn link_foreign_account(
 pub fn unlink_foreign_account(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let local_account = ctx.db.local_account().id().find(ctx.sender).ok_or(format!(
+	let native_account = ctx.db.native_account().id().find(ctx.sender).ok_or(format!(
 		"Identity {id} does not have an account.",
 		id = ctx.sender
 	))?;
@@ -51,7 +51,7 @@ pub fn unlink_foreign_account(
 			"Foreign account {reference} is not registered in the system."
 		))?;
 
-	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != local_account.id {
+	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != native_account.id {
 		return Err(format!(
 			"Account {id} is not linked to the foreign account {reference}.",
 			id = ctx.sender,

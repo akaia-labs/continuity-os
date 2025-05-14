@@ -2,7 +2,7 @@ use std::{str::FromStr, sync::Arc};
 
 use crowdcomm_sdk::corvidx::{
 	DbConnection, EventContext, ForeignAccountReference, ForeignPlatformTag,
-	LocalAccountTableAccess, Message, MessageAuthorId, ReducerEventContext, send_message,
+	NativeAccountTableAccess, Message, MessageAuthorId, ReducerEventContext, send_message,
 	traits::DisplayName,
 };
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
@@ -31,7 +31,7 @@ pub fn handle_telegram_forward(
 					.map_or(None, |r| Some(r.platform_tag))
 			},
 
-			| MessageAuthorId::LocalAccountId(_)
+			| MessageAuthorId::NativeAccountId(_)
 			| MessageAuthorId::System
 			| MessageAuthorId::Unknown => None,
 		};
@@ -44,7 +44,7 @@ pub fn handle_telegram_forward(
 			if subscribed_at.le(&message.sent_at) {
 				let sender_name = corvidx
 					.db()
-					.local_account()
+					.native_account()
 					.id()
 					.find(&message.sender.clone())
 					.map(|account| account.display_name(corvidx))

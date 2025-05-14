@@ -3,7 +3,7 @@ mod features;
 
 use entities::{
 	account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
-	local_account::*,
+	native_account::*,
 };
 use spacetimedb::{ReducerContext, Table, reducer};
 
@@ -14,8 +14,8 @@ pub fn init(_ctx: &ReducerContext) {
 
 #[reducer(client_connected)]
 pub fn client_connected(ctx: &ReducerContext) {
-	if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
-		ctx.db.local_account().id().update(LocalAccount {
+	if let Some(account) = ctx.db.native_account().id().find(ctx.sender) {
+		ctx.db.native_account().id().update(NativeAccount {
 			is_online: true,
 			last_seen_at: ctx.timestamp,
 			..account
@@ -36,10 +36,10 @@ pub fn client_connected(ctx: &ReducerContext) {
 			..initial_profile
 		});
 
-		ctx.db.local_account().insert(LocalAccount {
+		ctx.db.native_account().insert(NativeAccount {
 			id:           ctx.sender,
 			callsign:     format!("0x{}", ctx.sender.to_hex().to_string()),
-			role:         LocalAccountRole::Interactor,
+			role:         NativeAccountLocalRole::Interactor,
 			is_online:    true,
 			created_at:   ctx.timestamp,
 			updated_at:   ctx.timestamp,
@@ -51,8 +51,8 @@ pub fn client_connected(ctx: &ReducerContext) {
 
 #[reducer(client_disconnected)]
 pub fn client_disconnected(ctx: &ReducerContext) {
-	if let Some(account) = ctx.db.local_account().id().find(ctx.sender) {
-		ctx.db.local_account().id().update(LocalAccount {
+	if let Some(account) = ctx.db.native_account().id().find(ctx.sender) {
+		ctx.db.native_account().id().update(NativeAccount {
 			is_online: false,
 			last_seen_at: ctx.timestamp,
 			..account

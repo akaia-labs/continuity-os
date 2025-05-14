@@ -1,11 +1,11 @@
 use crate::corvidx::{
-	AccountProfile, AccountProfileTableAccess, ForeignAccount, LocalAccount,
-	LocalAccountTableAccess, RemoteDbContext,
+	AccountProfile, AccountProfileTableAccess, ForeignAccount, NativeAccount,
+	NativeAccountTableAccess, RemoteDbContext,
 	profile::ProfileRetrieval,
 	traits::{DisplayName, Displayable},
 };
 
-impl ProfileRetrieval for LocalAccount {
+impl ProfileRetrieval for NativeAccount {
 	fn profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
 		ctx.db().account_profile().id().find(&self.profile_id)
 	}
@@ -15,7 +15,7 @@ impl ProfileRetrieval for LocalAccount {
 	}
 }
 
-impl DisplayName for LocalAccount {
+impl DisplayName for NativeAccount {
 	/// Returns the display name of the linked profile, if present,
 	/// otherwise the account callsign
 	fn display_name(&self, ctx: &impl RemoteDbContext) -> String {
@@ -36,7 +36,7 @@ impl ProfileRetrieval for ForeignAccount {
 
 	fn local_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
 		let owner_account = if let Some(owner_id) = self.owner_id {
-			ctx.db().local_account().id().find(&owner_id)
+			ctx.db().native_account().id().find(&owner_id)
 		} else {
 			None
 		};
