@@ -9,7 +9,7 @@ use super::message_author_id_type::MessageAuthorId;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct Message {
-	pub id:        u64,
+	pub id:        i128,
 	pub sent_at:   __sdk::Timestamp,
 	pub sender:    __sdk::Identity,
 	pub author_id: MessageAuthorId,

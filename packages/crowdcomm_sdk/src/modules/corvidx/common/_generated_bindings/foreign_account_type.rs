@@ -10,7 +10,7 @@ pub struct ForeignAccount {
 	pub id:         String,
 	pub callsign:   Option<String>,
 	pub owner_id:   Option<__sdk::Identity>,
-	pub profile_id: Option<u64>,
+	pub profile_id: Option<i128>,
 }
 
 impl __sdk::InModule for ForeignAccount {

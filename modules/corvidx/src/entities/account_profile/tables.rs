@@ -2,7 +2,7 @@ use std::fmt::{self, Display, Formatter};
 
 use spacetimedb::{SpacetimeType, table};
 
-pub type AccountProfileId = u64;
+pub type AccountProfileId = i128;
 
 #[table(name = account_profile, public)]
 pub struct AccountProfile {

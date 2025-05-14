@@ -80,7 +80,7 @@ impl<'ctx> __sdk::Table for TextChannelTableHandle<'ctx> {
 #[doc(hidden)]
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
 	let _table = client_cache.get_or_make_table::<TextChannel>("text_channel");
-	_table.add_unique_constraint::<u64>("id", |row| &row.id);
+	_table.add_unique_constraint::<i128>("id", |row| &row.id);
 }
 pub struct TextChannelUpdateCallbackId(__sdk::CallbackId);
 
@@ -117,7 +117,7 @@ pub(super) fn parse_table_update(
 /// but to directly chain method calls,
 /// like `ctx.db.text_channel().id().find(...)`.
 pub struct TextChannelIdUnique<'ctx> {
-	imp:     __sdk::UniqueConstraintHandle<TextChannel, u64>,
+	imp:     __sdk::UniqueConstraintHandle<TextChannel, i128>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -125,7 +125,7 @@ impl<'ctx> TextChannelTableHandle<'ctx> {
 	/// Get a handle on the `id` unique index on the table `text_channel`.
 	pub fn id(&self) -> TextChannelIdUnique<'ctx> {
 		TextChannelIdUnique {
-			imp:     self.imp.get_unique_constraint::<u64>("id"),
+			imp:     self.imp.get_unique_constraint::<i128>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}
@@ -134,7 +134,7 @@ impl<'ctx> TextChannelTableHandle<'ctx> {
 impl<'ctx> TextChannelIdUnique<'ctx> {
 	/// Find the subscribed row whose `id` column value is equal to `col_val`,
 	/// if such a row is present in the client cache.
-	pub fn find(&self, col_val: &u64) -> Option<TextChannel> {
+	pub fn find(&self, col_val: &i128) -> Option<TextChannel> {
 		self.imp.find(col_val)
 	}
 }

@@ -1,6 +1,6 @@
-use spacetimedb::{Identity, SpacetimeType, Timestamp, table};
+use spacetimedb::{Identity, ReducerContext, SpacetimeType, Timestamp, table};
 
-use crate::entities::account_profile::AccountProfileId;
+use crate::{common::traits::AsRecordResolver, entities::account_profile::AccountProfileId};
 
 pub type NativeAccountId = Identity;
 
@@ -28,4 +28,13 @@ pub struct NativeAccount {
 	#[unique]
 	#[index(btree)]
 	pub profile_id:   AccountProfileId,
+}
+
+impl AsRecordResolver<NativeAccount> for NativeAccountId {
+	fn resolve(&self, ctx: &ReducerContext) -> Result<NativeAccount, String> {
+		ctx.db.native_account().id().find(ctx.sender).ok_or(format!(
+			"Identity {id} does not have an account.",
+			id = ctx.sender
+		))
+	}
 }

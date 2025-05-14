@@ -1,6 +1,6 @@
 use spacetimedb::table;
 
-pub type TextChannelId = u64;
+pub type TextChannelId = i128;
 
 #[table(name = text_channel, public)]
 pub struct TextChannel {

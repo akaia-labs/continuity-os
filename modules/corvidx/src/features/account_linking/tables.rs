@@ -1,15 +1,16 @@
 use spacetimedb::{Timestamp, table};
 
-use crate::entities::native_account::NativeAccountId;
+use crate::entities::{foreign_account::ForeignAccountId, native_account::NativeAccountId};
 
 #[table(name = account_link_request, public)]
-/// Represents a pending link invitation from a native Account to a foreign
-/// Telegram account
+/// Represents a pending link request
+/// from a native account to a foreign account
 pub struct AccountLinkRequest {
 	#[primary_key]
 	#[auto_inc]
-	pub id:         i128,
-	pub requester:  NativeAccountId,
-	pub created_at: Timestamp,
-	pub expires_at: Timestamp,
+	pub id:                   i128,
+	pub created_at:           Timestamp,
+	pub expires_at:           Timestamp,
+	pub requester_account_id: NativeAccountId,
+	pub subject_account_id:   ForeignAccountId,
 }

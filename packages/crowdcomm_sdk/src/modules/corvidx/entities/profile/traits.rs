@@ -11,9 +11,9 @@ pub trait ProfileRetrieval {
 
 	/// Retrieves the associated local profile, if present.
 	///
-	/// For **local accounts** this should be equivalent to [`Self::profile`].
+	/// For **native accounts** this should be equivalent to [`Self::profile`].
 	///
-	/// For **foreign accounts owned by local accounts**, the profile
+	/// For **foreign accounts owned by native accounts**, the profile
 	/// of the owner account should take precedence.
 	fn local_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile>;
 }

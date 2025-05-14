@@ -16,7 +16,7 @@ pub enum MessageAuthorId {
 pub struct Message {
 	#[auto_inc]
 	#[primary_key]
-	pub id:        u64,
+	pub id:        i128,
 	pub sent_at:   Timestamp,
 	pub sender:    Identity,
 	#[index(btree)]

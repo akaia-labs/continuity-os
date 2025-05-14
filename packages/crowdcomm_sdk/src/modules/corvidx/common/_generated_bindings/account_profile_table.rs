@@ -82,7 +82,7 @@ impl<'ctx> __sdk::Table for AccountProfileTableHandle<'ctx> {
 #[doc(hidden)]
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
 	let _table = client_cache.get_or_make_table::<AccountProfile>("account_profile");
-	_table.add_unique_constraint::<u64>("id", |row| &row.id);
+	_table.add_unique_constraint::<i128>("id", |row| &row.id);
 }
 pub struct AccountProfileUpdateCallbackId(__sdk::CallbackId);
 
@@ -119,7 +119,7 @@ pub(super) fn parse_table_update(
 /// but to directly chain method calls,
 /// like `ctx.db.account_profile().id().find(...)`.
 pub struct AccountProfileIdUnique<'ctx> {
-	imp:     __sdk::UniqueConstraintHandle<AccountProfile, u64>,
+	imp:     __sdk::UniqueConstraintHandle<AccountProfile, i128>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -127,7 +127,7 @@ impl<'ctx> AccountProfileTableHandle<'ctx> {
 	/// Get a handle on the `id` unique index on the table `account_profile`.
 	pub fn id(&self) -> AccountProfileIdUnique<'ctx> {
 		AccountProfileIdUnique {
-			imp:     self.imp.get_unique_constraint::<u64>("id"),
+			imp:     self.imp.get_unique_constraint::<i128>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}
@@ -136,7 +136,7 @@ impl<'ctx> AccountProfileTableHandle<'ctx> {
 impl<'ctx> AccountProfileIdUnique<'ctx> {
 	/// Find the subscribed row whose `id` column value is equal to `col_val`,
 	/// if such a row is present in the client cache.
-	pub fn find(&self, col_val: &u64) -> Option<AccountProfile> {
+	pub fn find(&self, col_val: &i128) -> Option<AccountProfile> {
 		self.imp.find(col_val)
 	}
 }

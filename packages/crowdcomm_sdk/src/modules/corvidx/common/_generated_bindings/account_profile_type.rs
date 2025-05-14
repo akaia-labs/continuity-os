@@ -9,7 +9,7 @@ use super::account_profile_metadata_type::AccountProfileMetadata;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct AccountProfile {
-	pub id:       u64,
+	pub id:       i128,
 	pub metadata: AccountProfileMetadata,
 }
 

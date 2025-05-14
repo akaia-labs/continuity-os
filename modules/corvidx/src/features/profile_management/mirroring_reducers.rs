@@ -8,14 +8,19 @@ use crate::entities::{
 
 #[reducer]
 /// Copies the linked foreign account's profile data
-/// over to the local account profile.
+/// over to the native account profile.
 pub fn mirror_foreign_profile(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let native_account = ctx.db.native_account().id().find(ctx.sender).ok_or(format!(
-		"Identity {id} does not have an account.",
-		id = ctx.sender
-	))?;
+	let native_account = ctx
+		.db
+		.native_account()
+		.id()
+		.find(ctx.sender)
+		.ok_or(format!(
+			"Identity {id} does not have an account.",
+			id = ctx.sender
+		))?;
 
 	let foreign_account = ctx
 		.db
@@ -26,7 +31,8 @@ pub fn mirror_foreign_profile(
 			"Foreign account {reference} is not registered in the system."
 		))?;
 
-	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != native_account.id {
+	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != native_account.id
+	{
 		return Err(format!(
 			"Account {id} is not linked to the foreign account {reference}.",
 			id = ctx.sender,

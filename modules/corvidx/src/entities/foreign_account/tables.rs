@@ -3,9 +3,12 @@ use std::{
 	str::FromStr,
 };
 
-use spacetimedb::{Identity, SpacetimeType, table};
+use spacetimedb::{DbContext, Identity, ReducerContext, SpacetimeType, table};
 
-use crate::entities::{account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag};
+use crate::{
+	common::traits::AsRecordResolver,
+	entities::{account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag},
+};
 
 /// "{String}@{ForeignPlatformTag}"
 pub type ForeignAccountId = String;
@@ -27,10 +30,24 @@ pub struct ForeignAccount {
 	pub profile_id: Option<AccountProfileId>,
 }
 
+impl AsRecordResolver<ForeignAccount> for ForeignAccountId {
+	fn resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
+		ctx.db().foreign_account().id().find(self).ok_or(format!(
+			"Foreign account {self} is not registered in the system."
+		))
+	}
+}
+
 #[derive(SpacetimeType, Clone)]
 pub struct ForeignAccountReference {
 	pub id:           String,
 	pub platform_tag: ForeignPlatformTag,
+}
+
+impl AsRecordResolver<ForeignAccount> for ForeignAccountReference {
+	fn resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
+		self.to_string().resolve(ctx)
+	}
 }
 
 impl ForeignAccountReference {

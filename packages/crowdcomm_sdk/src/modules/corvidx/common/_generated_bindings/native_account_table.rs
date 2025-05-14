@@ -84,7 +84,7 @@ pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::Remote
 	let _table = client_cache.get_or_make_table::<NativeAccount>("native_account");
 	_table.add_unique_constraint::<__sdk::Identity>("id", |row| &row.id);
 	_table.add_unique_constraint::<String>("callsign", |row| &row.callsign);
-	_table.add_unique_constraint::<u64>("profile_id", |row| &row.profile_id);
+	_table.add_unique_constraint::<i128>("profile_id", |row| &row.profile_id);
 }
 pub struct NativeAccountUpdateCallbackId(__sdk::CallbackId);
 
@@ -182,7 +182,7 @@ impl<'ctx> NativeAccountCallsignUnique<'ctx> {
 /// but to directly chain method calls,
 /// like `ctx.db.native_account().profile_id().find(...)`.
 pub struct NativeAccountProfileIdUnique<'ctx> {
-	imp:     __sdk::UniqueConstraintHandle<NativeAccount, u64>,
+	imp:     __sdk::UniqueConstraintHandle<NativeAccount, i128>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -191,7 +191,7 @@ impl<'ctx> NativeAccountTableHandle<'ctx> {
 	/// `native_account`.
 	pub fn profile_id(&self) -> NativeAccountProfileIdUnique<'ctx> {
 		NativeAccountProfileIdUnique {
-			imp:     self.imp.get_unique_constraint::<u64>("profile_id"),
+			imp:     self.imp.get_unique_constraint::<i128>("profile_id"),
 			phantom: std::marker::PhantomData,
 		}
 	}
@@ -200,7 +200,7 @@ impl<'ctx> NativeAccountTableHandle<'ctx> {
 impl<'ctx> NativeAccountProfileIdUnique<'ctx> {
 	/// Find the subscribed row whose `profile_id` column value is equal to
 	/// `col_val`, if such a row is present in the client cache.
-	pub fn find(&self, col_val: &u64) -> Option<NativeAccount> {
+	pub fn find(&self, col_val: &i128) -> Option<NativeAccount> {
 		self.imp.find(col_val)
 	}
 }
