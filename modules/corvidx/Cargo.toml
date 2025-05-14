@@ -11,6 +11,10 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
+# Internal dependencies
+corvutils.workspace = true
+
+# External dependencies
 capitalize.workspace = true
 log.workspace = true
 serde.workspace = true
