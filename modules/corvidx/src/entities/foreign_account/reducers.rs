@@ -1,7 +1,13 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{ForeignAccount, ForeignAccountReference, foreign_account};
-use crate::entities::account_profile::{AccountProfile, AccountProfileMetadata, account_profile};
+use crate::{
+	common::traits::RecordResolver,
+	entities::{
+		account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
+		native_account::{NativeAccount, native_account},
+	},
+};
 
 #[reducer]
 /// Registers a local representation of the given 3rd party platform account.
@@ -21,7 +27,7 @@ pub fn import_foreign_account(
 		));
 	}
 
-	ctx.db.foreign_account().insert(ForeignAccount {
+	let new_account = ctx.db.foreign_account().insert(ForeignAccount {
 		id: reference.to_string(),
 		callsign,
 		owner_id: ctx.identity(),
@@ -35,6 +41,15 @@ pub fn import_foreign_account(
 				})
 				.id,
 		),
+	});
+
+	let mut root_account = ctx.identity().resolve(ctx)?;
+
+	root_account.foreign_account_ownership.push(new_account.id);
+
+	ctx.db.native_account().id().update(NativeAccount {
+		updated_at: ctx.timestamp,
+		..root_account
 	});
 
 	Ok(())

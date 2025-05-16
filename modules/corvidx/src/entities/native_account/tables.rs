@@ -36,7 +36,7 @@ pub struct NativeAccount {
 	#[index(btree)]
 	pub profile_id: AccountProfileId,
 
-	pub foreign_accounts: Vec<ForeignAccountId>,
+	pub foreign_account_ownership: Vec<ForeignAccountId>,
 }
 
 impl RecordResolver<NativeAccount> for NativeAccountId {

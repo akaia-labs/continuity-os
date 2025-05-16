@@ -14,13 +14,14 @@ use spacetimedb::{ReducerContext, Table, reducer};
 /// Called when the module is initially published.
 pub fn init(ctx: &ReducerContext) {
 	ctx.db.native_account().insert(NativeAccount {
-		id:           ctx.identity(),
-		callsign:     "corvidx".to_string(),
-		role:         NativeAccountLocalRole::Service,
-		is_online:    true,
-		last_seen_at: ctx.timestamp,
-		created_at:   ctx.timestamp,
-		updated_at:   ctx.timestamp,
+		id:                        ctx.identity(),
+		callsign:                  "corvidx".to_string(),
+		role:                      NativeAccountLocalRole::Service,
+		is_online:                 true,
+		last_seen_at:              ctx.timestamp,
+		created_at:                ctx.timestamp,
+		updated_at:                ctx.timestamp,
+		foreign_account_ownership: vec![],
 
 		profile_id: ctx
 			.db

@@ -30,14 +30,15 @@ pub fn client_connected(ctx: &ReducerContext) {
 		});
 
 		ctx.db.native_account().insert(NativeAccount {
-			id:           ctx.sender,
-			callsign:     format!("0x{}", ctx.sender.to_hex().to_string()),
-			role:         NativeAccountLocalRole::Interactor,
-			is_online:    true,
-			created_at:   ctx.timestamp,
-			updated_at:   ctx.timestamp,
-			last_seen_at: ctx.timestamp,
-			profile_id:   account_profile.id,
+			id:                        ctx.sender,
+			callsign:                  format!("0x{}", ctx.sender.to_hex().to_string()),
+			role:                      NativeAccountLocalRole::Interactor,
+			is_online:                 true,
+			created_at:                ctx.timestamp,
+			updated_at:                ctx.timestamp,
+			last_seen_at:              ctx.timestamp,
+			profile_id:                account_profile.id,
+			foreign_account_ownership: vec![],
 		});
 	}
 }

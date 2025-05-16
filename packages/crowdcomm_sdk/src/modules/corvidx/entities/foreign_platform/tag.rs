@@ -47,3 +47,9 @@ impl Display for ForeignPlatformTag {
 		write!(f, "{}", Into::<SupportedForeignPlatformTag>::into(*self))
 	}
 }
+
+impl ForeignPlatformTag {
+	fn into_supported(&self) -> SupportedForeignPlatformTag {
+		Into::<SupportedForeignPlatformTag>::into(*self)
+	}
+}

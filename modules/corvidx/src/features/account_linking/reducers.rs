@@ -6,7 +6,10 @@ use spacetimedb::{ReducerContext, Table, reducer};
 use super::tables::{AccountLinkRequest, AccountLinkRequestExpirySchedule, account_link_request};
 use crate::{
 	common::traits::RecordResolver,
-	entities::foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
+	entities::{
+		foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
+		native_account::native_account,
+	},
 	features::account_linking::tables::account_link_request_schedule,
 };
 
@@ -64,13 +67,19 @@ pub fn create_account_link_request(
 pub fn resolve_account_link_request(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let native_account = ctx.sender.resolve(ctx)?;
+	let mut native_account = ctx.sender.resolve(ctx)?;
 	let foreign_account = reference.resolve(ctx)?;
 
 	ctx.db.foreign_account().id().update(ForeignAccount {
 		owner_id: native_account.id,
 		..foreign_account
 	});
+
+	native_account
+		.foreign_account_ownership
+		.push(reference.to_string());
+
+	ctx.db.native_account().id().update(native_account);
 
 	Ok(())
 }
@@ -80,7 +89,7 @@ pub fn resolve_account_link_request(
 pub fn unlink_foreign_account(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let native_account = ctx.sender.resolve(ctx)?;
+	let mut native_account = ctx.sender.resolve(ctx)?;
 	let foreign_account = reference.resolve(ctx)?;
 
 	if foreign_account.owner_id != native_account.id {
@@ -94,6 +103,12 @@ pub fn unlink_foreign_account(
 		owner_id: ctx.identity(),
 		..foreign_account
 	});
+
+	native_account
+		.foreign_account_ownership
+		.retain(|id| id != &reference.to_string());
+
+	ctx.db.native_account().id().update(native_account);
 
 	Ok(())
 }
