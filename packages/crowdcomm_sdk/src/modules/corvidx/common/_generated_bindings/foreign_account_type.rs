@@ -9,7 +9,7 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 pub struct ForeignAccount {
 	pub id:         String,
 	pub callsign:   Option<String>,
-	pub owner_id:   Option<__sdk::Identity>,
+	pub owner_id:   __sdk::Identity,
 	pub profile_id: Option<i128>,
 }
 

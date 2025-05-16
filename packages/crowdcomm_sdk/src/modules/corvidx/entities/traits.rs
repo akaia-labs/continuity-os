@@ -13,10 +13,6 @@ impl PlatformAssociated<ForeignAccount> for NativeAccount {
 	fn platform_association(
 		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedForeignPlatformTag,
 	) -> ForeignAccount {
-		ctx.db()
-			.foreign_account()
-			.owner_id()
-			.find(&self.id)
-			.unwrap()
+		ctx.db().foreign_account().id().find(&self.id).unwrap()
 	}
 }

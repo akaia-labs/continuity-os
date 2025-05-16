@@ -1,6 +1,6 @@
 use crate::corvidx::{
-	AccountProfile, AccountProfileTableAccess, ForeignAccount, NativeAccount,
-	NativeAccountTableAccess, RemoteDbContext,
+	AccountProfile, AccountProfileTableAccess, ForeignAccount, NativeAccountTableAccess,
+	RemoteDbContext,
 	profile::ProfileRetrieval,
 	traits::{DisplayName, Displayable},
 };
