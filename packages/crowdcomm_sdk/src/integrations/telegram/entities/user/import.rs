@@ -1,9 +1,10 @@
-use teloxide::types::User;
-
-use crate::corvidx::{
-	AccountProfileMetadata, AccountProfileName, ForeignAccountReference, ForeignPlatformTag,
-	foreign_account::ForeignAccountImport, profile::ProfileImport,
+use corvidx_client::{
+	common::stdb::{
+		AccountProfileMetadata, AccountProfileName, ForeignAccountReference, ForeignPlatformTag,
+	},
+	entities::{account_profile::ProfileImport, foreign_account::ForeignAccountImport},
 };
+use teloxide::types::User;
 
 impl ForeignAccountImport for User {
 	fn into_account_reference(&self) -> ForeignAccountReference {

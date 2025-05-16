@@ -1,6 +1,6 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::{
+use crate::entities::{
 	account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
 	native_account::{NativeAccount, NativeAccountLocalRole, native_account},
 };
