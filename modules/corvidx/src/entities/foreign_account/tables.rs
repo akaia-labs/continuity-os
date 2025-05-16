@@ -3,11 +3,14 @@ use std::{
 	str::FromStr,
 };
 
-use spacetimedb::{DbContext, Identity, ReducerContext, SpacetimeType, table};
+use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 
 use crate::{
 	common::traits::AsRecordResolver,
-	entities::{account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag},
+	entities::{
+		account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag,
+		native_account::NativeAccountId,
+	},
 };
 
 /// "{String}@{ForeignPlatformTag}"
@@ -24,7 +27,7 @@ pub struct ForeignAccount {
 	/// with the similar meaning, if present.
 	pub callsign:   Option<String>,
 	#[index(btree)]
-	pub owner_id:   Option<Identity>,
+	pub owner_id:   NativeAccountId,
 	#[unique]
 	#[index(btree)]
 	pub profile_id: Option<AccountProfileId>,

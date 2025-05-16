@@ -4,6 +4,8 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+pub mod account_link_request_expiry_schedule_type;
+pub mod account_link_request_schedule_table;
 pub mod account_link_request_table;
 pub mod account_link_request_type;
 pub mod account_profile_metadata_type;
@@ -28,6 +30,7 @@ pub mod mirror_foreign_profile_reducer;
 pub mod native_account_local_role_type;
 pub mod native_account_table;
 pub mod native_account_type;
+pub mod scheduled_delete_account_link_request_reducer;
 pub mod send_message_reducer;
 pub mod set_account_callsign_reducer;
 pub mod text_channel_table;
@@ -36,6 +39,8 @@ pub mod unlink_foreign_account_reducer;
 pub mod update_foreign_account_callsign_reducer;
 pub mod update_foreign_account_profile_reducer;
 
+pub use account_link_request_expiry_schedule_type::AccountLinkRequestExpirySchedule;
+pub use account_link_request_schedule_table::*;
 pub use account_link_request_table::*;
 pub use account_link_request_type::AccountLinkRequest;
 pub use account_profile_metadata_type::AccountProfileMetadata;
@@ -77,6 +82,10 @@ pub use mirror_foreign_profile_reducer::{
 pub use native_account_local_role_type::NativeAccountLocalRole;
 pub use native_account_table::*;
 pub use native_account_type::NativeAccount;
+pub use scheduled_delete_account_link_request_reducer::{
+	ScheduledDeleteAccountLinkRequestCallbackId, scheduled_delete_account_link_request,
+	set_flags_for_scheduled_delete_account_link_request,
+};
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
 pub use set_account_callsign_reducer::{
 	SetAccountCallsignCallbackId, set_account_callsign, set_flags_for_set_account_callsign,
@@ -127,6 +136,9 @@ pub enum Reducer {
 	MirrorForeignProfile {
 		reference: ForeignAccountReference,
 	},
+	ScheduledDeleteAccountLinkRequest {
+		args: AccountLinkRequestExpirySchedule,
+	},
 	SendMessage {
 		text: String,
 	},
@@ -161,6 +173,9 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::LinkForeignAccount { .. } => "link_foreign_account",
 			| Reducer::MirrorForeignProfile { .. } => "mirror_foreign_profile",
+			| Reducer::ScheduledDeleteAccountLinkRequest { .. } => {
+				"scheduled_delete_account_link_request"
+			},
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetAccountCallsign { .. } => "set_account_callsign",
 			| Reducer::UnlinkForeignAccount { .. } => "unlink_foreign_account",
@@ -174,69 +189,22 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 
 	fn try_from(value: __ws::ReducerCallInfo<__ws::BsatnFormat>) -> __sdk::Result<Self> {
 		match &value.reducer_name[..] {
-			| "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<
-				admin_set_account_role_reducer::AdminSetAccountRoleArgs,
-			>("admin_set_account_role", &value.args)?
-			.into()),
-			| "client_connected" => Ok(__sdk::parse_reducer_args::<
-				client_connected_reducer::ClientConnectedArgs,
-			>("client_connected", &value.args)?
-			.into()),
-			| "client_disconnected" => Ok(__sdk::parse_reducer_args::<
-				client_disconnected_reducer::ClientDisconnectedArgs,
-			>("client_disconnected", &value.args)?
-			.into()),
-			| "create_account_link_request" => Ok(__sdk::parse_reducer_args::<
-				create_account_link_request_reducer::CreateAccountLinkRequestArgs,
-			>("create_account_link_request", &value.args)?
-			.into()),
-			| "import_foreign_account" => Ok(__sdk::parse_reducer_args::<
-				import_foreign_account_reducer::ImportForeignAccountArgs,
-			>("import_foreign_account", &value.args)?
-			.into()),
-			| "import_message" => Ok(__sdk::parse_reducer_args::<
-				import_message_reducer::ImportMessageArgs,
-			>("import_message", &value.args)?
-			.into()),
-			| "link_foreign_account" => Ok(__sdk::parse_reducer_args::<
-				link_foreign_account_reducer::LinkForeignAccountArgs,
-			>("link_foreign_account", &value.args)?
-			.into()),
-			| "mirror_foreign_profile" => Ok(__sdk::parse_reducer_args::<
-				mirror_foreign_profile_reducer::MirrorForeignProfileArgs,
-			>("mirror_foreign_profile", &value.args)?
-			.into()),
-			| "send_message" => Ok(__sdk::parse_reducer_args::<
-				send_message_reducer::SendMessageArgs,
-			>("send_message", &value.args)?
-			.into()),
-			| "set_account_callsign" => Ok(__sdk::parse_reducer_args::<
-				set_account_callsign_reducer::SetAccountCallsignArgs,
-			>("set_account_callsign", &value.args)?
-			.into()),
-			| "unlink_foreign_account" => Ok(__sdk::parse_reducer_args::<
-				unlink_foreign_account_reducer::UnlinkForeignAccountArgs,
-			>("unlink_foreign_account", &value.args)?
-			.into()),
-			| "update_foreign_account_callsign" => {
-				Ok(__sdk::parse_reducer_args::<
-					update_foreign_account_callsign_reducer::UpdateForeignAccountCallsignArgs,
-				>("update_foreign_account_callsign", &value.args)?
-				.into())
-			},
-			| "update_foreign_account_profile" => {
-				Ok(__sdk::parse_reducer_args::<
-					update_foreign_account_profile_reducer::UpdateForeignAccountProfileArgs,
-				>("update_foreign_account_profile", &value.args)?
-				.into())
-			},
-			| unknown => {
-				Err(
-					__sdk::InternalError::unknown_name("reducer", unknown, "ReducerCallInfo")
-						.into(),
-				)
-			},
-		}
+                        "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<admin_set_account_role_reducer::AdminSetAccountRoleArgs>("admin_set_account_role", &value.args)?.into()),
+            "client_connected" => Ok(__sdk::parse_reducer_args::<client_connected_reducer::ClientConnectedArgs>("client_connected", &value.args)?.into()),
+            "client_disconnected" => Ok(__sdk::parse_reducer_args::<client_disconnected_reducer::ClientDisconnectedArgs>("client_disconnected", &value.args)?.into()),
+            "create_account_link_request" => Ok(__sdk::parse_reducer_args::<create_account_link_request_reducer::CreateAccountLinkRequestArgs>("create_account_link_request", &value.args)?.into()),
+            "import_foreign_account" => Ok(__sdk::parse_reducer_args::<import_foreign_account_reducer::ImportForeignAccountArgs>("import_foreign_account", &value.args)?.into()),
+            "import_message" => Ok(__sdk::parse_reducer_args::<import_message_reducer::ImportMessageArgs>("import_message", &value.args)?.into()),
+            "link_foreign_account" => Ok(__sdk::parse_reducer_args::<link_foreign_account_reducer::LinkForeignAccountArgs>("link_foreign_account", &value.args)?.into()),
+            "mirror_foreign_profile" => Ok(__sdk::parse_reducer_args::<mirror_foreign_profile_reducer::MirrorForeignProfileArgs>("mirror_foreign_profile", &value.args)?.into()),
+            "scheduled_delete_account_link_request" => Ok(__sdk::parse_reducer_args::<scheduled_delete_account_link_request_reducer::ScheduledDeleteAccountLinkRequestArgs>("scheduled_delete_account_link_request", &value.args)?.into()),
+            "send_message" => Ok(__sdk::parse_reducer_args::<send_message_reducer::SendMessageArgs>("send_message", &value.args)?.into()),
+            "set_account_callsign" => Ok(__sdk::parse_reducer_args::<set_account_callsign_reducer::SetAccountCallsignArgs>("set_account_callsign", &value.args)?.into()),
+            "unlink_foreign_account" => Ok(__sdk::parse_reducer_args::<unlink_foreign_account_reducer::UnlinkForeignAccountArgs>("unlink_foreign_account", &value.args)?.into()),
+            "update_foreign_account_callsign" => Ok(__sdk::parse_reducer_args::<update_foreign_account_callsign_reducer::UpdateForeignAccountCallsignArgs>("update_foreign_account_callsign", &value.args)?.into()),
+            "update_foreign_account_profile" => Ok(__sdk::parse_reducer_args::<update_foreign_account_profile_reducer::UpdateForeignAccountProfileArgs>("update_foreign_account_profile", &value.args)?.into()),
+            unknown => Err(__sdk::InternalError::unknown_name("reducer", unknown, "ReducerCallInfo").into()),
+}
 	}
 }
 
@@ -244,12 +212,13 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct DbUpdate {
-	account_link_request: __sdk::TableUpdate<AccountLinkRequest>,
-	account_profile:      __sdk::TableUpdate<AccountProfile>,
-	foreign_account:      __sdk::TableUpdate<ForeignAccount>,
-	message:              __sdk::TableUpdate<Message>,
-	native_account:       __sdk::TableUpdate<NativeAccount>,
-	text_channel:         __sdk::TableUpdate<TextChannel>,
+	account_link_request:          __sdk::TableUpdate<AccountLinkRequest>,
+	account_link_request_schedule: __sdk::TableUpdate<AccountLinkRequestExpirySchedule>,
+	account_profile:               __sdk::TableUpdate<AccountProfile>,
+	foreign_account:               __sdk::TableUpdate<ForeignAccount>,
+	message:                       __sdk::TableUpdate<Message>,
+	native_account:                __sdk::TableUpdate<NativeAccount>,
+	text_channel:                  __sdk::TableUpdate<TextChannel>,
 }
 
 impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
@@ -262,6 +231,10 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 				| "account_link_request" => {
 					db_update.account_link_request =
 						account_link_request_table::parse_table_update(table_update)?
+				},
+				| "account_link_request_schedule" => {
+					db_update.account_link_request_schedule =
+						account_link_request_schedule_table::parse_table_update(table_update)?
 				},
 				| "account_profile" => {
 					db_update.account_profile =
@@ -310,6 +283,12 @@ impl __sdk::DbUpdate for DbUpdate {
 				&self.account_link_request,
 			)
 			.with_updates_by_pk(|row| &row.id);
+		diff.account_link_request_schedule = cache
+			.apply_diff_to_table::<AccountLinkRequestExpirySchedule>(
+				"account_link_request_schedule",
+				&self.account_link_request_schedule,
+			)
+			.with_updates_by_pk(|row| &row.scheduled_id);
 		diff.account_profile = cache
 			.apply_diff_to_table::<AccountProfile>("account_profile", &self.account_profile)
 			.with_updates_by_pk(|row| &row.id);
@@ -334,12 +313,13 @@ impl __sdk::DbUpdate for DbUpdate {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct AppliedDiff<'r> {
-	account_link_request: __sdk::TableAppliedDiff<'r, AccountLinkRequest>,
-	account_profile:      __sdk::TableAppliedDiff<'r, AccountProfile>,
-	foreign_account:      __sdk::TableAppliedDiff<'r, ForeignAccount>,
-	message:              __sdk::TableAppliedDiff<'r, Message>,
-	native_account:       __sdk::TableAppliedDiff<'r, NativeAccount>,
-	text_channel:         __sdk::TableAppliedDiff<'r, TextChannel>,
+	account_link_request:          __sdk::TableAppliedDiff<'r, AccountLinkRequest>,
+	account_link_request_schedule: __sdk::TableAppliedDiff<'r, AccountLinkRequestExpirySchedule>,
+	account_profile:               __sdk::TableAppliedDiff<'r, AccountProfile>,
+	foreign_account:               __sdk::TableAppliedDiff<'r, ForeignAccount>,
+	message:                       __sdk::TableAppliedDiff<'r, Message>,
+	native_account:                __sdk::TableAppliedDiff<'r, NativeAccount>,
+	text_channel:                  __sdk::TableAppliedDiff<'r, TextChannel>,
 }
 
 impl __sdk::InModule for AppliedDiff<'_> {
@@ -353,6 +333,11 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 		callbacks.invoke_table_row_callbacks::<AccountLinkRequest>(
 			"account_link_request",
 			&self.account_link_request,
+			event,
+		);
+		callbacks.invoke_table_row_callbacks::<AccountLinkRequestExpirySchedule>(
+			"account_link_request_schedule",
+			&self.account_link_request_schedule,
 			event,
 		);
 		callbacks.invoke_table_row_callbacks::<AccountProfile>(
@@ -1006,6 +991,7 @@ impl __sdk::SpacetimeModule for RemoteModule {
 
 	fn register_tables(client_cache: &mut __sdk::ClientCache<Self>) {
 		account_link_request_table::register_table(client_cache);
+		account_link_request_schedule_table::register_table(client_cache);
 		account_profile_table::register_table(client_cache);
 		foreign_account_table::register_table(client_cache);
 		message_table::register_table(client_cache);
