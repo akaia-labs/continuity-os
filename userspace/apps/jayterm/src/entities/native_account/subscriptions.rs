@@ -1,5 +1,5 @@
-use crowdcomm_sdk::corvidx::{
-	DbConnection, EventContext, NativeAccountTableAccess, NativeAccount, ReducerEventContext,
+use crowdcomm_sdk::corvidx::stdb::{
+	DbConnection, EventContext, NativeAccount, NativeAccountTableAccess, ReducerEventContext,
 	set_account_callsign,
 };
 use spacetimedb_sdk::{Status, Table, TableWithPrimaryKey};

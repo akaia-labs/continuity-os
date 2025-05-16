@@ -1,14 +1,14 @@
 use corvutils::StringExtensions;
-use crowdcomm_sdk::corvidx::{
-	DbConnection, ForeignAccountReference, ReducerEventContext, link_foreign_account,
-	mirror_foreign_profile, unlink_foreign_account,
+use crowdcomm_sdk::corvidx::stdb::{
+	DbConnection, ForeignAccountReference, ReducerEventContext, mirror_foreign_profile,
+	resolve_account_link_request, unlink_foreign_account,
 };
 use spacetimedb_sdk::Status;
 
 pub fn subscribe(corvidx: &DbConnection) {
 	corvidx
 		.reducers
-		.on_link_foreign_account(on_link_foreign_account);
+		.on_resolve_account_link_request(on_resolve_account_link_request);
 
 	corvidx
 		.reducers
@@ -19,7 +19,10 @@ pub fn subscribe(corvidx: &DbConnection) {
 		.on_mirror_foreign_profile(on_mirror_foreign_profile);
 }
 
-fn on_link_foreign_account(corvidx: &ReducerEventContext, reference: &ForeignAccountReference) {
+// TODO: Send service DM to the particular requester instead
+fn on_resolve_account_link_request(
+	corvidx: &ReducerEventContext, reference: &ForeignAccountReference,
+) {
 	let ForeignAccountReference {
 		id: external_identifier,
 		platform_tag,

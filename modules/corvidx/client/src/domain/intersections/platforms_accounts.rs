@@ -11,7 +11,7 @@ impl PlatformAssociated<ForeignAccount> for NativeAccount {
 	// TODO: for the same foreign platform, in the future we'll need
 	// TODO: to be able to provide a selector predicate that narrows
 	// TODO: the search down to exactly one specific foreign account,
-	// TODO: instead of just taking the first found one.
+	// TODO: instead of just taking the first found record.
 	fn platform_association(
 		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedForeignPlatformTag,
 	) -> Option<ForeignAccount> {

@@ -1,4 +1,4 @@
-use crowdcomm_sdk::corvidx::{
+use crowdcomm_sdk::corvidx::stdb::{
 	DbConnection, EventContext, Message, MessageTableAccess, ReducerEventContext, send_message,
 };
 use spacetimedb_sdk::{Event, Status, Table};
