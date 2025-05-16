@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crowdcomm_sdk::corvidx::{
-	DbConnection, account::ForeignAccountImport, import_message, send_message,
+	DbConnection, import_message, native_account::ForeignAccountImport, send_message,
 };
 use teloxide::types::Message;
 

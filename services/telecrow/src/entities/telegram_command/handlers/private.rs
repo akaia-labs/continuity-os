@@ -1,7 +1,7 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowdcomm_sdk::corvidx::{
-	DbConnection, ForeignAccountTableAccess, account::ForeignAccountImport,
+	DbConnection, ForeignAccountTableAccess, native_account::ForeignAccountImport,
 };
 use teloxide::{
 	RequestError, payloads::SendMessageSetters, prelude::Requester,

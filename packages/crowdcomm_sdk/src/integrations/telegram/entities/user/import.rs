@@ -2,13 +2,13 @@ use teloxide::types::User;
 
 use crate::corvidx::{
 	AccountProfileMetadata, AccountProfileName, ForeignAccountReference, ForeignPlatformTag,
-	account::ForeignAccountImport, profile::ProfileImport,
+	foreign_account::ForeignAccountImport, profile::ProfileImport,
 };
 
 impl ForeignAccountImport for User {
 	fn into_account_reference(&self) -> ForeignAccountReference {
 		ForeignAccountReference {
-			id:            self.id.to_string(),
+			id:           self.id.to_string(),
 			platform_tag: ForeignPlatformTag::Telegram,
 		}
 	}

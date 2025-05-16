@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use corvutils::StringExtensions;
-use crowdcomm_sdk::corvidx::{DbConnection, account::ForeignAccountImport, send_message};
+use crowdcomm_sdk::corvidx::{DbConnection, native_account::ForeignAccountImport, send_message};
 use teloxide::types::Update;
 
 use crate::common::{constants::SERVICE_CANONICAL_NAME, traits::Summarizable};
