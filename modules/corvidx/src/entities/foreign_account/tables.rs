@@ -6,7 +6,7 @@ use std::{
 use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 
 use crate::{
-	common::traits::AsRecordResolver,
+	common::traits::RecordResolver,
 	entities::{
 		account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag,
 		native_account::NativeAccountId,
@@ -21,19 +21,22 @@ pub type ForeignAccountId = String;
 pub struct ForeignAccount {
 	#[primary_key]
 	/// "{String}@{ForeignPlatformTag}"
-	pub id:         ForeignAccountId,
+	pub id: ForeignAccountId,
+
 	#[index(btree)]
 	/// Holds username, handle, or any other identifier
 	/// with the similar meaning, if present.
-	pub callsign:   Option<String>,
+	pub callsign: Option<String>,
+
 	#[index(btree)]
-	pub owner_id:   NativeAccountId,
+	pub owner_id: NativeAccountId,
+
 	#[unique]
 	#[index(btree)]
 	pub profile_id: Option<AccountProfileId>,
 }
 
-impl AsRecordResolver<ForeignAccount> for ForeignAccountId {
+impl RecordResolver<ForeignAccount> for ForeignAccountId {
 	fn resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
 		ctx.db().foreign_account().id().find(self).ok_or(format!(
 			"Foreign account {self} is not registered in the system."
@@ -47,7 +50,7 @@ pub struct ForeignAccountReference {
 	pub platform_tag: ForeignPlatformTag,
 }
 
-impl AsRecordResolver<ForeignAccount> for ForeignAccountReference {
+impl RecordResolver<ForeignAccount> for ForeignAccountReference {
 	fn resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
 		self.to_string().resolve(ctx)
 	}

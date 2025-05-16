@@ -21,21 +21,20 @@ pub fn import_foreign_account(
 		));
 	}
 
-	let account = ctx.db.foreign_account().insert(ForeignAccount {
+	ctx.db.foreign_account().insert(ForeignAccount {
 		id: reference.to_string(),
 		callsign,
-		owner_id: None,
-		profile_id: None,
-	});
+		owner_id: ctx.identity(),
 
-	let profile = ctx.db.account_profile().insert(AccountProfile {
-		id:       0,
-		metadata: metadata.unwrap_or_default(),
-	});
-
-	ctx.db.foreign_account().id().update(ForeignAccount {
-		profile_id: Some(profile.id),
-		..account
+		profile_id: Some(
+			ctx.db
+				.account_profile()
+				.insert(AccountProfile {
+					id:       0,
+					metadata: metadata.unwrap_or_default(),
+				})
+				.id,
+		),
 	});
 
 	Ok(())

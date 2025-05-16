@@ -52,8 +52,8 @@ pub fn import_message(
 			platform_name = platform_tag.to_string().capitalize(),
 		))?;
 
-	let sender = if let Some(native_account_id) = author_account.owner_id {
-		native_account_id
+	let sender = if author_account.owner_id != ctx.identity() {
+		author_account.owner_id
 	} else {
 		ctx.sender
 	};

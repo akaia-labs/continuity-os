@@ -5,7 +5,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::tables::{AccountLinkRequest, AccountLinkRequestExpirySchedule, account_link_request};
 use crate::{
-	common::traits::AsRecordResolver,
+	common::traits::RecordResolver,
 	entities::foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
 	features::account_linking::tables::account_link_request_schedule,
 };
@@ -17,8 +17,15 @@ const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 pub fn create_account_link_request(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let native_account = ctx.sender.resolve(ctx)?;
 	let foreign_account = reference.resolve(ctx)?;
+
+	if foreign_account.owner_id != ctx.identity() {
+		return Err(format!(
+			"Foreign account {reference} is already linked to another native account.",
+		));
+	}
+
+	let native_account = ctx.sender.resolve(ctx)?;
 
 	let request = ctx.db.account_link_request().insert(AccountLinkRequest {
 		id:                   0,
@@ -51,16 +58,17 @@ pub fn create_account_link_request(
 	Ok(())
 }
 
+// TODO: Finish the flow!
 #[reducer]
 /// Binds a foreign account to a native account.
-pub fn link_foreign_account(
+pub fn resolve_account_link_request(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
 	let native_account = ctx.sender.resolve(ctx)?;
 	let foreign_account = reference.resolve(ctx)?;
 
 	ctx.db.foreign_account().id().update(ForeignAccount {
-		owner_id: Some(native_account.id),
+		owner_id: native_account.id,
 		..foreign_account
 	});
 
@@ -75,8 +83,7 @@ pub fn unlink_foreign_account(
 	let native_account = ctx.sender.resolve(ctx)?;
 	let foreign_account = reference.resolve(ctx)?;
 
-	if foreign_account.owner_id.is_some() && foreign_account.owner_id.unwrap() != native_account.id
-	{
+	if foreign_account.owner_id != native_account.id {
 		return Err(format!(
 			"Account {id} is not linked to the foreign account {reference}.",
 			id = ctx.sender,
@@ -84,7 +91,7 @@ pub fn unlink_foreign_account(
 	}
 
 	ctx.db.foreign_account().id().update(ForeignAccount {
-		owner_id: None,
+		owner_id: ctx.identity(),
 		..foreign_account
 	});
 
