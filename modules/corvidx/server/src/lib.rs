@@ -2,13 +2,14 @@ mod common;
 mod entities;
 mod features;
 
-use entities::{
+use spacetimedb::{ReducerContext, Table, reducer};
+
+use crate::entities::{
 	account_profile::{
 		AccountProfile, AccountProfileMetadata, AccountProfileName, account_profile,
 	},
 	native_account::{NativeAccount, NativeAccountLocalRole, native_account},
 };
-use spacetimedb::{ReducerContext, Table, reducer};
 
 #[reducer(init)]
 /// Called when the module is initially published.

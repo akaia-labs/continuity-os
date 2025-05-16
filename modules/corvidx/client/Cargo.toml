@@ -1,19 +1,18 @@
 [package]
-name = "crowdcomm_sdk"
-description = "AkaiaLabs subsystem SDK"
+name = "corvidx_client"
+description = "AkaiaLabs Corvi.d core SpacetimeDB module client library"
 version = "0.3.0"
 edition = "2024"
 
 
 [lib]
-name = "crowdcomm_sdk"
+name = "crowdcomm_core"
 path = "src/lib.rs"
 
 
 [dependencies]
 # Internal dependencies
 corvutils.workspace = true
-corvidx_client = { path = "../../modules/corvidx/client" }
 
 # External dependencies
 dotenvy.workspace = true

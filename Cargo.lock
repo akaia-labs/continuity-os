@@ -313,7 +313,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "corvidx"
+name = "corvidx_client"
+version = "0.3.0"
+dependencies = [
+ "corvutils",
+ "dotenvy",
+ "hex",
+ "serde",
+ "serde-env",
+ "spacetimedb-sdk",
+ "strum 0.27.1",
+ "strum_macros 0.27.1",
+ "teloxide",
+]
+
+[[package]]
+name = "corvidx_server"
 version = "0.3.0"
 dependencies = [
  "capitalize",
@@ -355,6 +370,7 @@ dependencies = [
 name = "crowdcomm_sdk"
 version = "0.3.0"
 dependencies = [
+ "corvidx_client",
  "corvutils",
  "dotenvy",
  "hex",

@@ -1,3 +1,3 @@
 # AkaiaLabs Crowdcomm SDK
 
-Akaia Labs subsystem SDK.
+AkaiaLabs subsystem SDK.

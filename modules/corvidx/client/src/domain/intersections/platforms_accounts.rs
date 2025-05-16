@@ -1,14 +1,10 @@
-use super::foreign_platform::SupportedForeignPlatformTag;
-use crate::corvidx::{
-	ForeignAccount, ForeignAccountReference, ForeignAccountTableAccess, NativeAccount,
-	RemoteDbContext,
+use crate::{
+	common::stdb::{
+		ForeignAccount, ForeignAccountReference, ForeignAccountTableAccess, NativeAccount,
+		RemoteDbContext,
+	},
+	entities::foreign_platform::{PlatformAssociated, SupportedForeignPlatformTag},
 };
-
-pub trait PlatformAssociated<T> {
-	fn platform_association(
-		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedForeignPlatformTag,
-	) -> Option<T>;
-}
 
 impl PlatformAssociated<ForeignAccount> for NativeAccount {
 	// TODO: Since one native accounts can have several linked foreign accounts
@@ -19,8 +15,7 @@ impl PlatformAssociated<ForeignAccount> for NativeAccount {
 	fn platform_association(
 		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedForeignPlatformTag,
 	) -> Option<ForeignAccount> {
-		let res = self
-			.foreign_account_ownership
+		self.foreign_account_ownership
 			.iter()
 			.filter_map(|account_id| ctx.db().foreign_account().id().find(account_id))
 			.find(|account| {
@@ -30,6 +25,6 @@ impl PlatformAssociated<ForeignAccount> for NativeAccount {
 					.map_or(false, |far| {
 						far.platform_tag.into_supported() == platform_tag
 					})
-			});
+			})
 	}
 }

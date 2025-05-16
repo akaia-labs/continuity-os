@@ -1,4 +1,4 @@
-use crate::corvidx::ForeignAccountReference;
+use crate::common::stdb::ForeignAccountReference;
 
 pub trait ForeignAccountImport {
 	/// Puts third-party account data into locally recognized format

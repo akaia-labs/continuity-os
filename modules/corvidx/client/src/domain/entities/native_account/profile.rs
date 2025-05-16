@@ -1,7 +1,9 @@
-use crate::corvidx::{
-	AccountProfile, AccountProfileTableAccess, NativeAccount, RemoteDbContext,
-	profile::ProfileRetrieval,
-	traits::{DisplayName, Displayable},
+use crate::{
+	common::{
+		stdb::{AccountProfile, AccountProfileTableAccess, NativeAccount, RemoteDbContext},
+		traits::{DisplayName, Displayable},
+	},
+	entities::account_profile::ProfileRetrieval,
 };
 
 impl ProfileRetrieval for NativeAccount {

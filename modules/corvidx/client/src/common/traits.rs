@@ -1,6 +1,6 @@
 use spacetimedb_sdk::Identity;
 
-use super::RemoteDbContext;
+use super::stdb::RemoteDbContext;
 
 pub trait Displayable {
 	fn display_name(&self) -> String;

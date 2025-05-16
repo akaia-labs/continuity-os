@@ -3,7 +3,7 @@ use std::{
 	str::FromStr,
 };
 
-use crate::corvidx::{ForeignAccountReference, ForeignPlatformTag};
+use crate::common::stdb::{ForeignAccountReference, ForeignPlatformTag};
 
 // TODO: figure out how to reduce the reimplementation overhead
 

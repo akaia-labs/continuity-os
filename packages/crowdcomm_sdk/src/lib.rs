@@ -1,7 +1,12 @@
 mod config;
 mod integrations;
-mod modules;
 
 pub use config::*;
 pub use integrations::*;
-pub use modules::*;
+
+pub mod corvidx {
+	pub use corvidx_client::{
+		common::*,
+		domain::{entities::*, intersections::*},
+	};
+}

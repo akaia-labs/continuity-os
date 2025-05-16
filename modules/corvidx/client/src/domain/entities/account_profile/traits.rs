@@ -1,4 +1,4 @@
-use crate::corvidx::{AccountProfile, AccountProfileMetadata, RemoteDbContext};
+use crate::common::stdb::{AccountProfile, AccountProfileMetadata, RemoteDbContext};
 
 pub trait ProfileImport {
 	/// Puts third-party profile into locally recognized format

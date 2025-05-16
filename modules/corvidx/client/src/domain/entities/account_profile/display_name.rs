@@ -1,6 +1,9 @@
 use std::fmt::{self, Display, Formatter};
 
-use crate::corvidx::{AccountProfile, AccountProfileName, traits::Displayable};
+use crate::common::{
+	stdb::{AccountProfile, AccountProfileName},
+	traits::Displayable,
+};
 
 impl Display for AccountProfileName {
 	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
