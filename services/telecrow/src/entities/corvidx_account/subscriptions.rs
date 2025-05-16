@@ -22,14 +22,14 @@ pub fn handle_status_telegram_forward(
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |_crowspace_ctx: &EventContext,
+	return move |_ctx: &EventContext,
 	             outdated_account_data: &NativeAccount,
 	             updated_account_data: &NativeAccount| {
 		// Only forward events registered after handler initialization
 		if subscribed_at.le(&updated_account_data.updated_at) {
 			if outdated_account_data.callsign != updated_account_data.callsign {
 				let request = StatusTelegramForwardRequest {
-					// TODO: The chat id must be taken from the crowchat room properties
+					// TODO: The chat id must be taken from the corvidx channel properties
 					chat_id:     -1001544271932,
 					sender_name: "system".to_string(),
 
