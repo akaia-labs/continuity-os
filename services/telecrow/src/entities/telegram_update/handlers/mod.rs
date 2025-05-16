@@ -1,3 +1,4 @@
+mod event;
 mod message;
 mod user;
 
@@ -10,15 +11,34 @@ use teloxide::{
 	types::{Update, UpdateKind},
 };
 
-use self::{message::on_message, user::on_user_update};
+use self::{event::on_unauthorized_use_attempt, message::on_message, user::on_user_update};
 use crate::BotInstanceType;
 
 pub fn root_handler(
-	corvidx: Arc<DbConnection>,
+	corvidx: Arc<DbConnection>, delegated_authority_groupchat_id: String,
 ) -> impl Fn(Update, BotInstanceType) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
 {
 	move |update: Update, _bot: BotInstanceType| {
 		let ctx = corvidx.clone();
+
+		let is_origin_authorized = update
+			.chat()
+			.and_then(|chat| {
+				if chat.is_group() || chat.is_supergroup() {
+					Some(chat.id.to_string() == delegated_authority_groupchat_id)
+				} else {
+					Some(chat.is_private())
+				}
+			})
+			.unwrap_or(false);
+
+		if !is_origin_authorized {
+			return Box::pin(async move {
+				on_unauthorized_use_attempt(ctx.clone(), update);
+				respond(())
+			});
+		}
+
 		let user = update.from();
 
 		if let Some(user) = user {

@@ -20,10 +20,10 @@ pub fn get() -> CorvidSubsystemConfig {
 				db_name: modules.core.dbname,
 			},
 
-			// TODO: Make it optional here as well as in env
+			// TODO: Make subsystem services optional here as well as in env
 			telecrow: SubsystemServiceConfig {
 				auth_token:                   services.telecrow.authtkn,
-				initial_authorized_entity_id: services.telecrow.iaeid,
+				delegated_authority_space_id: services.telecrow.dasid,
 			},
 		},
 	}

@@ -63,7 +63,10 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(
 			dptree::entry()
 				.filter_map(|update: Update| update.from().cloned())
-				.endpoint(telegram_update::root_handler(corvidx_connection.clone())),
+				.endpoint(telegram_update::root_handler(
+					corvidx_connection.clone(),
+					components.telecrow.delegated_authority_space_id,
+				)),
 		);
 
 	println!("\n⏳ Initializing module clients...\n");

@@ -34,5 +34,8 @@ pub struct CorvidServicesRuntimeEnvConfig {
 #[derive(Debug, Deserialize)]
 pub struct CorvidCoreServiceRuntimeEnvConfig {
 	pub authtkn: String,
-	pub iaeid:   String,
+	/// A shorthand for Delegated Authority Space ID.
+	/// Corresponds to the ID of the foreign-platform-bound structure
+	/// controlled exclusively by the subsystem owner community.
+	pub dasid:   String,
 }

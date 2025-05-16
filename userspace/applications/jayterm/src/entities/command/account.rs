@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use crowdcomm_sdk::corvidx::{
-	DbConnection, ForeignAccountReference, link_foreign_account, mirror_foreign_profile,
+	DbConnection, ForeignAccountReference, create_account_link_request, mirror_foreign_profile,
 	set_account_callsign, unlink_foreign_account,
 };
 use strum_macros::{Display, EnumString};
@@ -30,7 +30,7 @@ pub fn on_account_command(
 
 			corvidx
 				.reducers
-				.link_foreign_account(foreign_account_ref)
+				.create_account_link_request(foreign_account_ref)
 				.map_err(|e| e.to_string())
 		},
 
