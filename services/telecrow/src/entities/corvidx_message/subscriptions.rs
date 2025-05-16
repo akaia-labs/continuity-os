@@ -1,8 +1,10 @@
 use std::{str::FromStr, sync::Arc};
 
 use crowdcomm_sdk::corvidx::{
-	DbConnection, EventContext, ForeignAccountReference, ForeignPlatformTag,
-	NativeAccountTableAccess, Message, MessageAuthorId, ReducerEventContext, send_message,
+	stdb::{
+		DbConnection, EventContext, ForeignAccountReference, ForeignPlatformTag, Message,
+		MessageAuthorId, NativeAccountTableAccess, ReducerEventContext, send_message,
+	},
 	traits::DisplayName,
 };
 use spacetimedb_sdk::{DbContext, Status, Timestamp};

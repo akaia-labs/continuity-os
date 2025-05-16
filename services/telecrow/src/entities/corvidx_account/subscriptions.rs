@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crowdcomm_sdk::corvidx::{
+use crowdcomm_sdk::corvidx::stdb::{
 	DbConnection, EventContext, NativeAccount, NativeAccountTableAccess, ReducerEventContext,
 	set_account_callsign,
 };

@@ -7,8 +7,13 @@ setup:
 
 #* DEVELOPMENT
 
-corvid-dev:
-    (cd subsystems/corvi.d && ./rvvm/rvvm_arm64)
+corvidx-generate:
+    spacetime generate --lang rust \
+    	--project-path modules/corvidx/server \
+    	--out-dir modules/corvidx/client/src/common/stdb/generated_bindings
+
+generate: corvidx-generate
+    (echo "✅ DONE.")
 
 telecrow-dev:
     (cd services/telecrow && cargo run)
@@ -17,15 +22,7 @@ telecrow-inspect:
     (cd services/telecrow && RUST_LOG=trace cargo run)
 
 jayterm-dev:
-    (cd userspace/applications/jayterm && cargo run)
-
-generate-module_bindings:
-    spacetime generate --lang rust \
-    	--project-path modules/corvidx \
-    	--out-dir packages/crowdcomm_sdk/src/modules/corvidx/common/_generated_bindings
-
-generate: generate-module_bindings
-    (echo "✅ DONE.")
+    (cd userspace/apps/jayterm && cargo run)
 
 
 #* TESTS
@@ -41,9 +38,10 @@ corvutils-test-dbg:
 
 unsafe-local-corvidx-drop:
     (spacetime delete -s localhost corvidx)
+    (echo "✅ DONE.")
 
 local-corvidx-publish:
-    (spacetime publish -s localhost --project-path modules/corvidx corvidx)
+    (spacetime publish -s localhost --project-path modules/corvidx/server corvidx)
 
 local-corvidx-call:
     (spacetime call -s localhost corvidx)
@@ -56,4 +54,3 @@ local-publish: local-corvidx-publish
 
 unsafe-local-republish: unsafe-local-corvidx-drop
     (just local-publish)
-    (echo "✅ DONE.")

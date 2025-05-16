@@ -1,6 +1,6 @@
 use std::process;
 
-use crowdcomm_sdk::corvidx::{DbConnection, ErrorContext, SubscriptionEventContext};
+use crowdcomm_sdk::corvidx::stdb::{DbConnection, ErrorContext, SubscriptionEventContext};
 use spacetimedb_sdk::{Error, Identity};
 
 use super::authentication;
@@ -29,13 +29,13 @@ pub fn on_disconnected(_corvidx: &ErrorContext, err: Option<Error>) {
 	}
 }
 
-pub fn on_sub_applied(_crowspace_ctx: &SubscriptionEventContext) {
+pub fn on_sub_applied(_corvidx: &SubscriptionEventContext) {
 	println!("✅ Fully connected and all subscriptions applied.\n");
 	println!("🚀 ONLINE!\n");
 }
 
 /// Prints the error, then exits the process.
-pub fn on_sub_error(_crowspace_ctx: &ErrorContext, err: Error) {
+pub fn on_sub_error(_corvidx: &ErrorContext, err: Error) {
 	eprintln!("❌ Subscription failed: {}", err);
 	std::process::exit(1);
 }

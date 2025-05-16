@@ -1,3 +1,1 @@
-mod entities;
-
-pub use entities::*;
+mod user;

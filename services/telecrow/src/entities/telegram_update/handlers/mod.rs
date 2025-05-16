@@ -5,7 +5,7 @@ mod user;
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use corvutils::{print_error, print_success};
-use crowdcomm_sdk::corvidx::DbConnection;
+use crowdcomm_sdk::corvidx::stdb::DbConnection;
 use teloxide::{
 	RequestError, respond,
 	types::{Update, UpdateKind},

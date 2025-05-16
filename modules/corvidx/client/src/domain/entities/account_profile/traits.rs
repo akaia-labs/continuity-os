@@ -1,9 +1,4 @@
-use crate::common::stdb::{AccountProfile, AccountProfileMetadata, RemoteDbContext};
-
-pub trait ProfileImport {
-	/// Puts third-party profile into locally recognized format
-	fn into_profile_metadata(&self) -> AccountProfileMetadata;
-}
+use crate::common::stdb::{AccountProfile, RemoteDbContext};
 
 pub trait ProfileRetrieval {
 	/// Retrieves the associated profile, if present.

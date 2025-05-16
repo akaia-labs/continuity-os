@@ -6,7 +6,7 @@ members = [
 	"modules/corvidx/*",
 	"packages/*",
 	"services/*",
-	"userspace/applications/*",
+	"userspace/apps/*",
 ]
 
 
@@ -53,6 +53,7 @@ spacetimedb-sdk = "1.1.1"
 strum = { version = "0.27.1", features = ["derive"] }
 strum_macros = "0.27.1"
 teloxide = { version = "0.15.0", features = ["macros"] }
+teloxide-core = "0.11.2"
 tokio = { version = "1.45.0", features = ["rt-multi-thread", "macros"] }
 unicode-segmentation = "1.12.0"
 # wasm-opt = "0.116.1"

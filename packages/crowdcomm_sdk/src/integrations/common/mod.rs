@@ -1,2 +1,1 @@
-pub mod stdb;
 pub mod traits;

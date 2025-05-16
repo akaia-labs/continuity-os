@@ -317,7 +317,6 @@ name = "corvidx_client"
 version = "0.3.0"
 dependencies = [
  "corvutils",
- "dotenvy",
  "hex",
  "serde",
  "serde-env",
@@ -379,7 +378,7 @@ dependencies = [
  "spacetimedb-sdk",
  "strum 0.27.1",
  "strum_macros 0.27.1",
- "teloxide",
+ "teloxide-core",
 ]
 
 [[package]]

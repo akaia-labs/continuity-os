@@ -1,12 +1,16 @@
 use std::sync::Arc;
 
 use capitalize::Capitalize;
-use crowdcomm_sdk::corvidx::{
-	DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
-	native_account::ForeignAccountImport,
-	import_foreign_account,
-	profile::{ProfileImport, ProfileRetrieval},
-	update_foreign_account_callsign, update_foreign_account_profile,
+use crowdcomm_sdk::{
+	corvidx::{
+		account_profile::ProfileRetrieval,
+		stdb::{
+			DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
+			import_foreign_account, update_foreign_account_callsign,
+			update_foreign_account_profile,
+		},
+	},
+	integrations::{ForeignAccountImport, ProfileImport},
 };
 use teloxide::types::User;
 

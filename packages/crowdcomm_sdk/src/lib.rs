@@ -1,10 +1,8 @@
-mod config;
-mod integrations;
-
-pub use config::*;
-pub use integrations::*;
+pub mod configuration;
+pub mod integrations;
 
 pub mod corvidx {
+	#[allow(unused_imports)]
 	pub use corvidx_client::{
 		common::*,
 		domain::{entities::*, intersections::*},

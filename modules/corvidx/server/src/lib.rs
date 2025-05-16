@@ -1,4 +1,4 @@
-mod app;
+mod application;
 mod common;
 mod domain;
 

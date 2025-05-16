@@ -15,7 +15,6 @@ path = "src/lib.rs"
 corvutils.workspace = true
 
 # External dependencies
-dotenvy.workspace = true
 hex.workspace = true
 serde.workspace = true
 serde-env.workspace = true

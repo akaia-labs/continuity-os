@@ -4,7 +4,7 @@ pub mod features;
 
 use std::sync::Arc;
 
-use crowdcomm_sdk::corvid_subsystem_config::{self, CorvidSubsystemConfig};
+use crowdcomm_sdk::configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig};
 use dotenvy::dotenv;
 use entities::{telegram_command, telegram_update};
 use teloxide::{

@@ -1,5 +1,5 @@
 use crowdcomm_sdk::{
-	corvid_subsystem_config, corvidx::foreign_platform::SupportedForeignPlatformTag,
+	configuration::corvid_subsystem_config, corvidx::foreign_platform::SupportedForeignPlatformTag,
 };
 
 pub const ROOT_SUBSYSTEM_CANONICAL_NAME: &str = corvid_subsystem_config::CANONICAL_NAME;

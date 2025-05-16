@@ -2,8 +2,8 @@ mod authentication;
 mod subscriptions;
 
 use crowdcomm_sdk::{
-	corvid_subsystem_config::{self, CorvidSubsystemConfig},
-	corvidx::DbConnection,
+	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
+	corvidx::stdb::DbConnection,
 };
 use spacetimedb_sdk::DbContext;
 
