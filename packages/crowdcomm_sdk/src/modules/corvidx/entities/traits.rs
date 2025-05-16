@@ -27,7 +27,9 @@ impl PlatformAssociated<ForeignAccount> for NativeAccount {
 				account
 					.id
 					.parse::<ForeignAccountReference>()
-					.map_or(false, |far| far.platform_tag == platform_tag)
+					.map_or(false, |far| {
+						far.platform_tag.into_supported() == platform_tag
+					})
 			});
 	}
 }

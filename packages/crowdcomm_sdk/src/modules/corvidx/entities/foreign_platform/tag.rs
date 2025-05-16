@@ -11,6 +11,12 @@ pub enum SupportedForeignPlatformTag {
 	Unknown,
 }
 
+impl ForeignPlatformTag {
+	pub fn into_supported(&self) -> SupportedForeignPlatformTag {
+		(*self).into()
+	}
+}
+
 impl From<SupportedForeignPlatformTag> for ForeignPlatformTag {
 	fn from(name_reference: SupportedForeignPlatformTag) -> Self {
 		match name_reference {
@@ -44,12 +50,6 @@ impl FromStr for ForeignPlatformTag {
 
 impl Display for ForeignPlatformTag {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "{}", Into::<SupportedForeignPlatformTag>::into(*self))
-	}
-}
-
-impl ForeignPlatformTag {
-	fn into_supported(&self) -> SupportedForeignPlatformTag {
-		Into::<SupportedForeignPlatformTag>::into(*self)
+		write!(f, "{}", self.into_supported())
 	}
 }
