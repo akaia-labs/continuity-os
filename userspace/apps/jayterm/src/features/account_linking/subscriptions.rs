@@ -1,7 +1,10 @@
 use corvutils::StringExtensions;
-use crowdcomm_sdk::corvidx::stdb::{
-	DbConnection, ForeignAccountReference, ReducerEventContext, mirror_foreign_profile,
-	resolve_account_link_request, unlink_foreign_account,
+use crowdcomm_sdk::corvidx::{
+	account_linking::AccountLinkRequestId,
+	stdb::{
+		DbConnection, ForeignAccountReference, ReducerEventContext, mirror_foreign_profile,
+		resolve_account_link_request, unlink_foreign_account,
+	},
 };
 use spacetimedb_sdk::Status;
 
@@ -21,22 +24,14 @@ pub fn subscribe(corvidx: &DbConnection) {
 
 // TODO: Send service DM to the particular requester instead
 fn on_resolve_account_link_request(
-	corvidx: &ReducerEventContext, reference: &ForeignAccountReference,
+	corvidx: &ReducerEventContext, request_id: &AccountLinkRequestId, is_approved: &bool,
 ) {
-	let ForeignAccountReference {
-		id: external_identifier,
-		platform_tag,
-	} = reference;
-
 	match &corvidx.event.status {
 		| Status::Committed => {
 			let message = format!(
-				r#"
-					{platform_tag} account {external_identifier}
-					has been successfully linked to your account.
-				"#
+				"Account link request {request_id} has been {outcome}.",
+				outcome = if *is_approved { "approved" } else { "rejected" }
 			)
-			.squash_whitespace()
 			.padded();
 
 			println!("{message}")
@@ -44,8 +39,7 @@ fn on_resolve_account_link_request(
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to link {external_identifier} {platform_tag} account:\n{err}")
-					.padded();
+				format!("Unable to resolve account link request {request_id}:\n{err}").padded();
 
 			eprintln!("{message}")
 		},

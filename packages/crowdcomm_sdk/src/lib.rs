@@ -5,6 +5,6 @@ pub mod corvidx {
 	#[allow(unused_imports)]
 	pub use corvidx_client::{
 		common::*,
-		domain::{entities::*, intersections::*},
+		domain::{entities::*, features::*, intersections::*},
 	};
 }
