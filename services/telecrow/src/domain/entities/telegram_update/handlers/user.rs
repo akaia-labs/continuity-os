@@ -3,7 +3,7 @@ use std::sync::Arc;
 use capitalize::Capitalize;
 use crowdcomm_sdk::{
 	corvidx::{
-		account_profile::ProfileResolution,
+		ports::ProfileResolution,
 		stdb::{
 			DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
 			import_foreign_account, update_foreign_account_callsign,
