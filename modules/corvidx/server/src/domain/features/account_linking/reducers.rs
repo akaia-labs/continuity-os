@@ -135,21 +135,24 @@ pub fn unlink_foreign_account(
 /// Reports account link resolution outcome.
 pub fn report_account_link_resolution(
 	ctx: &ReducerContext, request: AccountLinkRequest, is_approved: bool,
-) -> Result<(), String> {
+) {
 	let AccountLinkRequest {
 		requester_account_id: _,
 		subject_account_id,
 		..
 	} = request;
 
-	let ForeignAccountReference {
-		id: fa_id,
-		platform_tag,
-	} = subject_account_id.parse().unwrap();
+	let display_account_reference = subject_account_id
+		.parse::<ForeignAccountReference>()
+		.map_or(subject_account_id, |far| {
+			format!(
+				"{platform_name} account {fa_id}",
+				platform_name = far.platform_tag.to_string().capitalize(),
+				fa_id = far.id,
+			)
+		});
 
-	let platform_name = platform_tag.to_string().capitalize();
-
-	// TODO: Send DMs to both parties instead
+	// TODO: Send DM instead, once DMs are implemented
 	let result = ctx.db.message().try_insert(Message {
 		id:        0,
 		sender:    ctx.identity(),
@@ -157,17 +160,15 @@ pub fn report_account_link_resolution(
 		author_id: MessageAuthorId::NativeAccountId(ctx.identity()),
 
 		text: if is_approved {
-			format!("{platform_name} account {fa_id} has been linked to your account.")
+			format!("{display_account_reference} has been linked to your account.")
 		} else {
-			format!("Account link request for foreign account {fa_id} has been rejected.")
+			format!("Account link request for {display_account_reference} has been rejected.")
 		},
 	});
 
 	if let Err(err) = result {
 		log::error!("Failed to send account link resolution message: {err}");
 	}
-
-	Ok(())
 }
 
 #[reducer]
