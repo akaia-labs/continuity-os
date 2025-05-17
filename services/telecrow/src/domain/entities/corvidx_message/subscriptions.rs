@@ -1,13 +1,16 @@
 use std::{str::FromStr, sync::Arc};
 
-use crowdcomm_sdk::corvidx::{
-	PlatformAssociation,
-	ports::{ProfileResolution, RecordResolution},
-	presentation::Displayable,
-	stdb::{
-		DbConnection, EventContext, ForeignAccountReference, Message, MessageAuthorId,
-		ReducerEventContext, send_message,
+use crowdcomm_sdk::{
+	corvidx::{
+		PlatformAssociation,
+		ports::{ProfileResolution, RecordResolution},
+		presentation::Displayable,
+		stdb::{
+			DbConnection, EventContext, ForeignAccountReference, Message, MessageAuthorId,
+			ReducerEventContext, send_message,
+		},
 	},
+	integrations::telegram::OutboundTelegramMessage,
 };
 use spacetimedb_sdk::{Status, Timestamp};
 use teloxide::types::Message as TelegramMessage;
@@ -15,15 +18,9 @@ use tokio::sync::mpsc;
 
 use crate::common::{constants::TARGET_FOREIGN_PLATFORM_TAG, runtime::AsyncHandler};
 
-pub struct TelegramForwardRequest {
-	pub chat_id:      i64,
-	pub author_name:  String,
-	pub message_text: String,
-}
-
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	transmitter: mpsc::Sender<TelegramForwardRequest>, async_handler: Arc<AsyncHandler>,
+	transmitter: mpsc::Sender<OutboundTelegramMessage>, async_handler: Arc<AsyncHandler>,
 ) -> impl FnMut(&EventContext, &Message) {
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
@@ -67,7 +64,7 @@ pub fn handle_telegram_forward(
 					.map(|profile| profile.display_name())
 					.unwrap_or(format!("unknown-{}", message.sender));
 
-				let request = TelegramForwardRequest {
+				let dto = OutboundTelegramMessage {
 					// TODO: The chat id must be taken from crowdcomm_sdk::ForeignChannel
 					chat_id: -1001544271932,
 					author_name,
@@ -78,7 +75,7 @@ pub fn handle_telegram_forward(
 				let tx = transmitter.clone();
 
 				handle.spawn(async move {
-					let _ = tx.send(request).await;
+					let _ = tx.send(dto).await;
 				});
 			}
 		}

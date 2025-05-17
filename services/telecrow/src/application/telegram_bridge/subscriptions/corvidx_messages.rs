@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use crowdcomm_sdk::corvidx::stdb::{DbConnection, MessageTableAccess};
+use crowdcomm_sdk::{
+	corvidx::stdb::{DbConnection, MessageTableAccess},
+	integrations::telegram::OutboundTelegramMessage,
+};
 use spacetimedb_sdk::Table;
 use teloxide::{
 	payloads::SendMessageSetters,
@@ -11,20 +14,12 @@ use tokio::sync::mpsc;
 
 use crate::{BotInstanceType, common::runtime::AsyncHandler, domain::entities::corvidx_message};
 
-/// Sets up message forwarding from corvidx to Telegram.
-///
-/// This function:
-/// 1. Creates the channel for forwarding messages
-/// 2. Spawns a background task that processes messages from the channel
-/// 3. Registers the message handler
+/// Sets up message forwarding from corvidx to Telegram through a Tokio channel.
 pub fn subscribe(
 	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
-	let (forward_transmitter, mut forward_receiver) =
-		mpsc::channel::<corvidx_message::TelegramForwardRequest>(100);
-
-	// Telegram bot instance for the background task
-	let telegram_transmitter = telegram_bot.clone();
+	let (forward_transmitter, mut forward_receiver) = mpsc::channel::<OutboundTelegramMessage>(100);
+	let bridge = telegram_bot.clone();
 
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
@@ -32,7 +27,7 @@ pub fn subscribe(
 			let message_header = format!("💬 <strong>{}</strong>\n\n", req.author_name);
 			let message_text = format!("{}{}", message_header, req.message_text);
 
-			let _ = telegram_transmitter
+			let _ = bridge
 				.send_message(ChatId(req.chat_id), &message_text)
 				.message_thread_id(ThreadId(MessageId(3315)))
 				.await

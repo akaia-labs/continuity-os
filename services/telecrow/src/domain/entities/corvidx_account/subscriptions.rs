@@ -1,23 +1,20 @@
 use std::sync::Arc;
 
-use crowdcomm_sdk::corvidx::stdb::{
-	DbConnection, EventContext, NativeAccount, NativeAccountTableAccess, ReducerEventContext,
-	set_account_callsign,
+use crowdcomm_sdk::{
+	corvidx::stdb::{
+		DbConnection, EventContext, NativeAccount, NativeAccountTableAccess, ReducerEventContext,
+		set_account_callsign,
+	},
+	integrations::telegram::OutboundTelegramMessage,
 };
 use spacetimedb_sdk::{Status, Table, Timestamp};
 use tokio::sync::mpsc;
 
 use crate::common::runtime::AsyncHandler;
 
-pub struct StatusTelegramForwardRequest {
-	pub chat_id:      i64,
-	pub author_name:  String,
-	pub message_text: String,
-}
-
 /// Logs event on Telegram using a channel.
 pub fn handle_status_telegram_forward(
-	transmitter: mpsc::Sender<StatusTelegramForwardRequest>, async_handler: Arc<AsyncHandler>,
+	transmitter: mpsc::Sender<OutboundTelegramMessage>, async_handler: Arc<AsyncHandler>,
 ) -> impl FnMut(&EventContext, &NativeAccount, &NativeAccount) {
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
@@ -28,7 +25,7 @@ pub fn handle_status_telegram_forward(
 		// Only forward events registered after handler initialization
 		if subscribed_at.le(&updated_account_data.updated_at) {
 			if outdated_account_data.callsign != updated_account_data.callsign {
-				let request = StatusTelegramForwardRequest {
+				let dto = OutboundTelegramMessage {
 					// TODO: The chat id must be taken from the corvidx channel properties
 					chat_id:     -1001544271932,
 					author_name: "system".to_string(),
@@ -45,7 +42,7 @@ pub fn handle_status_telegram_forward(
 				let tx = transmitter.clone();
 
 				handle.spawn(async move {
-					let _ = tx.send(request).await;
+					let _ = tx.send(dto).await;
 				});
 			}
 		}
