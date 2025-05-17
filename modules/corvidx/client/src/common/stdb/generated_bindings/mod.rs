@@ -29,6 +29,7 @@ pub mod mirror_foreign_profile_reducer;
 pub mod native_account_local_role_type;
 pub mod native_account_table;
 pub mod native_account_type;
+pub mod report_account_link_resolution_reducer;
 pub mod resolve_account_link_request_reducer;
 pub mod scheduled_delete_account_link_request_reducer;
 pub mod send_message_reducer;
@@ -79,6 +80,10 @@ pub use mirror_foreign_profile_reducer::{
 pub use native_account_local_role_type::NativeAccountLocalRole;
 pub use native_account_table::*;
 pub use native_account_type::NativeAccount;
+pub use report_account_link_resolution_reducer::{
+	ReportAccountLinkResolutionCallbackId, report_account_link_resolution,
+	set_flags_for_report_account_link_resolution,
+};
 pub use resolve_account_link_request_reducer::{
 	ResolveAccountLinkRequestCallbackId, resolve_account_link_request,
 	set_flags_for_resolve_account_link_request,
@@ -134,8 +139,13 @@ pub enum Reducer {
 	MirrorForeignProfile {
 		reference: ForeignAccountReference,
 	},
+	ReportAccountLinkResolution {
+		request:     AccountLinkRequest,
+		is_approved: bool,
+	},
 	ResolveAccountLinkRequest {
-		reference: ForeignAccountReference,
+		request_id:  i128,
+		is_approved: bool,
 	},
 	ScheduledDeleteAccountLinkRequest {
 		args: AccountLinkRequestExpirySchedule,
@@ -173,6 +183,7 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::ImportForeignAccount { .. } => "import_foreign_account",
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::MirrorForeignProfile { .. } => "mirror_foreign_profile",
+			| Reducer::ReportAccountLinkResolution { .. } => "report_account_link_resolution",
 			| Reducer::ResolveAccountLinkRequest { .. } => "resolve_account_link_request",
 			| Reducer::ScheduledDeleteAccountLinkRequest { .. } => {
 				"scheduled_delete_account_link_request"
@@ -197,6 +208,7 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
             "import_foreign_account" => Ok(__sdk::parse_reducer_args::<import_foreign_account_reducer::ImportForeignAccountArgs>("import_foreign_account", &value.args)?.into()),
             "import_message" => Ok(__sdk::parse_reducer_args::<import_message_reducer::ImportMessageArgs>("import_message", &value.args)?.into()),
             "mirror_foreign_profile" => Ok(__sdk::parse_reducer_args::<mirror_foreign_profile_reducer::MirrorForeignProfileArgs>("mirror_foreign_profile", &value.args)?.into()),
+            "report_account_link_resolution" => Ok(__sdk::parse_reducer_args::<report_account_link_resolution_reducer::ReportAccountLinkResolutionArgs>("report_account_link_resolution", &value.args)?.into()),
             "resolve_account_link_request" => Ok(__sdk::parse_reducer_args::<resolve_account_link_request_reducer::ResolveAccountLinkRequestArgs>("resolve_account_link_request", &value.args)?.into()),
             "scheduled_delete_account_link_request" => Ok(__sdk::parse_reducer_args::<scheduled_delete_account_link_request_reducer::ScheduledDeleteAccountLinkRequestArgs>("scheduled_delete_account_link_request", &value.args)?.into()),
             "send_message" => Ok(__sdk::parse_reducer_args::<send_message_reducer::SendMessageArgs>("send_message", &value.args)?.into()),

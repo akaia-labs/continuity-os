@@ -4,18 +4,18 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::foreign_account_reference_type::ForeignAccountReference;
-
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct ResolveAccountLinkRequestArgs {
-	pub reference: ForeignAccountReference,
+	pub request_id:  i128,
+	pub is_approved: bool,
 }
 
 impl From<ResolveAccountLinkRequestArgs> for super::Reducer {
 	fn from(args: ResolveAccountLinkRequestArgs) -> Self {
 		Self::ResolveAccountLinkRequest {
-			reference: args.reference,
+			request_id:  args.request_id,
+			is_approved: args.is_approved,
 		}
 	}
 }
@@ -38,8 +38,9 @@ pub trait resolve_account_link_request {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_resolve_account_link_request`] callbacks.
-	fn resolve_account_link_request(&self, reference: ForeignAccountReference)
-	-> __sdk::Result<()>;
+	fn resolve_account_link_request(
+		&self, request_id: i128, is_approved: bool,
+	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `resolve_account_link_request`.
 	///
@@ -50,8 +51,7 @@ pub trait resolve_account_link_request {
 	/// [`Self::remove_on_resolve_account_link_request`] to cancel the
 	/// callback.
 	fn on_resolve_account_link_request(
-		&self,
-		callback: impl FnMut(&super::ReducerEventContext, &ForeignAccountReference) + Send + 'static,
+		&self, callback: impl FnMut(&super::ReducerEventContext, &i128, &bool) + Send + 'static,
 	) -> ResolveAccountLinkRequestCallbackId;
 	/// Cancel a callback previously registered by
 	/// [`Self::on_resolve_account_link_request`], causing it not to run in the
@@ -61,17 +61,19 @@ pub trait resolve_account_link_request {
 
 impl resolve_account_link_request for super::RemoteReducers {
 	fn resolve_account_link_request(
-		&self, reference: ForeignAccountReference,
+		&self, request_id: i128, is_approved: bool,
 	) -> __sdk::Result<()> {
 		self.imp.call_reducer(
 			"resolve_account_link_request",
-			ResolveAccountLinkRequestArgs { reference },
+			ResolveAccountLinkRequestArgs {
+				request_id,
+				is_approved,
+			},
 		)
 	}
 
 	fn on_resolve_account_link_request(
-		&self,
-		mut callback: impl FnMut(&super::ReducerEventContext, &ForeignAccountReference) + Send + 'static,
+		&self, mut callback: impl FnMut(&super::ReducerEventContext, &i128, &bool) + Send + 'static,
 	) -> ResolveAccountLinkRequestCallbackId {
 		ResolveAccountLinkRequestCallbackId(self.imp.on_reducer(
 			"resolve_account_link_request",
@@ -79,7 +81,11 @@ impl resolve_account_link_request for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::ResolveAccountLinkRequest { reference },
+							reducer:
+								super::Reducer::ResolveAccountLinkRequest {
+									request_id,
+									is_approved,
+								},
 							..
 						},
 					..
@@ -87,7 +93,7 @@ impl resolve_account_link_request for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, reference)
+				callback(ctx, request_id, is_approved)
 			}),
 		))
 	}
