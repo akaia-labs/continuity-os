@@ -14,7 +14,7 @@ impl ProfileResolution for NativeAccount {
 	}
 
 	/// Equivalent to `.profile` for native accounts
-	fn local_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
+	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
 		self.profile(ctx)
 	}
 }

@@ -3,13 +3,13 @@ use std::{str::FromStr, sync::Arc};
 use crowdcomm_sdk::corvidx::{
 	PlatformAssociation,
 	ports::{ProfileResolution, RecordResolution},
-	presentation::{DisplayName, Displayable},
+	presentation::Displayable,
 	stdb::{
 		DbConnection, EventContext, ForeignAccountReference, Message, MessageAuthorId,
-		NativeAccountTableAccess, ReducerEventContext, send_message,
+		ReducerEventContext, send_message,
 	},
 };
-use spacetimedb_sdk::{DbContext, Status, Timestamp};
+use spacetimedb_sdk::{Status, Timestamp};
 use teloxide::types::Message as TelegramMessage;
 use tokio::sync::mpsc;
 

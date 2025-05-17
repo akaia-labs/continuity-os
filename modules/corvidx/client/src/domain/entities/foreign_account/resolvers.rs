@@ -19,9 +19,9 @@ impl ProfileResolution for ForeignAccount {
 
 	/// Walks the ownership tree starting from the bound internal account
 	/// (if present) to retrieve the first available account profile
-	fn local_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
+	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
 		if let Some(owner) = ctx.db().native_account().id().find(&self.owner_id) {
-			owner.local_profile(ctx)
+			owner.native_profile(ctx)
 		} else if let Some(profile_id) = self.profile_id {
 			ctx.db().account_profile().id().find(&profile_id)
 		} else {

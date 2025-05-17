@@ -3,11 +3,12 @@ use std::process;
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	corvidx::{
+		ports::RecordResolution,
 		presentation::DisplayName,
 		stdb::{
 			AccountProfileTableAccess, DbConnection, ErrorContext, ForeignAccountTableAccess,
-			Message, MessageAuthorId, MessageTableAccess, NativeAccountTableAccess,
-			RemoteDbContext, SubscriptionEventContext,
+			Message, MessageAuthorId, MessageTableAccess, RemoteDbContext,
+			SubscriptionEventContext,
 		},
 	},
 };
@@ -15,23 +16,16 @@ use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};
 
 pub fn print_message(corvidx: &impl RemoteDbContext, message: &Message) {
 	let sender = match &message.author_id {
-		| MessageAuthorId::NativeAccountId(author_id) => corvidx
-			.db()
-			.native_account()
-			.id()
-			.find(&author_id)
+		| MessageAuthorId::NativeAccountId(author_id) => author_id
+			.resolve(corvidx)
 			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
 
-		| MessageAuthorId::ForeignAccountId(author_id) => corvidx
-			.db()
-			.foreign_account()
-			.id()
-			.find(&author_id)
+		| MessageAuthorId::ForeignAccountId(author_id) => author_id
+			.resolve(corvidx)
 			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
 
-		| MessageAuthorId::System => "system".to_string(),
 		| MessageAuthorId::Unknown => "unknown".to_string(),
 	};
 

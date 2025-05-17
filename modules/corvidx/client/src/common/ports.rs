@@ -14,5 +14,5 @@ pub trait ProfileResolution {
 	///
 	/// For **foreign accounts owned by native accounts**, the profile
 	/// of the owner account should take precedence.
-	fn local_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile>;
+	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile>;
 }
