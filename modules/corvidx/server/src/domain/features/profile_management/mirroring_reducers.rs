@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, reducer};
 
 use crate::{
 	common::ports::RecordResolution,
-	entities::{
+	domain::entities::{
 		account_profile::{AccountProfile, account_profile},
 		foreign_account::ForeignAccountReference,
 	},

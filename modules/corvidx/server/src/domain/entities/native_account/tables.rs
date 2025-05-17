@@ -2,7 +2,7 @@ use spacetimedb::{Identity, ReducerContext, SpacetimeType, Timestamp, table};
 
 use crate::{
 	common::ports::RecordResolution,
-	entities::{account_profile::AccountProfileId, foreign_account::ForeignAccountId},
+	domain::entities::{account_profile::AccountProfileId, foreign_account::ForeignAccountId},
 };
 
 pub type NativeAccountId = Identity;

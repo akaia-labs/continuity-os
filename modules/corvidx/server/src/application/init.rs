@@ -1,6 +1,6 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use crate::entities::{
+use crate::domain::entities::{
 	account_profile::{
 		AccountProfile, AccountProfileMetadata, AccountProfileName, account_profile,
 	},

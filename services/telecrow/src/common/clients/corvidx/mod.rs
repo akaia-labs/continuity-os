@@ -1,5 +1,5 @@
 mod authentication;
-mod subscriptions;
+mod handlers;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
@@ -15,9 +15,9 @@ pub fn connect() -> DbConnection {
 	} = corvid_subsystem_config::get();
 
 	DbConnection::builder()
-			.on_connect(subscriptions::on_connected)
-			.on_connect_error(subscriptions::on_connect_error)
-			.on_disconnect(subscriptions::on_disconnected)
+			.on_connect(handlers::on_connected)
+			.on_connect_error(handlers::on_connect_error)
+			.on_disconnect(handlers::on_disconnected)
 			// If the account has previously connected, we'll have saved a token in the `on_connect` callback.
 			// In that case, we'll load it and pass it to `with_token`,
 			// so we can re-authenticate as the same `Identity`.
@@ -34,8 +34,8 @@ pub fn connect() -> DbConnection {
 pub fn subscribe(corvidx: &DbConnection) {
 	corvidx
 		.subscription_builder()
-		.on_applied(subscriptions::on_sub_applied)
-		.on_error(subscriptions::on_sub_error)
+		.on_applied(handlers::on_sub_applied)
+		.on_error(handlers::on_sub_error)
 		// Facilitating creation of a local partial replica of the database.
 		.subscribe([
 			"SELECT * FROM account_link_request",

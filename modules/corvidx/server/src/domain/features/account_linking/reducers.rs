@@ -10,12 +10,14 @@ use super::tables::{
 };
 use crate::{
 	common::ports::RecordResolution,
-	entities::{
-		foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
-		message::{Message, MessageAuthorId, message},
-		native_account::native_account,
+	domain::{
+		entities::{
+			foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
+			message::{Message, MessageAuthorId, message},
+			native_account::native_account,
+		},
+		features::account_linking::tables::account_link_request_schedule,
 	},
-	features::account_linking::tables::account_link_request_schedule,
 };
 
 const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);

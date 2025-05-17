@@ -1,7 +1,7 @@
 use spacetimedb::{ScheduleAt, Timestamp, table};
 
 use super::reducers::scheduled_delete_account_link_request;
-use crate::entities::{foreign_account::ForeignAccountId, native_account::NativeAccountId};
+use crate::domain::entities::{foreign_account::ForeignAccountId, native_account::NativeAccountId};
 
 pub type AccountLinkRequestId = i128;
 

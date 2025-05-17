@@ -4,6 +4,7 @@ pub mod domain;
 
 use std::sync::Arc;
 
+use application::general_subscriptions;
 use crowdcomm_sdk::configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig};
 use dotenvy::dotenv;
 use teloxide::{
@@ -16,9 +17,9 @@ use teloxide::{
 };
 
 use crate::{
-	application::telegram_group_bridge,
+	application::telegram_bridge,
 	common::{clients::corvidx_client, runtime, runtime::TelecrowError},
-	domain::entities::{corvidx_account, corvidx_message, telegram_command, telegram_update},
+	domain::entities::{telegram_command, telegram_update},
 };
 
 pub type BotInstanceType = DefaultParseMode<Bot>;
@@ -36,11 +37,9 @@ async fn main() -> Result<(), TelecrowError> {
 		Bot::new(components.telecrow.auth_token).parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
-	corvidx_client::subscribe(&corvidx_connection);
-	corvidx_account::subscribe(&corvidx_connection);
-	corvidx_message::subscribe(&corvidx_connection);
+	general_subscriptions::init(&corvidx_connection);
 
-	telegram_group_bridge::subscribe(
+	telegram_bridge::subscribe(
 		&corvidx_connection,
 		async_handler.clone(),
 		telegram_bridge_bot.clone(),

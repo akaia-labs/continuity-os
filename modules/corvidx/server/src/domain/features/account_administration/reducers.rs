@@ -1,6 +1,6 @@
 use spacetimedb::{ReducerContext, reducer};
 
-use crate::{
+use crate::domain::{
 	entities::native_account::{
 		NativeAccount, NativeAccountId, NativeAccountLocalRole, native_account,
 	},

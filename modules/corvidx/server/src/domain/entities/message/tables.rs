@@ -1,6 +1,6 @@
 use spacetimedb::{Identity, SpacetimeType, Timestamp, table};
 
-use crate::entities::{foreign_account::ForeignAccountId, native_account::NativeAccountId};
+use crate::domain::entities::{foreign_account::ForeignAccountId, native_account::NativeAccountId};
 
 #[derive(SpacetimeType)]
 /// The original message author.

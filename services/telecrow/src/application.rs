@@ -1,1 +1,2 @@
-pub mod telegram_group_bridge;
+pub mod general_subscriptions;
+pub mod telegram_bridge;

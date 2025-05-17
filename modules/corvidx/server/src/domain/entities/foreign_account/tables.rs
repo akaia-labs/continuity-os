@@ -8,7 +8,7 @@ use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 
 use crate::{
 	common::ports::RecordResolution,
-	entities::{
+	domain::entities::{
 		account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag,
 		native_account::NativeAccountId,
 	},
