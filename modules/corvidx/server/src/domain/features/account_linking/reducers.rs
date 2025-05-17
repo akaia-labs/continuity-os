@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use capitalize::Capitalize;
 use corvutils::StringExtensions;
 use spacetimedb::{ReducerContext, Table, reducer};
 
@@ -11,6 +12,7 @@ use crate::{
 	common::ports::RecordResolution,
 	entities::{
 		foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
+		message::{Message, MessageAuthorId, message},
 		native_account::native_account,
 	},
 	features::account_linking::tables::account_link_request_schedule,
@@ -18,6 +20,7 @@ use crate::{
 
 const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 
+// TODO Implement rate limit
 #[reducer]
 /// Creates a foreign to native account link request.
 pub fn create_account_link_request(
@@ -69,14 +72,15 @@ pub fn create_account_link_request(
 pub fn resolve_account_link_request(
 	ctx: &ReducerContext, request_id: AccountLinkRequestId, is_approved: bool,
 ) -> Result<(), String> {
+	let request = request_id.try_resolve(ctx)?;
+
 	let AccountLinkRequest {
 		requester_account_id,
 		subject_account_id,
 		..
-	} = request_id.try_resolve(ctx)?;
+	} = &request;
 
-	if !is_approved {
-	} else {
+	if is_approved {
 		let mut native_account = requester_account_id.try_resolve(ctx)?;
 		let foreign_account = subject_account_id.try_resolve(ctx)?;
 
@@ -93,6 +97,7 @@ pub fn resolve_account_link_request(
 	}
 
 	ctx.db.account_link_request().id().delete(request_id);
+	report_account_link_resolution(ctx, request, is_approved);
 
 	Ok(())
 }
@@ -122,6 +127,45 @@ pub fn unlink_foreign_account(
 		.retain(|id| id != &reference.to_string());
 
 	ctx.db.native_account().id().update(native_account);
+
+	Ok(())
+}
+
+#[reducer]
+/// Reports account link resolution outcome.
+pub fn report_account_link_resolution(
+	ctx: &ReducerContext, request: AccountLinkRequest, is_approved: bool,
+) -> Result<(), String> {
+	let AccountLinkRequest {
+		requester_account_id: _,
+		subject_account_id,
+		..
+	} = request;
+
+	let ForeignAccountReference {
+		id: fa_id,
+		platform_tag,
+	} = subject_account_id.parse().unwrap();
+
+	let platform_name = platform_tag.to_string().capitalize();
+
+	// TODO: Send DMs to both parties instead
+	let result = ctx.db.message().try_insert(Message {
+		id:        0,
+		sender:    ctx.identity(),
+		sent_at:   ctx.timestamp,
+		author_id: MessageAuthorId::NativeAccountId(ctx.identity()),
+
+		text: if is_approved {
+			format!("{platform_name} account {fa_id} has been linked to your account.")
+		} else {
+			format!("Account link request for foreign account {fa_id} has been rejected.")
+		},
+	});
+
+	if let Err(err) = result {
+		log::error!("Failed to send account link resolution message: {err}");
+	}
 
 	Ok(())
 }
