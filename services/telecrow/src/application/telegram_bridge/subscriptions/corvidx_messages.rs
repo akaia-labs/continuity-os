@@ -8,7 +8,7 @@ use spacetimedb_sdk::Table;
 use teloxide::{
 	payloads::SendMessageSetters,
 	prelude::Requester,
-	types::{ChatId, MessageId, ThreadId},
+	types::{MessageId, ThreadId},
 };
 use tokio::sync::mpsc;
 
@@ -23,12 +23,10 @@ pub fn subscribe(
 
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
-		while let Some(req) = forward_receiver.recv().await {
-			let message_header = format!("💬 <strong>{}</strong>\n\n", req.author_name);
-			let message_text = format!("{}{}", message_header, req.message_text);
+		while let Some(msg) = forward_receiver.recv().await {
+			let message_request = bridge.send_message(msg.chat_id, &msg.text);
 
-			let _ = bridge
-				.send_message(ChatId(req.chat_id), &message_text)
+			let _ = message_request
 				.message_thread_id(ThreadId(MessageId(3315)))
 				.await
 				.map_err(|err| eprintln!("{:?}", err));

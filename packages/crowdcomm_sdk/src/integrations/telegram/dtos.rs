@@ -1,5 +1,6 @@
+use teloxide_core::types::ChatId;
+
 pub struct OutboundTelegramMessage {
-	pub chat_id:      i64,
-	pub author_name:  String,
-	pub message_text: String,
+	pub chat_id: ChatId,
+	pub text:    String,
 }

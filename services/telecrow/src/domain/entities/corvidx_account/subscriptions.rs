@@ -30,7 +30,7 @@ pub fn handle_status_telegram_forward(
 					chat_id:     -1001544271932,
 					author_name: "system".to_string(),
 
-					message_text: format!(
+					text: format!(
 						"Account {} changed callsign from {} to {}",
 						outdated_account_data.id,
 						outdated_account_data.callsign,

@@ -23,12 +23,12 @@ pub fn subscribe(
 
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
-		while let Some(req) = forward_receiver.recv().await {
-			let message_header = format!("ℹ️ <strong>{}</strong>\n\n", req.author_name);
-			let message_text = format!("{}{}", message_header, req.message_text);
+		while let Some(message) = forward_receiver.recv().await {
+			let message_header = format!("ℹ️ <strong>{}</strong>\n\n", message.author_name);
+			let message_text = format!("{}{}", message_header, message.text);
 
 			let _ = bridge
-				.send_message(ChatId(req.chat_id), message_text)
+				.send_message(ChatId(message.chat_id), message_text)
 				.message_thread_id(ThreadId(MessageId(3315)))
 				.await
 				.map_err(|err| println!("{:?}", err));

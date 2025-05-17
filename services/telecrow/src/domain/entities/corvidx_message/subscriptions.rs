@@ -10,7 +10,7 @@ use crowdcomm_sdk::{
 			ReducerEventContext, send_message,
 		},
 	},
-	integrations::telegram::OutboundTelegramMessage,
+	integrations::{MessageConverter, telegram::OutboundTelegramMessage},
 };
 use spacetimedb_sdk::{Status, Timestamp};
 use teloxide::types::Message as TelegramMessage;
@@ -20,13 +20,13 @@ use crate::common::{constants::TARGET_FOREIGN_PLATFORM_TAG, runtime::AsyncHandle
 
 /// Forwards message to Telegram using a channel.
 pub fn handle_telegram_forward(
-	transmitter: mpsc::Sender<OutboundTelegramMessage>, async_handler: Arc<AsyncHandler>,
+	tx: mpsc::Sender<OutboundTelegramMessage>, async_handler: Arc<AsyncHandler>,
 ) -> impl FnMut(&EventContext, &Message) {
 	let subscribed_at = Timestamp::now();
 	let handle = async_handler.handle();
 
-	return move |corvidx: &EventContext, message: &Message| {
-		let foreign_platform_tag = match &message.author_id {
+	return move |corvidx: &EventContext, msg: &Message| {
+		let foreign_platform_tag = match &msg.author_id {
 			| MessageAuthorId::ForeignAccountId(account_id) => {
 				ForeignAccountReference::from_str(&account_id)
 					.map_or(None, |far| Some(far.platform_tag.into_supported()))
@@ -40,42 +40,21 @@ pub fn handle_telegram_forward(
 			|| foreign_platform_tag.is_some_and(|tag| tag != TARGET_FOREIGN_PLATFORM_TAG)
 		{
 			// Only forward messages sent after handler initialization
-			if subscribed_at.le(&message.sent_at) {
-				let author_profile = match &message.author_id {
-					| MessageAuthorId::ForeignAccountId(account_id) => account_id
-						.resolve(corvidx)
-						.map_or(None, |account| account.profile(corvidx)),
+			if subscribed_at.le(&msg.sent_at) {
+				let transmitter = tx.clone();
 
-					| MessageAuthorId::NativeAccountId(account_id) => account_id
-						.resolve(corvidx)
-						.map(|native_account| {
-							native_account
-								.platform_association(corvidx, TARGET_FOREIGN_PLATFORM_TAG)
-								.map_or(native_account.profile(corvidx), |foreign_account| {
-									foreign_account.profile(corvidx)
-								})
-						})
-						.unwrap_or_default(),
-
-					| MessageAuthorId::Unknown => None,
-				};
-
-				let author_name = author_profile
-					.map(|profile| profile.display_name())
-					.unwrap_or(format!("unknown-{}", message.sender));
-
-				let dto = OutboundTelegramMessage {
-					// TODO: The chat id must be taken from crowdcomm_sdk::ForeignChannel
-					chat_id: -1001544271932,
-					author_name,
-					message_text: message.text.clone(),
-				};
-
-				// Use the runtime handle to spawn the async task
-				let tx = transmitter.clone();
+				let dto: OutboundTelegramMessage = TelegramMessage::from_corvidx_message(
+					corvidx,
+					msg,
+					TARGET_FOREIGN_PLATFORM_TAG,
+				);
 
 				handle.spawn(async move {
-					let _ = tx.send(dto).await;
+					let result = transmitter.send(dto).await;
+
+					if let Err(err) = result {
+						eprintln!("Failed to forward message: {err}");
+					}
 				});
 			}
 		}
