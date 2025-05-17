@@ -3,12 +3,12 @@ use std::process;
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	corvidx::{
+		presentation::DisplayName,
 		stdb::{
 			AccountProfileTableAccess, DbConnection, ErrorContext, ForeignAccountTableAccess,
 			Message, MessageAuthorId, MessageTableAccess, NativeAccountTableAccess,
 			RemoteDbContext, SubscriptionEventContext,
 		},
-		traits::DisplayName,
 	},
 };
 use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};

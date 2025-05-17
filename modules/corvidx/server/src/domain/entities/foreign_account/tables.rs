@@ -3,6 +3,7 @@ use std::{
 	str::FromStr,
 };
 
+use capitalize::Capitalize;
 use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 
 use crate::{
@@ -38,8 +39,16 @@ pub struct ForeignAccount {
 
 impl RecordResolver<ForeignAccount> for ForeignAccountId {
 	fn resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
+		let ForeignAccountReference {
+			id: external_author_id,
+			platform_tag,
+		} = self
+			.parse()
+			.map_err(|e: ForeignAccountReferenceParseErr| e.to_string())?;
+
 		ctx.db().foreign_account().id().find(self).ok_or(format!(
-			"Foreign account {self} is not registered in the system."
+			"{platform_name} account {external_author_id} is not registered in the system.",
+			platform_name = platform_tag.to_string().capitalize(),
 		))
 	}
 }
@@ -72,8 +81,10 @@ impl Display for ForeignAccountReference {
 	}
 }
 
+type ForeignAccountReferenceParseErr = &'static str;
+
 impl FromStr for ForeignAccountReference {
-	type Err = &'static str;
+	type Err = ForeignAccountReferenceParseErr;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		let mut parts = s.rsplitn(2, Self::DELIMITER);

@@ -1,5 +1,5 @@
-mod tag;
-mod traits;
+mod adapters;
+mod model;
+mod views;
 
-pub use tag::*;
-pub use traits::*;
+pub use model::*;

@@ -1,12 +1,11 @@
+pub mod application;
 pub mod common;
-pub mod entities;
-pub mod features;
+pub mod domain;
 
 use std::sync::Arc;
 
 use crowdcomm_sdk::configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig};
 use dotenvy::dotenv;
-use entities::{telegram_command, telegram_update};
 use teloxide::{
 	Bot,
 	adaptors::DefaultParseMode,
@@ -17,9 +16,9 @@ use teloxide::{
 };
 
 use crate::{
+	application::telegram_group_bridge,
 	common::{clients::corvidx_client, runtime, runtime::TelecrowError},
-	entities::{corvidx_account, corvidx_message},
-	features::telegram_group_bridge,
+	domain::entities::{corvidx_account, corvidx_message, telegram_command, telegram_update},
 };
 
 pub type BotInstanceType = DefaultParseMode<Bot>;

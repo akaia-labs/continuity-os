@@ -1,2 +1,6 @@
-mod profile;
-mod reference;
+mod adapters;
+mod model;
+mod resolvers;
+mod views;
+
+pub use model::*;

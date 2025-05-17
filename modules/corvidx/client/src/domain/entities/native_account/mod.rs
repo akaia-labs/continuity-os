@@ -1,1 +1,2 @@
-mod profile;
+mod resolvers;
+mod views;

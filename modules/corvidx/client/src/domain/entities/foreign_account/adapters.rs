@@ -1,28 +1,6 @@
-use std::{
-	fmt::{self, Display, Formatter},
-	str::FromStr,
-};
+use std::str::FromStr;
 
 use crate::common::stdb::{ForeignAccountReference, ForeignPlatformTag};
-
-// TODO: figure out how to reduce the reimplementation overhead
-
-impl ForeignAccountReference {
-	pub const DELIMITER: char = '@';
-}
-
-impl Display for ForeignAccountReference {
-	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
-		write!(
-			formatter,
-			"{}{}{}",
-			self.id,
-			Self::DELIMITER,
-			// ! Temporarily hardcoded
-			"telegram".to_string()
-		)
-	}
-}
 
 impl FromStr for ForeignAccountReference {
 	type Err = &'static str;

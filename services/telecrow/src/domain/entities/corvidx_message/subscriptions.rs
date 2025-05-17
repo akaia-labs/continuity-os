@@ -2,16 +2,16 @@ use std::{str::FromStr, sync::Arc};
 
 use crowdcomm_sdk::corvidx::{
 	stdb::{
-		DbConnection, EventContext, ForeignAccountReference, ForeignPlatformTag, Message,
-		MessageAuthorId, NativeAccountTableAccess, ReducerEventContext, send_message,
+		DbConnection, EventContext, ForeignAccountReference, Message, MessageAuthorId,
+		NativeAccountTableAccess, ReducerEventContext, send_message,
 	},
-	traits::DisplayName,
+	ports::DisplayName,
 };
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use teloxide::types::Message as TelegramMessage;
 use tokio::sync::mpsc;
 
-use crate::common::runtime::AsyncHandler;
+use crate::common::{constants::TARGET_FOREIGN_PLATFORM_TAG, runtime::AsyncHandler};
 
 pub struct TelegramForwardRequest {
 	pub chat_id:      i64,
@@ -27,10 +27,17 @@ pub fn handle_telegram_forward(
 	let handle = async_handler.handle();
 
 	return move |corvidx: &EventContext, message: &Message| {
-		let foreign_platform_name = match &message.author_id {
+		let author_account = match &message.author_id {
+			| MessageAuthorId::ForeignAccountId(account_id) => account_id.resolve(corvidx),
+
+			| MessageAuthorId::NativeAccountId(account_id) => account_id.resolve(corvidx),
+			| MessageAuthorId::Unknown => None,
+		};
+
+		let foreign_platform_tag = match &message.author_id {
 			| MessageAuthorId::ForeignAccountId(account_id) => {
 				ForeignAccountReference::from_str(&account_id)
-					.map_or(None, |r| Some(r.platform_tag))
+					.map_or(None, |far| Some(far.platform_tag.into_supported()))
 			},
 
 			| MessageAuthorId::NativeAccountId(_)
@@ -39,8 +46,8 @@ pub fn handle_telegram_forward(
 		};
 
 		// Ignore messages imported from Telegram
-		if foreign_platform_name.is_none()
-			|| foreign_platform_name.is_some_and(|fpn| fpn != ForeignPlatformTag::Telegram)
+		if foreign_platform_tag.is_none()
+			|| foreign_platform_tag.is_some_and(|tag| tag != TARGET_FOREIGN_PLATFORM_TAG)
 		{
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {

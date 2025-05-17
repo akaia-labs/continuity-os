@@ -5,7 +5,6 @@ use crate::entities::{foreign_account::ForeignAccountId, native_account::NativeA
 #[derive(SpacetimeType)]
 /// The original message author.
 pub enum MessageAuthorId {
-	System,
 	NativeAccountId(NativeAccountId),
 	ForeignAccountId(ForeignAccountId),
 	/// Fallback value, use with caution.
@@ -16,10 +15,13 @@ pub enum MessageAuthorId {
 pub struct Message {
 	#[auto_inc]
 	#[primary_key]
-	pub id:        i128,
-	pub sent_at:   Timestamp,
-	pub sender:    Identity,
+	pub id: i128,
+
+	pub sent_at: Timestamp,
+	pub sender:  Identity,
+
 	#[index(btree)]
 	pub author_id: MessageAuthorId,
-	pub text:      String,
+
+	pub text: String,
 }

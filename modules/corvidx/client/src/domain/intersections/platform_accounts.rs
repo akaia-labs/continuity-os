@@ -1,12 +1,13 @@
+use super::PlatformAssociation;
 use crate::{
 	common::stdb::{
 		ForeignAccount, ForeignAccountReference, ForeignAccountTableAccess, NativeAccount,
 		RemoteDbContext,
 	},
-	entities::foreign_platform::{PlatformAssociated, SupportedForeignPlatformTag},
+	domain::entities::foreign_platform::SupportedForeignPlatformTag,
 };
 
-impl PlatformAssociated<ForeignAccount> for NativeAccount {
+impl PlatformAssociation<ForeignAccount> for NativeAccount {
 	// TODO: Since one native accounts can have several linked foreign accounts
 	// TODO: for the same foreign platform, in the future we'll need
 	// TODO: to be able to provide a selector predicate that narrows

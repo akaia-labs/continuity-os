@@ -1,15 +1,7 @@
-use std::{fmt::Display, str::FromStr};
+use std::str::FromStr;
 
-use strum_macros::{Display, EnumString};
-
+use super::SupportedForeignPlatformTag;
 use crate::common::stdb::ForeignPlatformTag;
-
-#[derive(Debug, Clone, PartialEq, Display, EnumString)]
-#[strum(serialize_all = "lowercase")]
-pub enum SupportedForeignPlatformTag {
-	Telegram,
-	Unknown,
-}
 
 impl ForeignPlatformTag {
 	pub fn into_supported(&self) -> SupportedForeignPlatformTag {
@@ -45,11 +37,5 @@ impl FromStr for ForeignPlatformTag {
 				| Err(_) => SupportedForeignPlatformTag::Unknown,
 			},
 		))
-	}
-}
-
-impl Display for ForeignPlatformTag {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "{}", self.into_supported())
 	}
 }

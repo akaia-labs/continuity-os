@@ -1,8 +1,8 @@
 use std::fmt::{self, Display, Formatter};
 
 use crate::common::{
+	presentation::Displayable,
 	stdb::{AccountProfile, AccountProfileName},
-	traits::Displayable,
 };
 
 impl Display for AccountProfileName {

@@ -1,6 +1,10 @@
-use crate::common::stdb::{AccountProfile, RemoteDbContext};
+use super::stdb::{AccountProfile, RemoteDbContext};
 
-pub trait ProfileRetrieval {
+pub trait RecordResolver<RecordType> {
+	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<RecordType>;
+}
+
+pub trait ProfileResolution {
 	/// Retrieves the associated profile, if present.
 	fn profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile>;
 
