@@ -1,7 +1,7 @@
 use spacetimedb::{ReducerContext, reducer};
 
 use crate::{
-	common::traits::RecordResolver,
+	common::traits::RecordResolution,
 	entities::{
 		account_profile::{AccountProfile, account_profile},
 		foreign_account::ForeignAccountReference,

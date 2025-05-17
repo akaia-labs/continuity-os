@@ -1,6 +1,6 @@
 use super::ForeignAccountId;
 use crate::common::{
-	ports::{ProfileResolution, RecordResolver},
+	ports::{ProfileResolution, RecordResolution},
 	stdb::{
 		AccountProfile, AccountProfileTableAccess, ForeignAccount, ForeignAccountReference,
 		ForeignAccountTableAccess, NativeAccountTableAccess, RemoteDbContext,
@@ -27,14 +27,14 @@ impl ProfileResolution for ForeignAccount {
 	}
 }
 
-impl RecordResolver<ForeignAccount> for ForeignAccountReference {
+impl RecordResolution<ForeignAccount> for ForeignAccountReference {
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<ForeignAccount> {
 		ctx.db().foreign_account().id().find(&self.to_string())
 	}
 }
 
 // TODO: Might not be much of help, consider removing
-impl RecordResolver<ForeignAccount> for ForeignAccountId {
+impl RecordResolution<ForeignAccount> for ForeignAccountId {
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<ForeignAccount> {
 		ctx.db().foreign_account().id().find(&self)
 	}

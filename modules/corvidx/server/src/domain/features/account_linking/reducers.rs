@@ -5,7 +5,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::tables::{AccountLinkRequest, AccountLinkRequestExpirySchedule, account_link_request};
 use crate::{
-	common::traits::RecordResolver,
+	common::traits::RecordResolution,
 	entities::{
 		foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
 		native_account::native_account,

@@ -1,7 +1,7 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{tables::*, validation::*};
-use crate::{common::traits::RecordResolver, entities::foreign_account::ForeignAccountReference};
+use crate::{common::traits::RecordResolution, entities::foreign_account::ForeignAccountReference};
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality

@@ -1,11 +1,11 @@
 use std::{str::FromStr, sync::Arc};
 
 use crowdcomm_sdk::corvidx::{
+	ports::RecordResolution,
 	stdb::{
 		DbConnection, EventContext, ForeignAccountReference, Message, MessageAuthorId,
 		NativeAccountTableAccess, ReducerEventContext, send_message,
 	},
-	ports::DisplayName,
 };
 use spacetimedb_sdk::{DbContext, Status, Timestamp};
 use teloxide::types::Message as TelegramMessage;

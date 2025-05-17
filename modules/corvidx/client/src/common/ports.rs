@@ -1,6 +1,6 @@
 use super::stdb::{AccountProfile, RemoteDbContext};
 
-pub trait RecordResolver<RecordType> {
+pub trait RecordResolution<RecordType> {
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<RecordType>;
 }
 

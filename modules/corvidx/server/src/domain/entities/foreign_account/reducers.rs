@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{ForeignAccount, ForeignAccountReference, foreign_account};
 use crate::{
-	common::traits::RecordResolver,
+	common::traits::RecordResolution,
 	entities::{
 		account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
 		native_account::{NativeAccount, native_account},

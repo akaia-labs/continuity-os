@@ -2,8 +2,10 @@ use std::str::FromStr;
 
 use crate::common::stdb::{ForeignAccountReference, ForeignPlatformTag};
 
+pub type ForeignAccountReferenceParseErr = &'static str;
+
 impl FromStr for ForeignAccountReference {
-	type Err = &'static str;
+	type Err = ForeignAccountReferenceParseErr;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		let mut parts = s.rsplitn(2, Self::DELIMITER);
