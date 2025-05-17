@@ -1,7 +1,7 @@
 use spacetimedb::{ReducerContext, reducer};
 
 use crate::{
-	common::traits::RecordResolution,
+	common::ports::RecordResolution,
 	entities::{
 		account_profile::{AccountProfile, account_profile},
 		foreign_account::ForeignAccountReference,
@@ -14,8 +14,8 @@ use crate::{
 pub fn mirror_foreign_profile(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let native_account = ctx.sender.resolve(ctx)?;
-	let foreign_account = reference.resolve(ctx)?;
+	let native_account = ctx.sender.try_resolve(ctx)?;
+	let foreign_account = reference.try_resolve(ctx)?;
 
 	if foreign_account.owner_id != native_account.id {
 		return Err(format!(

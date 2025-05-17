@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{ForeignAccount, ForeignAccountReference, foreign_account};
 use crate::{
-	common::traits::RecordResolution,
+	common::ports::RecordResolution,
 	entities::{
 		account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
 		native_account::{NativeAccount, native_account},
@@ -43,7 +43,7 @@ pub fn import_foreign_account(
 		),
 	});
 
-	let mut root_account = ctx.identity().resolve(ctx)?;
+	let mut root_account = ctx.identity().try_resolve(ctx)?;
 
 	root_account.foreign_account_ownership.push(new_account.id);
 

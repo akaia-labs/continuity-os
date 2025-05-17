@@ -7,7 +7,7 @@ use capitalize::Capitalize;
 use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 
 use crate::{
-	common::traits::RecordResolution,
+	common::ports::RecordResolution,
 	entities::{
 		account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag,
 		native_account::NativeAccountId,
@@ -38,7 +38,7 @@ pub struct ForeignAccount {
 }
 
 impl RecordResolution<ForeignAccount> for ForeignAccountId {
-	fn resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
+	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
 		let ForeignAccountReference {
 			id: external_author_id,
 			platform_tag,
@@ -60,8 +60,8 @@ pub struct ForeignAccountReference {
 }
 
 impl RecordResolution<ForeignAccount> for ForeignAccountReference {
-	fn resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
-		self.to_string().resolve(ctx)
+	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
+		self.to_string().try_resolve(ctx)
 	}
 }
 

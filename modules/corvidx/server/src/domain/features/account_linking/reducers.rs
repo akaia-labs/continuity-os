@@ -3,9 +3,12 @@ use std::time::Duration;
 use corvutils::StringExtensions;
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::tables::{AccountLinkRequest, AccountLinkRequestExpirySchedule, account_link_request};
+use super::tables::{
+	AccountLinkRequest, AccountLinkRequestExpirySchedule, AccountLinkRequestId,
+	account_link_request,
+};
 use crate::{
-	common::traits::RecordResolution,
+	common::ports::RecordResolution,
 	entities::{
 		foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
 		native_account::native_account,
@@ -20,7 +23,7 @@ const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 pub fn create_account_link_request(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let foreign_account = reference.resolve(ctx)?;
+	let foreign_account = reference.try_resolve(ctx)?;
 
 	if foreign_account.owner_id != ctx.identity() {
 		return Err(format!(
@@ -28,7 +31,7 @@ pub fn create_account_link_request(
 		));
 	}
 
-	let native_account = ctx.sender.resolve(ctx)?;
+	let native_account = ctx.sender.try_resolve(ctx)?;
 
 	let request = ctx.db.account_link_request().insert(AccountLinkRequest {
 		id:                   0,
@@ -61,25 +64,35 @@ pub fn create_account_link_request(
 	Ok(())
 }
 
-// TODO: Finish the flow!
 #[reducer]
 /// Binds a foreign account to a native account.
 pub fn resolve_account_link_request(
-	ctx: &ReducerContext, reference: ForeignAccountReference,
+	ctx: &ReducerContext, request_id: AccountLinkRequestId, is_approved: bool,
 ) -> Result<(), String> {
-	let mut native_account = ctx.sender.resolve(ctx)?;
-	let foreign_account = reference.resolve(ctx)?;
+	let AccountLinkRequest {
+		requester_account_id,
+		subject_account_id,
+		..
+	} = request_id.try_resolve(ctx)?;
 
-	ctx.db.foreign_account().id().update(ForeignAccount {
-		owner_id: native_account.id,
-		..foreign_account
-	});
+	if !is_approved {
+	} else {
+		let mut native_account = requester_account_id.try_resolve(ctx)?;
+		let foreign_account = subject_account_id.try_resolve(ctx)?;
 
-	native_account
-		.foreign_account_ownership
-		.push(reference.to_string());
+		ctx.db.foreign_account().id().update(ForeignAccount {
+			owner_id: native_account.id,
+			..foreign_account
+		});
 
-	ctx.db.native_account().id().update(native_account);
+		native_account
+			.foreign_account_ownership
+			.push(subject_account_id.to_string());
+
+		ctx.db.native_account().id().update(native_account);
+	}
+
+	ctx.db.account_link_request().id().delete(request_id);
 
 	Ok(())
 }
@@ -89,8 +102,8 @@ pub fn resolve_account_link_request(
 pub fn unlink_foreign_account(
 	ctx: &ReducerContext, reference: ForeignAccountReference,
 ) -> Result<(), String> {
-	let mut native_account = ctx.sender.resolve(ctx)?;
-	let foreign_account = reference.resolve(ctx)?;
+	let mut native_account = ctx.sender.try_resolve(ctx)?;
+	let foreign_account = reference.try_resolve(ctx)?;
 
 	if foreign_account.owner_id != native_account.id {
 		return Err(format!(

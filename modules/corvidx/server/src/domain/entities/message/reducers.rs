@@ -1,12 +1,13 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{tables::*, validation::*};
-use crate::{common::traits::RecordResolution, entities::foreign_account::ForeignAccountReference};
+use crate::{common::ports::RecordResolution, entities::foreign_account::ForeignAccountReference};
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
-	let author_id: MessageAuthorId = if let Some(author_account) = ctx.sender.resolve(ctx).ok() {
+	let author_id: MessageAuthorId = if let Some(author_account) = ctx.sender.try_resolve(ctx).ok()
+	{
 		MessageAuthorId::NativeAccountId(author_account.id)
 	} else {
 		MessageAuthorId::Unknown
@@ -32,7 +33,7 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 pub fn import_message(
 	ctx: &ReducerContext, author_reference: ForeignAccountReference, text: String,
 ) -> Result<(), String> {
-	let author_account = author_reference.resolve(ctx)?;
+	let author_account = author_reference.try_resolve(ctx)?;
 
 	let sender = if author_account.owner_id != ctx.identity() {
 		author_account.owner_id

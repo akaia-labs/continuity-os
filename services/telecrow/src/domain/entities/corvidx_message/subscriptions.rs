@@ -68,7 +68,7 @@ pub fn handle_telegram_forward(
 					.unwrap_or(format!("unknown-{}", message.sender));
 
 				let request = TelegramForwardRequest {
-					// TODO: The chat id must be taken from crowdcomm_sdk::TextChannel
+					// TODO: The chat id must be taken from crowdcomm_sdk::ForeignChannel
 					chat_id: -1001544271932,
 					author_name,
 					message_text: message.text.clone(),
