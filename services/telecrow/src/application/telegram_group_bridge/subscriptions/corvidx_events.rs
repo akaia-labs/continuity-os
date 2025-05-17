@@ -29,7 +29,7 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(req) = forward_receiver.recv().await {
-			let message_header = format!("ℹ️ <strong>{}</strong>\n\n", req.sender_name);
+			let message_header = format!("ℹ️ <strong>{}</strong>\n\n", req.author_name);
 			let message_text = format!("{}{}", message_header, req.message_text);
 
 			let _ = telegram_transmitter

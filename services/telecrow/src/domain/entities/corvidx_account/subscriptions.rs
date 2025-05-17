@@ -11,7 +11,7 @@ use crate::common::runtime::AsyncHandler;
 
 pub struct StatusTelegramForwardRequest {
 	pub chat_id:      i64,
-	pub sender_name:  String,
+	pub author_name:  String,
 	pub message_text: String,
 }
 
@@ -31,7 +31,7 @@ pub fn handle_status_telegram_forward(
 				let request = StatusTelegramForwardRequest {
 					// TODO: The chat id must be taken from the corvidx channel properties
 					chat_id:     -1001544271932,
-					sender_name: "system".to_string(),
+					author_name: "system".to_string(),
 
 					message_text: format!(
 						"Account {} changed callsign from {} to {}",

@@ -1,1 +1,1 @@
-pub mod traits;
+pub mod adapters;

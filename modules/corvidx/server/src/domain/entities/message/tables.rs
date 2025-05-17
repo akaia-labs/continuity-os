@@ -24,4 +24,6 @@ pub struct Message {
 	pub author_id: MessageAuthorId,
 
 	pub text: String,
+	// TODO: track message forwarding
+	// pub forwarded_to: Vec<ForeignChannelId>
 }

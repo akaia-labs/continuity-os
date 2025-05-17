@@ -1,4 +1,4 @@
 mod common;
 mod telegram;
 
-pub use common::traits::*;
+pub use common::adapters::*;

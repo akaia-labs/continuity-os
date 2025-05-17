@@ -1,7 +1,9 @@
 use std::{str::FromStr, sync::Arc};
 
 use crowdcomm_sdk::corvidx::{
-	ports::RecordResolution,
+	PlatformAssociation,
+	ports::{ProfileResolution, RecordResolution},
+	presentation::{DisplayName, Displayable},
 	stdb::{
 		DbConnection, EventContext, ForeignAccountReference, Message, MessageAuthorId,
 		NativeAccountTableAccess, ReducerEventContext, send_message,
@@ -15,7 +17,7 @@ use crate::common::{constants::TARGET_FOREIGN_PLATFORM_TAG, runtime::AsyncHandle
 
 pub struct TelegramForwardRequest {
 	pub chat_id:      i64,
-	pub sender_name:  String,
+	pub author_name:  String,
 	pub message_text: String,
 }
 
@@ -27,42 +29,48 @@ pub fn handle_telegram_forward(
 	let handle = async_handler.handle();
 
 	return move |corvidx: &EventContext, message: &Message| {
-		let author_account = match &message.author_id {
-			| MessageAuthorId::ForeignAccountId(account_id) => account_id.resolve(corvidx),
-
-			| MessageAuthorId::NativeAccountId(account_id) => account_id.resolve(corvidx),
-			| MessageAuthorId::Unknown => None,
-		};
-
 		let foreign_platform_tag = match &message.author_id {
 			| MessageAuthorId::ForeignAccountId(account_id) => {
 				ForeignAccountReference::from_str(&account_id)
 					.map_or(None, |far| Some(far.platform_tag.into_supported()))
 			},
 
-			| MessageAuthorId::NativeAccountId(_)
-			| MessageAuthorId::System
-			| MessageAuthorId::Unknown => None,
+			| MessageAuthorId::NativeAccountId(_) | MessageAuthorId::Unknown => None,
 		};
 
-		// Ignore messages imported from Telegram
+		// Ignore messages originated from Telegram
 		if foreign_platform_tag.is_none()
 			|| foreign_platform_tag.is_some_and(|tag| tag != TARGET_FOREIGN_PLATFORM_TAG)
 		{
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&message.sent_at) {
-				let sender_name = corvidx
-					.db()
-					.native_account()
-					.id()
-					.find(&message.sender.clone())
-					.map(|account| account.display_name(corvidx))
-					.unwrap_or(format!("{}", message.sender));
+				let author_profile = match &message.author_id {
+					| MessageAuthorId::ForeignAccountId(account_id) => account_id
+						.resolve(corvidx)
+						.map_or(None, |account| account.profile(corvidx)),
+
+					| MessageAuthorId::NativeAccountId(account_id) => account_id
+						.resolve(corvidx)
+						.map(|native_account| {
+							native_account
+								.platform_association(corvidx, TARGET_FOREIGN_PLATFORM_TAG)
+								.map_or(native_account.profile(corvidx), |foreign_account| {
+									foreign_account.profile(corvidx)
+								})
+						})
+						.unwrap_or_default(),
+
+					| MessageAuthorId::Unknown => None,
+				};
+
+				let author_name = author_profile
+					.map(|profile| profile.display_name())
+					.unwrap_or(format!("unknown-{}", message.sender));
 
 				let request = TelegramForwardRequest {
 					// TODO: The chat id must be taken from crowdcomm_sdk::TextChannel
 					chat_id: -1001544271932,
-					sender_name,
+					author_name,
 					message_text: message.text.clone(),
 				};
 
