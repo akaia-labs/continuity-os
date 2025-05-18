@@ -314,7 +314,7 @@ dependencies = [
 
 [[package]]
 name = "corvidx_client"
-version = "0.3.0"
+version = "0.5.0"
 dependencies = [
  "corvutils",
  "hex",
@@ -328,7 +328,7 @@ dependencies = [
 
 [[package]]
 name = "corvidx_server"
-version = "0.3.0"
+version = "0.5.0"
 dependencies = [
  "capitalize",
  "corvutils",
@@ -367,7 +367,7 @@ dependencies = [
 
 [[package]]
 name = "crowdcomm_sdk"
-version = "0.3.0"
+version = "0.5.0"
 dependencies = [
  "corvidx_client",
  "corvutils",
@@ -2258,7 +2258,7 @@ checksum = "20f34339676cdcab560c9a82300c4c2581f68b9369aedf0fae86f2ff9565ff3e"
 
 [[package]]
 name = "telecrow"
-version = "0.3.0"
+version = "0.5.0"
 dependencies = [
  "capitalize",
  "corvutils",
