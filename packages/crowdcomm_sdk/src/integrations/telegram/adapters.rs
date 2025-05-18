@@ -44,9 +44,7 @@ impl MessageConverter<OutboundTelegramMessage> for TelegramMessage {
 		todo!()
 	}
 
-	fn from_corvidx_message(
-		ctx: &EventContext, msg: &CorvidxMessage, target_platform_tag: SupportedTpPlatformTag,
-	) -> OutboundTelegramMessage {
+	fn from_corvidx_message(ctx: &EventContext, msg: &CorvidxMessage) -> OutboundTelegramMessage {
 		let (author_role, author_profile) = match &msg.author_id {
 			| MessageAuthorId::TpAccountId(account_id) => account_id
 				.resolve(ctx)
@@ -56,7 +54,7 @@ impl MessageConverter<OutboundTelegramMessage> for TelegramMessage {
 				.resolve(ctx)
 				.map(|native_account| {
 					native_account
-						.platform_association(ctx, target_platform_tag)
+						.platform_association(ctx, SupportedTpPlatformTag::Telegram)
 						.map_or(
 							(Some(native_account.role), native_account.profile(ctx)),
 							|tp_account| (None, tp_account.profile(ctx)),

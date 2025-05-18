@@ -16,10 +16,9 @@ use crate::common::{constants::TARGET_FOREIGN_PLATFORM_TAG, runtime::AsyncHandle
 /// A reusable forwarder that listens to corvidx [`Message`]s
 /// and pushes them into a Telegram bridge message channel.
 pub struct TelegramForwarder {
-	tx:              mpsc::Sender<OutboundTelegramMessage>,
-	async_handler:   Arc<AsyncHandler>,
-	tp_platform_tag: SupportedTpPlatformTag,
-	subscribed_at:   Timestamp,
+	tx:            mpsc::Sender<OutboundTelegramMessage>,
+	async_handler: Arc<AsyncHandler>,
+	subscribed_at: Timestamp,
 }
 
 impl TelegramForwarder {
@@ -29,7 +28,6 @@ impl TelegramForwarder {
 		TelegramForwarder {
 			tx,
 			async_handler,
-			tp_platform_tag: TARGET_FOREIGN_PLATFORM_TAG,
 			subscribed_at: Timestamp::now(),
 		}
 	}
@@ -53,11 +51,8 @@ impl TelegramForwarder {
 			if self.subscribed_at.le(&msg.sent_at) {
 				let transmitter = tx.clone();
 
-				let dto: OutboundTelegramMessage = TelegramMessage::from_corvidx_message(
-					corvidx,
-					msg,
-					TARGET_FOREIGN_PLATFORM_TAG,
-				);
+				let dto: OutboundTelegramMessage =
+					TelegramMessage::from_corvidx_message(corvidx, msg);
 
 				handle.spawn(async move {
 					let result = transmitter.send(dto).await;

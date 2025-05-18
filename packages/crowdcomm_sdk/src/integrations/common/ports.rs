@@ -1,7 +1,4 @@
-use corvidx_client::{
-	common::stdb::{AccountProfileMetadata, EventContext, TpAccountReference},
-	domain::entities::tp_platform::SupportedTpPlatformTag,
-};
+use corvidx_client::common::stdb::{AccountProfileMetadata, EventContext, TpAccountReference};
 pub use teloxide_core::types::Message as TelegramMessage;
 
 pub use crate::corvidx::stdb::Message as CorvidxMessage;
@@ -18,7 +15,5 @@ pub trait ProfileImport {
 
 pub trait MessageConverter<OutboundDto> {
 	fn into_corvidx_message(self) -> CorvidxMessage;
-	fn from_corvidx_message(
-		ctx: &EventContext, msg: &CorvidxMessage, target_platform_tag: SupportedTpPlatformTag,
-	) -> OutboundDto;
+	fn from_corvidx_message(ctx: &EventContext, msg: &CorvidxMessage) -> OutboundDto;
 }
