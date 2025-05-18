@@ -49,8 +49,9 @@ impl OutboundTelegramMessage {
 			// TODO: `chat_id` and `thread_id` must be taken from MessageChannel
 			chat_id:   ChatId(-1001544271932),
 			thread_id: Some(ThreadId(MessageId(3315))),
+
 			// TODO: must be taken from Message
-			reply_to:  None,
+			reply_to_message_id: None,
 
 			text: format!(
 				"{}\n\n{}",

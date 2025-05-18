@@ -6,7 +6,7 @@ use crowdcomm_sdk::{
 	runtime::AsyncHandler,
 };
 use spacetimedb_sdk::Table;
-use teloxide::{payloads::SendMessageSetters, prelude::Requester};
+use teloxide::{payloads::SendMessageSetters, prelude::Requester, sugar::request::RequestReplyExt};
 use tokio::sync::mpsc;
 
 use crate::BotInstanceType;
@@ -21,15 +21,17 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(msg) = rx.recv().await {
-			let basic_request = bridge.send_message(msg.chat_id, &msg.text);
+			let mut req = bridge.send_message(msg.chat_id, &msg.text);
 
-			let final_request = if let Some(thread_id) = msg.thread_id {
-				basic_request.message_thread_id(thread_id)
-			} else {
-				basic_request
+			if let Some(thread_id) = msg.thread_id {
+				req = req.message_thread_id(thread_id)
 			};
 
-			let _ = final_request.await.map_err(|err| eprintln!("{:?}", err));
+			if let Some(reply_to_message_id) = msg.reply_to_message_id {
+				req = req.reply_to(reply_to_message_id)
+			};
+
+			let _ = req.await.map_err(|err| eprintln!("{:?}", err));
 		}
 	});
 
