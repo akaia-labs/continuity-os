@@ -95,7 +95,6 @@ impl OutboundTelegramMessage {
 		let issuer_name = issuer_account.display_name(ctx);
 		let requester_name = requester_account.display_name(ctx);
 
-		// TODO: accept / decline buttons
 		Ok(OutboundTelegramMessage {
 			chat_id:             subject_user_id,
 			thread_id:           None,

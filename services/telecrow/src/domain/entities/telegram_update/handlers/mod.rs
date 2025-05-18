@@ -45,6 +45,8 @@ pub fn root_handler(
 			let user_data = user.clone();
 
 			Box::pin(async move {
+				// ! CRITICAL:
+				// TODO!: Only handle user updates emitted after bot's initialization
 				on_user_update(ctx.clone(), user_data, print_success, print_error);
 
 				match update.kind {

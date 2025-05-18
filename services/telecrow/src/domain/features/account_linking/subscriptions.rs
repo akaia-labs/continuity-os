@@ -6,7 +6,11 @@ use crowdcomm_sdk::{
 	runtime::AsyncHandler,
 };
 use spacetimedb_sdk::Table;
-use teloxide::prelude::Requester;
+use teloxide::{
+	payloads::SendMessageSetters,
+	prelude::Requester,
+	types::{InlineKeyboardButton, InlineKeyboardMarkup},
+};
 use tokio::sync::mpsc;
 
 use crate::BotInstanceType;
@@ -22,9 +26,14 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(msg) = rx.recv().await {
-			// TODO: accept / decline buttons
+			let keyboard = [[
+				InlineKeyboardButton::callback("✅ Accept".to_string(), "accept".to_string()),
+				InlineKeyboardButton::callback("❌ Reject".to_string(), "reject".to_string()),
+			]];
+
 			let _ = bridge
 				.send_message(msg.chat_id, &msg.text)
+				.reply_markup(InlineKeyboardMarkup::new(keyboard))
 				.await
 				.map_err(|err| eprintln!("{:?}", err));
 		}
