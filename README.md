@@ -15,6 +15,7 @@
 - [ ] Self-hosted isolated subsystem encapsulated in a Cloud Hypervisor microVM
 - [ ] Full compatibility with the Matrix standard
 - [ ] Blockchain integrations for decentralized community governance
+- [ ] IoT integrations for environmental awareness
 
 ## Development
 
