@@ -4,7 +4,6 @@ pub mod domain;
 
 use std::sync::Arc;
 
-use application::general_subscriptions;
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	runtime::AsyncHandler,
@@ -20,11 +19,12 @@ use teloxide::{
 };
 
 use crate::{
-	application::telegram_bridge,
-	common::{clients::corvidx_client, runtime::TelecrowError},
+	application::{general_subscriptions, telegram_bridge},
+	common::clients::corvidx_client,
 	domain::entities::{telegram_command, telegram_update},
 };
 
+pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 pub type BotInstanceType = DefaultParseMode<Bot>;
 
 #[tokio::main]

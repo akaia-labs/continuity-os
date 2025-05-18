@@ -7,6 +7,8 @@ use crowdcomm_sdk::{
 };
 use spacetimedb_sdk::DbContext;
 
+// TODO: Abstract this away to SDK,
+// TODO: only passing the handlers and credential store from here
 /// Loads credentials from a file and connects to the database.
 pub fn connect() -> DbConnection {
 	let CorvidSubsystemConfig {
