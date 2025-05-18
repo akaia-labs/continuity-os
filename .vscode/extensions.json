@@ -4,6 +4,7 @@
 		"gruntfuggly.todo-tree",
 		"rust-lang.rust-analyzer",
 		"cordx56.rustowl-vscode",
-		"nefrob.vscode-just-syntax"
+		"nefrob.vscode-just-syntax",
+		"streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries"
 	]
 }

@@ -3,17 +3,28 @@ resolver = "3"
 
 members = [
 	"libraries/*",
-	"modules/*",
+	"modules/corvidx/*",
 	"packages/*",
 	"services/*",
-	"userspace/applications/*",
+	"userspace/apps/*",
 ]
 
 
 [workspace.package]
-version = "0.2.0"
-authors = ["Carina.Akaia.org <cvo.akaia@gmail.com>"]
-keywords = ["akaia-labs", "communication", "community", "knowledge base"]
+version = "0.3.0"
+
+authors = [
+	"AkaiaLabs <cvo.akaia@gmail.com>",
+	"Carina.Akaia.org <cvo.akaia@gmail.com>",
+]
+
+keywords = [
+	"algorithmic-society",
+	"akaia-labs",
+	"communication",
+	"community",
+	"knowledge base",
+]
 
 
 [profile.release]
@@ -24,21 +35,25 @@ overflow-checks = true
 
 
 [workspace.dependencies]
-# corvi.d
+# Internal dependencies
 corvutils = { path = "libraries/corvutils" }
-crowdcomm = { path = "packages/crowdcomm" }
+crowdcomm_sdk = { path = "packages/crowdcomm_sdk" }
 
-# External packages
+# External dependencies
 capitalize = "0.3.4"
 dotenvy = "0.15.7"
 hex = "0.4"
 log = "0.4"
 pretty_env_logger = "0.5"
 serde = { version = "1.0", features = ["derive"] }
-spacetimedb = "1.1.1"
+serde-env = "0.2.0"
+sequoia-openpgp = { version = "2.0.0", default-features = false }
+spacetimedb = "1.1.2"
 spacetimedb-sdk = "1.1.1"
-strum = { version = "0.25.0", features = ["derive"] }
-strum_macros = "0.25.3"
+strum = { version = "0.27.1", features = ["derive"] }
+strum_macros = "0.27.1"
 teloxide = { version = "0.15.0", features = ["macros"] }
-tokio = { version = "1.8", features = ["rt-multi-thread", "macros"] }
+teloxide-core = "0.11.2"
+tokio = { version = "1.45.0", features = ["rt-multi-thread", "macros"] }
+unicode-segmentation = "1.12.0"
 # wasm-opt = "0.116.1"

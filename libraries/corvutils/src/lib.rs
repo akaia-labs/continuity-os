@@ -1,3 +1,5 @@
-mod string;
+mod logging;
+mod text;
 
-pub use string::*;
+pub use logging::*;
+pub use text::*;

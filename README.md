@@ -1,12 +1,21 @@
-# Akaia Labs Corvi.d
+# AkaiaLabs Corvi.d
 
 🐦‍⬛ AI-powered local-first community hub built on [SpacetimeDB](https://github.com/clockworklabs/SpacetimeDB.git)
 
 🚧 WORK IN PROGRESS 🚧
 
-## Roadmap
+## Roadmap / Features
 
-🚧 WORK IN PROGRESS 🚧
+- [ ] First class Telegram integration
+- [ ] Partial compatibility with the Matrix standard
+- [ ] Community-driven continuous knowledge base development
+
+..._🚧 TBD 🚧_...
+
+- [ ] Self-hosted isolated subsystem encapsulated in a Cloud Hypervisor microVM
+- [ ] Full compatibility with the Matrix standard
+- [ ] Blockchain integrations for decentralized community governance
+- [ ] IoT integrations for environmental awareness
 
 ## Development
 
