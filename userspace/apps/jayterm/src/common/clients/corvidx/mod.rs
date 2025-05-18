@@ -3,12 +3,11 @@ use std::process;
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	corvidx::{
-		ports::RecordResolution,
-		presentation::DisplayName,
+		ports::{ProfileResolution, RecordResolution},
+		presentation::{DisplayName, Displayable},
 		stdb::{
-			AccountProfileTableAccess, DbConnection, ErrorContext, TpAccountTableAccess,
-			Message, MessageAuthorId, MessageTableAccess, RemoteDbContext,
-			SubscriptionEventContext,
+			AccountProfileTableAccess, DbConnection, ErrorContext, Message, MessageAuthorId,
+			MessageTableAccess, RemoteDbContext, SubscriptionEventContext, TpAccountTableAccess,
 		},
 	},
 };
@@ -23,7 +22,12 @@ pub fn print_message(corvidx: &impl RemoteDbContext, message: &Message) {
 
 		| MessageAuthorId::TpAccountId(author_id) => author_id
 			.resolve(corvidx)
-			.map(|account| account.display_name(corvidx))
+			.map(|account| {
+				account
+					.profile(corvidx)
+					.map(|p| p.display_name())
+					.unwrap_or_else(|| "unknown".to_string())
+			})
 			.unwrap_or_else(|| "unknown".to_string()),
 
 		| MessageAuthorId::Unknown => "unknown".to_string(),
