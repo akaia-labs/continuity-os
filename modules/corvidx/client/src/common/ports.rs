@@ -12,7 +12,7 @@ pub trait ProfileResolution {
 	///
 	/// For **native accounts** this should be equivalent to [`Self::profile`].
 	///
-	/// For **foreign accounts owned by native accounts**, the profile
+	/// For **third-party accounts owned by native accounts**, the profile
 	/// of the owner account should take precedence.
 	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile>;
 }

@@ -1,8 +1,8 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, ForeignAccountTableAccess},
-	integrations::ForeignAccountImport,
+	corvidx::stdb::{DbConnection, TpAccountTableAccess},
+	integrations::TpAccountImport,
 };
 use teloxide::{
 	RequestError, payloads::SendMessageSetters, prelude::Requester,
@@ -48,16 +48,16 @@ pub fn private_handler(
 			}
 
 			if let Some(user) = user {
-				let foreign_account = ctx
+				let tp_account = ctx
 					.db
-					.foreign_account()
+					.tp_account()
 					.id()
 					.find(&user.into_account_reference().to_string());
 
 				match cmd {
 					| PrivateCommand::MyAccountId => {
-						let response_text = if let Some(foreign_account) = foreign_account {
-							format!("Your account id is <code>{}</code>", foreign_account.id)
+						let response_text = if let Some(tp_account) = tp_account {
+							format!("Your account id is <code>{}</code>", tp_account.id)
 						} else {
 							format!(
 								r#"

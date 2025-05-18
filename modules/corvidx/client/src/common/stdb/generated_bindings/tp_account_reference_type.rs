@@ -4,15 +4,15 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+use super::tp_platform_tag_type::TpPlatformTag;
+
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub struct ForeignAccount {
-	pub id:         String,
-	pub callsign:   Option<String>,
-	pub owner_id:   __sdk::Identity,
-	pub profile_id: Option<i128>,
+pub struct TpAccountReference {
+	pub id:           String,
+	pub platform_tag: TpPlatformTag,
 }
 
-impl __sdk::InModule for ForeignAccount {
+impl __sdk::InModule for TpAccountReference {
 	type Module = super::RemoteModule;
 }

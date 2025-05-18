@@ -40,7 +40,7 @@ pub fn subscribe(corvidx: &DbConnection) {
 		.subscribe([
 			"SELECT * FROM account_link_request",
 			"SELECT * FROM account_profile",
-			"SELECT * FROM foreign_account",
+			"SELECT * FROM tp_account",
 			"SELECT * FROM message",
 			// "SELECT * FROM message_channel",
 			"SELECT * FROM native_account",

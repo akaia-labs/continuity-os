@@ -18,7 +18,7 @@ pub fn init(ctx: &ReducerContext) {
 		last_seen_at:              ctx.timestamp,
 		created_at:                ctx.timestamp,
 		updated_at:                ctx.timestamp,
-		foreign_account_ownership: vec![],
+		tp_account_ownership: vec![],
 
 		profile_id: ctx
 			.db

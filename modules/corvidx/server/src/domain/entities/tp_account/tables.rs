@@ -9,20 +9,20 @@ use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 use crate::{
 	common::ports::RecordResolution,
 	domain::entities::{
-		account_profile::AccountProfileId, foreign_platform::ForeignPlatformTag,
+		account_profile::AccountProfileId, tp_platform::TpPlatformTag,
 		native_account::NativeAccountId,
 	},
 };
 
-/// "{String}@{ForeignPlatformTag}"
-pub type ForeignAccountId = String;
+/// "{String}@{TpPlatformTag}"
+pub type TpAccountId = String;
 
-#[table(name = foreign_account, public)]
+#[table(name = tp_account, public)]
 /// Locally recognized format for third-party accounts
-pub struct ForeignAccount {
+pub struct TpAccount {
 	#[primary_key]
-	/// "{String}@{ForeignPlatformTag}"
-	pub id: ForeignAccountId,
+	/// "{String}@{TpPlatformTag}"
+	pub id: TpAccountId,
 
 	#[index(btree)]
 	/// Holds username, handle, or any other identifier
@@ -37,16 +37,16 @@ pub struct ForeignAccount {
 	pub profile_id: Option<AccountProfileId>,
 }
 
-impl RecordResolution<ForeignAccount> for ForeignAccountId {
-	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
-		let ForeignAccountReference {
+impl RecordResolution<TpAccount> for TpAccountId {
+	fn try_resolve(&self, ctx: &ReducerContext) -> Result<TpAccount, String> {
+		let TpAccountReference {
 			id: external_author_id,
 			platform_tag,
 		} = self
 			.parse()
-			.map_err(|e: ForeignAccountReferenceParseErr| e.to_string())?;
+			.map_err(|e: TpAccountReferenceParseErr| e.to_string())?;
 
-		ctx.db().foreign_account().id().find(self).ok_or(format!(
+		ctx.db().tp_account().id().find(self).ok_or(format!(
 			"{platform_name} account {external_author_id} is not registered in the system.",
 			platform_name = platform_tag.to_string().capitalize(),
 		))
@@ -54,22 +54,22 @@ impl RecordResolution<ForeignAccount> for ForeignAccountId {
 }
 
 #[derive(SpacetimeType, Clone)]
-pub struct ForeignAccountReference {
+pub struct TpAccountReference {
 	pub id:           String,
-	pub platform_tag: ForeignPlatformTag,
+	pub platform_tag: TpPlatformTag,
 }
 
-impl RecordResolution<ForeignAccount> for ForeignAccountReference {
-	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ForeignAccount, String> {
+impl RecordResolution<TpAccount> for TpAccountReference {
+	fn try_resolve(&self, ctx: &ReducerContext) -> Result<TpAccount, String> {
 		self.to_string().try_resolve(ctx)
 	}
 }
 
-impl ForeignAccountReference {
+impl TpAccountReference {
 	pub const DELIMITER: char = '@';
 }
 
-impl Display for ForeignAccountReference {
+impl Display for TpAccountReference {
 	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
 		write!(
 			formatter,
@@ -81,10 +81,10 @@ impl Display for ForeignAccountReference {
 	}
 }
 
-type ForeignAccountReferenceParseErr = &'static str;
+type TpAccountReferenceParseErr = &'static str;
 
-impl FromStr for ForeignAccountReference {
-	type Err = ForeignAccountReferenceParseErr;
+impl FromStr for TpAccountReference {
+	type Err = TpAccountReferenceParseErr;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		let mut parts = s.rsplitn(2, Self::DELIMITER);
@@ -92,10 +92,10 @@ impl FromStr for ForeignAccountReference {
 		let id = parts.next().ok_or("missing id")?;
 
 		let platform_tag = platform_name_str
-			.parse::<ForeignPlatformTag>()
+			.parse::<TpPlatformTag>()
 			.map_err(|_| "invalid or unsupported platform specifier")?;
 
-		Ok(ForeignAccountReference {
+		Ok(TpAccountReference {
 			id: id.to_owned(),
 			platform_tag,
 		})

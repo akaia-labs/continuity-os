@@ -1,12 +1,12 @@
 use spacetimedb::{Identity, SpacetimeType, Timestamp, table};
 
-use crate::domain::entities::{foreign_account::ForeignAccountId, native_account::NativeAccountId};
+use crate::domain::entities::{tp_account::TpAccountId, native_account::NativeAccountId};
 
 #[derive(SpacetimeType)]
 /// The original message author.
 pub enum MessageAuthorId {
 	NativeAccountId(NativeAccountId),
-	ForeignAccountId(ForeignAccountId),
+	TpAccountId(TpAccountId),
 	/// Fallback value, use with caution.
 	Unknown,
 }
@@ -25,5 +25,5 @@ pub struct Message {
 
 	pub text: String,
 	// TODO: track message forwarding
-	// pub forwarded_to: Vec<ForeignChannelId>
+	// pub forwarded_to: Vec<TpChannelId>
 }

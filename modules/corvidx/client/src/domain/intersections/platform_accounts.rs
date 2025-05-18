@@ -1,28 +1,27 @@
 use super::PlatformAssociation;
 use crate::{
 	common::stdb::{
-		ForeignAccount, ForeignAccountReference, ForeignAccountTableAccess, NativeAccount,
-		RemoteDbContext,
+		NativeAccount, RemoteDbContext, TpAccount, TpAccountReference, TpAccountTableAccess,
 	},
-	domain::entities::foreign_platform::SupportedForeignPlatformTag,
+	domain::entities::tp_platform::SupportedTpPlatformTag,
 };
 
-impl PlatformAssociation<ForeignAccount> for NativeAccount {
-	// TODO: Since one native accounts can have several linked foreign accounts
-	// TODO: for the same foreign platform, in the future we'll need
+impl PlatformAssociation<TpAccount> for NativeAccount {
+	// TODO: Since one native accounts can have several linked third-party accounts
+	// TODO: for the same third-party platform, in the future we'll need
 	// TODO: to be able to provide a selector predicate that narrows
-	// TODO: the search down to exactly one specific foreign account,
+	// TODO: the search down to exactly one specific third-party account,
 	// TODO: instead of just taking the first found record.
 	fn platform_association(
-		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedForeignPlatformTag,
-	) -> Option<ForeignAccount> {
-		self.foreign_account_ownership
+		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedTpPlatformTag,
+	) -> Option<TpAccount> {
+		self.tp_account_ownership
 			.iter()
-			.filter_map(|account_id| ctx.db().foreign_account().id().find(account_id))
+			.filter_map(|account_id| ctx.db().tp_account().id().find(account_id))
 			.find(|account| {
 				account
 					.id
-					.parse::<ForeignAccountReference>()
+					.parse::<TpAccountReference>()
 					.map_or(false, |far| {
 						far.platform_tag.into_supported() == platform_tag
 					})

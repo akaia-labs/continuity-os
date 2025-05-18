@@ -2,7 +2,7 @@ use spacetimedb::{Identity, ReducerContext, SpacetimeType, Timestamp, table};
 
 use crate::{
 	common::ports::RecordResolution,
-	domain::entities::{account_profile::AccountProfileId, foreign_account::ForeignAccountId},
+	domain::entities::{account_profile::AccountProfileId, tp_account::TpAccountId},
 };
 
 pub type NativeAccountId = Identity;
@@ -36,7 +36,7 @@ pub struct NativeAccount {
 	#[index(btree)]
 	pub profile_id: AccountProfileId,
 
-	pub foreign_account_ownership: Vec<ForeignAccountId>,
+	pub tp_account_ownership: Vec<TpAccountId>,
 }
 
 impl RecordResolution<NativeAccount> for NativeAccountId {

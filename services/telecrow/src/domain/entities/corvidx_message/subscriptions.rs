@@ -6,8 +6,8 @@ use crowdcomm_sdk::{
 		ports::{ProfileResolution, RecordResolution},
 		presentation::Displayable,
 		stdb::{
-			DbConnection, EventContext, ForeignAccountReference, Message, MessageAuthorId,
-			ReducerEventContext, send_message,
+			DbConnection, EventContext, Message, MessageAuthorId, ReducerEventContext,
+			TpAccountReference, send_message,
 		},
 	},
 	integrations::{MessageConverter, telegram::OutboundTelegramMessage},
@@ -26,18 +26,16 @@ pub fn handle_telegram_forward(
 	let handle = async_handler.handle();
 
 	return move |corvidx: &EventContext, msg: &Message| {
-		let foreign_platform_tag = match &msg.author_id {
-			| MessageAuthorId::ForeignAccountId(account_id) => {
-				ForeignAccountReference::from_str(&account_id)
-					.map_or(None, |far| Some(far.platform_tag.into_supported()))
-			},
+		let tp_platform_tag = match &msg.author_id {
+			| MessageAuthorId::TpAccountId(account_id) => TpAccountReference::from_str(&account_id)
+				.map_or(None, |far| Some(far.platform_tag.into_supported())),
 
 			| MessageAuthorId::NativeAccountId(_) | MessageAuthorId::Unknown => None,
 		};
 
 		// Ignore messages originated from Telegram
-		if foreign_platform_tag.is_none()
-			|| foreign_platform_tag.is_some_and(|tag| tag != TARGET_FOREIGN_PLATFORM_TAG)
+		if tp_platform_tag.is_none()
+			|| tp_platform_tag.is_some_and(|tag| tag != TARGET_FOREIGN_PLATFORM_TAG)
 		{
 			// Only forward messages sent after handler initialization
 			if subscribed_at.le(&msg.sent_at) {

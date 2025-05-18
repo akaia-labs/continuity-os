@@ -1,11 +1,11 @@
 use crowdcomm_sdk::corvidx::stdb::{
-	AccountProfileMetadata, DbConnection, ForeignAccountReference, ReducerEventContext,
-	import_foreign_account, update_foreign_account_profile,
+	AccountProfileMetadata, DbConnection, TpAccountReference, ReducerEventContext,
+	import_tp_account, update_tp_account_profile,
 };
 use spacetimedb_sdk::Status;
 
-fn on_foreign_account_import(
-	corvidx: &ReducerEventContext, reference: &ForeignAccountReference, callsign: &Option<String>,
+fn on_tp_account_import(
+	corvidx: &ReducerEventContext, reference: &TpAccountReference, callsign: &Option<String>,
 	metadata: &Option<AccountProfileMetadata>,
 ) {
 	if let Status::Failed(err) = &corvidx.event.status {
@@ -15,8 +15,8 @@ fn on_foreign_account_import(
 	}
 }
 
-fn on_foreign_account_update(
-	corvidx: &ReducerEventContext, reference: &ForeignAccountReference,
+fn on_tp_account_update(
+	corvidx: &ReducerEventContext, reference: &TpAccountReference,
 	metadata: &Option<AccountProfileMetadata>,
 ) {
 	if let Status::Failed(err) = &corvidx.event.status {
@@ -28,9 +28,9 @@ fn on_foreign_account_update(
 pub fn subscribe(corvidx: &DbConnection) {
 	corvidx
 		.reducers
-		.on_import_foreign_account(on_foreign_account_import);
+		.on_import_tp_account(on_tp_account_import);
 
 	corvidx
 		.reducers
-		.on_update_foreign_account_profile(on_foreign_account_update);
+		.on_update_tp_account_profile(on_tp_account_update);
 }

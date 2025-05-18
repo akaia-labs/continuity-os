@@ -8,7 +8,7 @@ use crate::common::{
 };
 
 impl ProfileResolution for NativeAccount {
-	/// Resolves a foreign account profile
+	/// Resolves a third-party account profile
 	fn profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
 		ctx.db().account_profile().id().find(&self.profile_id)
 	}

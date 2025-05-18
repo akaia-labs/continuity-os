@@ -3,10 +3,10 @@ use std::fmt::{self, Display, Formatter};
 use crate::common::{
 	ports::ProfileResolution,
 	presentation::{DisplayName, Displayable},
-	stdb::{ForeignAccount, ForeignAccountReference, RemoteDbContext},
+	stdb::{TpAccount, TpAccountReference, RemoteDbContext},
 };
 
-impl DisplayName for ForeignAccount {
+impl DisplayName for TpAccount {
 	/// Walks the ownership tree starting from the bound internal account
 	/// (if present) to retrieve the first available identifier for display
 	fn display_name(&self, ctx: &impl RemoteDbContext) -> String {
@@ -20,7 +20,7 @@ impl DisplayName for ForeignAccount {
 	}
 }
 
-impl Display for ForeignAccountReference {
+impl Display for TpAccountReference {
 	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
 		write!(
 			formatter,

@@ -12,7 +12,7 @@ use crate::{
 	common::ports::RecordResolution,
 	domain::{
 		entities::{
-			foreign_account::{ForeignAccount, ForeignAccountReference, foreign_account},
+			tp_account::{TpAccount, TpAccountReference, tp_account},
 			message::{Message, MessageAuthorId, message},
 			native_account::native_account,
 		},
@@ -24,15 +24,15 @@ const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 
 // TODO Implement rate limit
 #[reducer]
-/// Creates a foreign to native account link request.
+/// Creates a third-party to native account link request.
 pub fn create_account_link_request(
-	ctx: &ReducerContext, reference: ForeignAccountReference,
+	ctx: &ReducerContext, reference: TpAccountReference,
 ) -> Result<(), String> {
-	let foreign_account = reference.try_resolve(ctx)?;
+	let tp_account = reference.try_resolve(ctx)?;
 
-	if foreign_account.owner_id != ctx.identity() {
+	if tp_account.owner_id != ctx.identity() {
 		return Err(format!(
-			"Foreign account {reference} is already linked to another native account.",
+			"Tp account {reference} is already linked to another native account.",
 		));
 	}
 
@@ -42,7 +42,7 @@ pub fn create_account_link_request(
 		id:                   0,
 		created_at:           ctx.timestamp,
 		requester_account_id: native_account.id,
-		subject_account_id:   foreign_account.id,
+		subject_account_id:   tp_account.id,
 
 		expires_at: ctx
 			.timestamp
@@ -61,7 +61,7 @@ pub fn create_account_link_request(
 		});
 
 	log::info!(
-		"{requester} created an account link request {id} for foreign account {reference}.",
+		"{requester} created an account link request {id} for third-party account {reference}.",
 		requester = native_account.id,
 		id = request.id,
 	);
@@ -70,7 +70,7 @@ pub fn create_account_link_request(
 }
 
 #[reducer]
-/// Binds a foreign account to a native account.
+/// Binds a third-party account to a native account.
 pub fn resolve_account_link_request(
 	ctx: &ReducerContext, request_id: AccountLinkRequestId, is_approved: bool,
 ) -> Result<(), String> {
@@ -84,15 +84,15 @@ pub fn resolve_account_link_request(
 
 	if is_approved {
 		let mut native_account = requester_account_id.try_resolve(ctx)?;
-		let foreign_account = subject_account_id.try_resolve(ctx)?;
+		let tp_account = subject_account_id.try_resolve(ctx)?;
 
-		ctx.db.foreign_account().id().update(ForeignAccount {
+		ctx.db.tp_account().id().update(TpAccount {
 			owner_id: native_account.id,
-			..foreign_account
+			..tp_account
 		});
 
 		native_account
-			.foreign_account_ownership
+			.tp_account_ownership
 			.push(subject_account_id.to_string());
 
 		ctx.db.native_account().id().update(native_account);
@@ -105,27 +105,27 @@ pub fn resolve_account_link_request(
 }
 
 #[reducer]
-/// Unbinds a foreign account from a native account.
-pub fn unlink_foreign_account(
-	ctx: &ReducerContext, reference: ForeignAccountReference,
+/// Unbinds a third-party account from a native account.
+pub fn unlink_tp_account(
+	ctx: &ReducerContext, reference: TpAccountReference,
 ) -> Result<(), String> {
 	let mut native_account = ctx.sender.try_resolve(ctx)?;
-	let foreign_account = reference.try_resolve(ctx)?;
+	let tp_account = reference.try_resolve(ctx)?;
 
-	if foreign_account.owner_id != native_account.id {
+	if tp_account.owner_id != native_account.id {
 		return Err(format!(
-			"Account {id} is not linked to the foreign account {reference}.",
+			"Account {id} is not linked to the third-party account {reference}.",
 			id = ctx.sender,
 		));
 	}
 
-	ctx.db.foreign_account().id().update(ForeignAccount {
+	ctx.db.tp_account().id().update(TpAccount {
 		owner_id: ctx.identity(),
-		..foreign_account
+		..tp_account
 	});
 
 	native_account
-		.foreign_account_ownership
+		.tp_account_ownership
 		.retain(|id| id != &reference.to_string());
 
 	ctx.db.native_account().id().update(native_account);
@@ -145,7 +145,7 @@ pub fn report_account_link_resolution(
 	} = request;
 
 	let display_account_reference = subject_account_id
-		.parse::<ForeignAccountReference>()
+		.parse::<TpAccountReference>()
 		.map_or(subject_account_id, |far| {
 			format!(
 				"{platform_name} account {fa_id}",

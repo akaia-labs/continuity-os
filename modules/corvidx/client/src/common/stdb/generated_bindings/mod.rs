@@ -16,16 +16,12 @@ pub mod admin_set_account_role_reducer;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
 pub mod create_account_link_request_reducer;
-pub mod foreign_account_reference_type;
-pub mod foreign_account_table;
-pub mod foreign_account_type;
-pub mod foreign_platform_tag_type;
-pub mod import_foreign_account_reducer;
 pub mod import_message_reducer;
+pub mod import_tp_account_reducer;
 pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
-pub mod mirror_foreign_profile_reducer;
+pub mod mirror_tp_profile_reducer;
 pub mod native_account_local_role_type;
 pub mod native_account_table;
 pub mod native_account_type;
@@ -36,9 +32,13 @@ pub mod send_message_reducer;
 pub mod set_account_callsign_reducer;
 pub mod text_channel_table;
 pub mod text_channel_type;
-pub mod unlink_foreign_account_reducer;
-pub mod update_foreign_account_callsign_reducer;
-pub mod update_foreign_account_profile_reducer;
+pub mod tp_account_reference_type;
+pub mod tp_account_table;
+pub mod tp_account_type;
+pub mod tp_platform_tag_type;
+pub mod unlink_tp_account_reducer;
+pub mod update_tp_account_callsign_reducer;
+pub mod update_tp_account_profile_reducer;
 
 pub use account_link_request_expiry_schedule_type::AccountLinkRequestExpirySchedule;
 pub use account_link_request_schedule_table::*;
@@ -61,21 +61,17 @@ pub use create_account_link_request_reducer::{
 	CreateAccountLinkRequestCallbackId, create_account_link_request,
 	set_flags_for_create_account_link_request,
 };
-pub use foreign_account_reference_type::ForeignAccountReference;
-pub use foreign_account_table::*;
-pub use foreign_account_type::ForeignAccount;
-pub use foreign_platform_tag_type::ForeignPlatformTag;
-pub use import_foreign_account_reducer::{
-	ImportForeignAccountCallbackId, import_foreign_account, set_flags_for_import_foreign_account,
-};
 pub use import_message_reducer::{
 	ImportMessageCallbackId, import_message, set_flags_for_import_message,
+};
+pub use import_tp_account_reducer::{
+	ImportTpAccountCallbackId, import_tp_account, set_flags_for_import_tp_account,
 };
 pub use message_author_id_type::MessageAuthorId;
 pub use message_table::*;
 pub use message_type::Message;
-pub use mirror_foreign_profile_reducer::{
-	MirrorForeignProfileCallbackId, mirror_foreign_profile, set_flags_for_mirror_foreign_profile,
+pub use mirror_tp_profile_reducer::{
+	MirrorTpProfileCallbackId, mirror_tp_profile, set_flags_for_mirror_tp_profile,
 };
 pub use native_account_local_role_type::NativeAccountLocalRole;
 pub use native_account_table::*;
@@ -98,16 +94,20 @@ pub use set_account_callsign_reducer::{
 };
 pub use text_channel_table::*;
 pub use text_channel_type::TextChannel;
-pub use unlink_foreign_account_reducer::{
-	UnlinkForeignAccountCallbackId, set_flags_for_unlink_foreign_account, unlink_foreign_account,
+pub use tp_account_reference_type::TpAccountReference;
+pub use tp_account_table::*;
+pub use tp_account_type::TpAccount;
+pub use tp_platform_tag_type::TpPlatformTag;
+pub use unlink_tp_account_reducer::{
+	UnlinkTpAccountCallbackId, set_flags_for_unlink_tp_account, unlink_tp_account,
 };
-pub use update_foreign_account_callsign_reducer::{
-	UpdateForeignAccountCallsignCallbackId, set_flags_for_update_foreign_account_callsign,
-	update_foreign_account_callsign,
+pub use update_tp_account_callsign_reducer::{
+	UpdateTpAccountCallsignCallbackId, set_flags_for_update_tp_account_callsign,
+	update_tp_account_callsign,
 };
-pub use update_foreign_account_profile_reducer::{
-	UpdateForeignAccountProfileCallbackId, set_flags_for_update_foreign_account_profile,
-	update_foreign_account_profile,
+pub use update_tp_account_profile_reducer::{
+	UpdateTpAccountProfileCallbackId, set_flags_for_update_tp_account_profile,
+	update_tp_account_profile,
 };
 
 #[derive(Clone, PartialEq, Debug)]
@@ -125,19 +125,19 @@ pub enum Reducer {
 	ClientConnected,
 	ClientDisconnected,
 	CreateAccountLinkRequest {
-		reference: ForeignAccountReference,
+		reference: TpAccountReference,
 	},
-	ImportForeignAccount {
-		reference: ForeignAccountReference,
+	ImportMessage {
+		author_reference: TpAccountReference,
+		text:             String,
+	},
+	ImportTpAccount {
+		reference: TpAccountReference,
 		callsign:  Option<String>,
 		metadata:  Option<AccountProfileMetadata>,
 	},
-	ImportMessage {
-		author_reference: ForeignAccountReference,
-		text:             String,
-	},
-	MirrorForeignProfile {
-		reference: ForeignAccountReference,
+	MirrorTpProfile {
+		reference: TpAccountReference,
 	},
 	ReportAccountLinkResolution {
 		request:     AccountLinkRequest,
@@ -156,15 +156,15 @@ pub enum Reducer {
 	SetAccountCallsign {
 		callsign: String,
 	},
-	UnlinkForeignAccount {
-		reference: ForeignAccountReference,
+	UnlinkTpAccount {
+		reference: TpAccountReference,
 	},
-	UpdateForeignAccountCallsign {
-		reference: ForeignAccountReference,
+	UpdateTpAccountCallsign {
+		reference: TpAccountReference,
 		callsign:  Option<String>,
 	},
-	UpdateForeignAccountProfile {
-		reference: ForeignAccountReference,
+	UpdateTpAccountProfile {
+		reference: TpAccountReference,
 		metadata:  Option<AccountProfileMetadata>,
 	},
 }
@@ -180,9 +180,9 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
 			| Reducer::CreateAccountLinkRequest { .. } => "create_account_link_request",
-			| Reducer::ImportForeignAccount { .. } => "import_foreign_account",
 			| Reducer::ImportMessage { .. } => "import_message",
-			| Reducer::MirrorForeignProfile { .. } => "mirror_foreign_profile",
+			| Reducer::ImportTpAccount { .. } => "import_tp_account",
+			| Reducer::MirrorTpProfile { .. } => "mirror_tp_profile",
 			| Reducer::ReportAccountLinkResolution { .. } => "report_account_link_resolution",
 			| Reducer::ResolveAccountLinkRequest { .. } => "resolve_account_link_request",
 			| Reducer::ScheduledDeleteAccountLinkRequest { .. } => {
@@ -190,9 +190,9 @@ impl __sdk::Reducer for Reducer {
 			},
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetAccountCallsign { .. } => "set_account_callsign",
-			| Reducer::UnlinkForeignAccount { .. } => "unlink_foreign_account",
-			| Reducer::UpdateForeignAccountCallsign { .. } => "update_foreign_account_callsign",
-			| Reducer::UpdateForeignAccountProfile { .. } => "update_foreign_account_profile",
+			| Reducer::UnlinkTpAccount { .. } => "unlink_tp_account",
+			| Reducer::UpdateTpAccountCallsign { .. } => "update_tp_account_callsign",
+			| Reducer::UpdateTpAccountProfile { .. } => "update_tp_account_profile",
 		}
 	}
 }
@@ -205,17 +205,17 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
             "client_connected" => Ok(__sdk::parse_reducer_args::<client_connected_reducer::ClientConnectedArgs>("client_connected", &value.args)?.into()),
             "client_disconnected" => Ok(__sdk::parse_reducer_args::<client_disconnected_reducer::ClientDisconnectedArgs>("client_disconnected", &value.args)?.into()),
             "create_account_link_request" => Ok(__sdk::parse_reducer_args::<create_account_link_request_reducer::CreateAccountLinkRequestArgs>("create_account_link_request", &value.args)?.into()),
-            "import_foreign_account" => Ok(__sdk::parse_reducer_args::<import_foreign_account_reducer::ImportForeignAccountArgs>("import_foreign_account", &value.args)?.into()),
             "import_message" => Ok(__sdk::parse_reducer_args::<import_message_reducer::ImportMessageArgs>("import_message", &value.args)?.into()),
-            "mirror_foreign_profile" => Ok(__sdk::parse_reducer_args::<mirror_foreign_profile_reducer::MirrorForeignProfileArgs>("mirror_foreign_profile", &value.args)?.into()),
+            "import_tp_account" => Ok(__sdk::parse_reducer_args::<import_tp_account_reducer::ImportTpAccountArgs>("import_tp_account", &value.args)?.into()),
+            "mirror_tp_profile" => Ok(__sdk::parse_reducer_args::<mirror_tp_profile_reducer::MirrorTpProfileArgs>("mirror_tp_profile", &value.args)?.into()),
             "report_account_link_resolution" => Ok(__sdk::parse_reducer_args::<report_account_link_resolution_reducer::ReportAccountLinkResolutionArgs>("report_account_link_resolution", &value.args)?.into()),
             "resolve_account_link_request" => Ok(__sdk::parse_reducer_args::<resolve_account_link_request_reducer::ResolveAccountLinkRequestArgs>("resolve_account_link_request", &value.args)?.into()),
             "scheduled_delete_account_link_request" => Ok(__sdk::parse_reducer_args::<scheduled_delete_account_link_request_reducer::ScheduledDeleteAccountLinkRequestArgs>("scheduled_delete_account_link_request", &value.args)?.into()),
             "send_message" => Ok(__sdk::parse_reducer_args::<send_message_reducer::SendMessageArgs>("send_message", &value.args)?.into()),
             "set_account_callsign" => Ok(__sdk::parse_reducer_args::<set_account_callsign_reducer::SetAccountCallsignArgs>("set_account_callsign", &value.args)?.into()),
-            "unlink_foreign_account" => Ok(__sdk::parse_reducer_args::<unlink_foreign_account_reducer::UnlinkForeignAccountArgs>("unlink_foreign_account", &value.args)?.into()),
-            "update_foreign_account_callsign" => Ok(__sdk::parse_reducer_args::<update_foreign_account_callsign_reducer::UpdateForeignAccountCallsignArgs>("update_foreign_account_callsign", &value.args)?.into()),
-            "update_foreign_account_profile" => Ok(__sdk::parse_reducer_args::<update_foreign_account_profile_reducer::UpdateForeignAccountProfileArgs>("update_foreign_account_profile", &value.args)?.into()),
+            "unlink_tp_account" => Ok(__sdk::parse_reducer_args::<unlink_tp_account_reducer::UnlinkTpAccountArgs>("unlink_tp_account", &value.args)?.into()),
+            "update_tp_account_callsign" => Ok(__sdk::parse_reducer_args::<update_tp_account_callsign_reducer::UpdateTpAccountCallsignArgs>("update_tp_account_callsign", &value.args)?.into()),
+            "update_tp_account_profile" => Ok(__sdk::parse_reducer_args::<update_tp_account_profile_reducer::UpdateTpAccountProfileArgs>("update_tp_account_profile", &value.args)?.into()),
             unknown => Err(__sdk::InternalError::unknown_name("reducer", unknown, "ReducerCallInfo").into()),
 }
 	}
@@ -228,10 +228,10 @@ pub struct DbUpdate {
 	account_link_request:          __sdk::TableUpdate<AccountLinkRequest>,
 	account_link_request_schedule: __sdk::TableUpdate<AccountLinkRequestExpirySchedule>,
 	account_profile:               __sdk::TableUpdate<AccountProfile>,
-	foreign_account:               __sdk::TableUpdate<ForeignAccount>,
 	message:                       __sdk::TableUpdate<Message>,
 	native_account:                __sdk::TableUpdate<NativeAccount>,
 	text_channel:                  __sdk::TableUpdate<TextChannel>,
+	tp_account:                    __sdk::TableUpdate<TpAccount>,
 }
 
 impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
@@ -253,10 +253,6 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 					db_update.account_profile =
 						account_profile_table::parse_table_update(table_update)?
 				},
-				| "foreign_account" => {
-					db_update.foreign_account =
-						foreign_account_table::parse_table_update(table_update)?
-				},
 				| "message" => db_update.message = message_table::parse_table_update(table_update)?,
 				| "native_account" => {
 					db_update.native_account =
@@ -264,6 +260,9 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 				},
 				| "text_channel" => {
 					db_update.text_channel = text_channel_table::parse_table_update(table_update)?
+				},
+				| "tp_account" => {
+					db_update.tp_account = tp_account_table::parse_table_update(table_update)?
 				},
 
 				| unknown => {
@@ -305,9 +304,6 @@ impl __sdk::DbUpdate for DbUpdate {
 		diff.account_profile = cache
 			.apply_diff_to_table::<AccountProfile>("account_profile", &self.account_profile)
 			.with_updates_by_pk(|row| &row.id);
-		diff.foreign_account = cache
-			.apply_diff_to_table::<ForeignAccount>("foreign_account", &self.foreign_account)
-			.with_updates_by_pk(|row| &row.id);
 		diff.message = cache
 			.apply_diff_to_table::<Message>("message", &self.message)
 			.with_updates_by_pk(|row| &row.id);
@@ -316,6 +312,9 @@ impl __sdk::DbUpdate for DbUpdate {
 			.with_updates_by_pk(|row| &row.id);
 		diff.text_channel = cache
 			.apply_diff_to_table::<TextChannel>("text_channel", &self.text_channel)
+			.with_updates_by_pk(|row| &row.id);
+		diff.tp_account = cache
+			.apply_diff_to_table::<TpAccount>("tp_account", &self.tp_account)
 			.with_updates_by_pk(|row| &row.id);
 
 		diff
@@ -329,10 +328,10 @@ pub struct AppliedDiff<'r> {
 	account_link_request:          __sdk::TableAppliedDiff<'r, AccountLinkRequest>,
 	account_link_request_schedule: __sdk::TableAppliedDiff<'r, AccountLinkRequestExpirySchedule>,
 	account_profile:               __sdk::TableAppliedDiff<'r, AccountProfile>,
-	foreign_account:               __sdk::TableAppliedDiff<'r, ForeignAccount>,
 	message:                       __sdk::TableAppliedDiff<'r, Message>,
 	native_account:                __sdk::TableAppliedDiff<'r, NativeAccount>,
 	text_channel:                  __sdk::TableAppliedDiff<'r, TextChannel>,
+	tp_account:                    __sdk::TableAppliedDiff<'r, TpAccount>,
 }
 
 impl __sdk::InModule for AppliedDiff<'_> {
@@ -358,11 +357,6 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 			&self.account_profile,
 			event,
 		);
-		callbacks.invoke_table_row_callbacks::<ForeignAccount>(
-			"foreign_account",
-			&self.foreign_account,
-			event,
-		);
 		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
 		callbacks.invoke_table_row_callbacks::<NativeAccount>(
 			"native_account",
@@ -374,6 +368,7 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 			&self.text_channel,
 			event,
 		);
+		callbacks.invoke_table_row_callbacks::<TpAccount>("tp_account", &self.tp_account, event);
 	}
 }
 
@@ -1006,9 +1001,9 @@ impl __sdk::SpacetimeModule for RemoteModule {
 		account_link_request_table::register_table(client_cache);
 		account_link_request_schedule_table::register_table(client_cache);
 		account_profile_table::register_table(client_cache);
-		foreign_account_table::register_table(client_cache);
 		message_table::register_table(client_cache);
 		native_account_table::register_table(client_cache);
 		text_channel_table::register_table(client_cache);
+		tp_account_table::register_table(client_cache);
 	}
 }

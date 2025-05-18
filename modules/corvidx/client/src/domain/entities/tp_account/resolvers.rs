@@ -1,14 +1,14 @@
-use super::ForeignAccountId;
+use super::TpAccountId;
 use crate::common::{
 	ports::{ProfileResolution, RecordResolution},
 	stdb::{
-		AccountProfile, AccountProfileTableAccess, ForeignAccount, ForeignAccountReference,
-		ForeignAccountTableAccess, NativeAccountTableAccess, RemoteDbContext,
+		AccountProfile, AccountProfileTableAccess, TpAccount, TpAccountReference,
+		TpAccountTableAccess, NativeAccountTableAccess, RemoteDbContext,
 	},
 };
 
-impl ProfileResolution for ForeignAccount {
-	/// Resolves a foreign account profile
+impl ProfileResolution for TpAccount {
+	/// Resolves a third-party account profile
 	fn profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
 		if let Some(profile_id) = self.profile_id {
 			ctx.db().account_profile().id().find(&profile_id)
@@ -30,16 +30,16 @@ impl ProfileResolution for ForeignAccount {
 	}
 }
 
-impl RecordResolution<ForeignAccount> for ForeignAccountReference {
-	/// Resolves a foreign account by its reference
-	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<ForeignAccount> {
-		ctx.db().foreign_account().id().find(&self.to_string())
+impl RecordResolution<TpAccount> for TpAccountReference {
+	/// Resolves a third-party account by its reference
+	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<TpAccount> {
+		ctx.db().tp_account().id().find(&self.to_string())
 	}
 }
 
-impl RecordResolution<ForeignAccount> for ForeignAccountId {
-	/// Resolves a foreign account by ID
-	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<ForeignAccount> {
-		ctx.db().foreign_account().id().find(&self)
+impl RecordResolution<TpAccount> for TpAccountId {
+	/// Resolves a third-party account by ID
+	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<TpAccount> {
+		ctx.db().tp_account().id().find(&self)
 	}
 }

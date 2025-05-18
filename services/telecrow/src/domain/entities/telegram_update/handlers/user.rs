@@ -5,12 +5,11 @@ use crowdcomm_sdk::{
 	corvidx::{
 		ports::ProfileResolution,
 		stdb::{
-			DbConnection, ForeignAccountReference, ForeignAccountTableAccess,
-			import_foreign_account, update_foreign_account_callsign,
-			update_foreign_account_profile,
+			DbConnection, TpAccountReference, TpAccountTableAccess, import_tp_account,
+			update_tp_account_callsign, update_tp_account_profile,
 		},
 	},
-	integrations::{ForeignAccountImport, ProfileImport},
+	integrations::{ProfileImport, TpAccountImport},
 };
 use teloxide::types::User;
 
@@ -26,33 +25,33 @@ pub fn on_user_update(
 	let tg_account_reference = user_data.into_account_reference();
 	let tg_profile_metadata = user_data.into_profile_metadata();
 
-	let ForeignAccountReference {
-		id: foreign_account_external_id,
+	let TpAccountReference {
+		id: tp_account_external_id,
 		platform_tag,
 	} = &tg_account_reference;
 
 	let platform_name = platform_tag.to_string().capitalize();
 
-	let foreign_account = corvidx
+	let tp_account = corvidx
 		.db
-		.foreign_account()
+		.tp_account()
 		.id()
 		.find(&tg_account_reference.to_string());
 
-	if let Some(account) = foreign_account {
+	if let Some(account) = tp_account {
 		let profile = account.profile(&*corvidx);
 
 		if account.callsign != tg_username {
 			let result = corvidx
 				.reducers
-				.update_foreign_account_callsign(tg_account_reference.clone(), tg_username);
+				.update_tp_account_callsign(tg_account_reference.clone(), tg_username);
 
 			match result {
 				| Ok(_) => {
 					on_success(format!(
 						r#"
 							Username change for {platform_name} account
-							{foreign_account_external_id} has been
+							{tp_account_external_id} has been
 							successfully reflected on its callsign.
 						"#
 					));
@@ -62,7 +61,7 @@ pub fn on_user_update(
 					on_error(format!(
 						r#"
 							Unable to register username change for {platform_name}
-							account {foreign_account_external_id}: {err}
+							account {tp_account_external_id}: {err}
 						"#
 					));
 				},
@@ -72,17 +71,16 @@ pub fn on_user_update(
 		if profile.is_none()
 			|| profile.is_some_and(|profile| profile.metadata != tg_profile_metadata)
 		{
-			let result = corvidx.reducers.update_foreign_account_profile(
-				tg_account_reference.clone(),
-				Some(tg_profile_metadata),
-			);
+			let result = corvidx
+				.reducers
+				.update_tp_account_profile(tg_account_reference.clone(), Some(tg_profile_metadata));
 
 			match result {
 				| Ok(_) => {
 					on_success(format!(
 						r#"
 							{platform_name} profile record for account
-							{foreign_account_external_id} has been successfully updated.
+							{tp_account_external_id} has been successfully updated.
 						"#
 					));
 				},
@@ -91,7 +89,7 @@ pub fn on_user_update(
 					on_error(format!(
 						r#"
 							Unable to register profile change for {platform_name}
-							account {foreign_account_external_id}: {err}
+							account {tp_account_external_id}: {err}
 						"#
 					));
 				},
@@ -100,7 +98,7 @@ pub fn on_user_update(
 	} else {
 		let result = corvidx
 			.reducers
-			.import_foreign_account(
+			.import_tp_account(
 				tg_account_reference.clone(),
 				tg_username,
 				Some(tg_profile_metadata),
@@ -111,7 +109,7 @@ pub fn on_user_update(
 			| Ok(_) => {
 				on_success(format!(
 					r#"
-						{platform_name} account {foreign_account_external_id}
+						{platform_name} account {tp_account_external_id}
 						has been successfully imported.
 					"#
 				));
@@ -121,7 +119,7 @@ pub fn on_user_update(
 				on_error(format!(
 					r#"
 						Unable to import {platform_name} account
-						{foreign_account_external_id}: {err}
+						{tp_account_external_id}: {err}
 					"#
 				));
 			},

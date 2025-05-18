@@ -4,12 +4,12 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::foreign_account_reference_type::ForeignAccountReference;
+use super::tp_account_reference_type::TpAccountReference;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct CreateAccountLinkRequestArgs {
-	pub reference: ForeignAccountReference,
+	pub reference: TpAccountReference,
 }
 
 impl From<CreateAccountLinkRequestArgs> for super::Reducer {
@@ -38,7 +38,7 @@ pub trait create_account_link_request {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_create_account_link_request`] callbacks.
-	fn create_account_link_request(&self, reference: ForeignAccountReference) -> __sdk::Result<()>;
+	fn create_account_link_request(&self, reference: TpAccountReference) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `create_account_link_request`.
 	///
@@ -49,7 +49,7 @@ pub trait create_account_link_request {
 	/// [`Self::remove_on_create_account_link_request`] to cancel the callback.
 	fn on_create_account_link_request(
 		&self,
-		callback: impl FnMut(&super::ReducerEventContext, &ForeignAccountReference) + Send + 'static,
+		callback: impl FnMut(&super::ReducerEventContext, &TpAccountReference) + Send + 'static,
 	) -> CreateAccountLinkRequestCallbackId;
 	/// Cancel a callback previously registered by
 	/// [`Self::on_create_account_link_request`], causing it not to run in the
@@ -58,7 +58,7 @@ pub trait create_account_link_request {
 }
 
 impl create_account_link_request for super::RemoteReducers {
-	fn create_account_link_request(&self, reference: ForeignAccountReference) -> __sdk::Result<()> {
+	fn create_account_link_request(&self, reference: TpAccountReference) -> __sdk::Result<()> {
 		self.imp.call_reducer(
 			"create_account_link_request",
 			CreateAccountLinkRequestArgs { reference },
@@ -67,7 +67,7 @@ impl create_account_link_request for super::RemoteReducers {
 
 	fn on_create_account_link_request(
 		&self,
-		mut callback: impl FnMut(&super::ReducerEventContext, &ForeignAccountReference) + Send + 'static,
+		mut callback: impl FnMut(&super::ReducerEventContext, &TpAccountReference) + Send + 'static,
 	) -> CreateAccountLinkRequestCallbackId {
 		CreateAccountLinkRequestCallbackId(self.imp.on_reducer(
 			"create_account_link_request",

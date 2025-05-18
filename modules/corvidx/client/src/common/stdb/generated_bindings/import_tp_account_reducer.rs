@@ -6,20 +6,20 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 use super::{
 	account_profile_metadata_type::AccountProfileMetadata,
-	foreign_account_reference_type::ForeignAccountReference,
+	tp_account_reference_type::TpAccountReference,
 };
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub(super) struct ImportForeignAccountArgs {
-	pub reference: ForeignAccountReference,
+pub(super) struct ImportTpAccountArgs {
+	pub reference: TpAccountReference,
 	pub callsign:  Option<String>,
 	pub metadata:  Option<AccountProfileMetadata>,
 }
 
-impl From<ImportForeignAccountArgs> for super::Reducer {
-	fn from(args: ImportForeignAccountArgs) -> Self {
-		Self::ImportForeignAccount {
+impl From<ImportTpAccountArgs> for super::Reducer {
+	fn from(args: ImportTpAccountArgs) -> Self {
+		Self::ImportTpAccount {
 			reference: args.reference,
 			callsign:  args.callsign,
 			metadata:  args.metadata,
@@ -27,83 +27,82 @@ impl From<ImportForeignAccountArgs> for super::Reducer {
 	}
 }
 
-impl __sdk::InModule for ImportForeignAccountArgs {
+impl __sdk::InModule for ImportTpAccountArgs {
 	type Module = super::RemoteModule;
 }
 
-pub struct ImportForeignAccountCallbackId(__sdk::CallbackId);
+pub struct ImportTpAccountCallbackId(__sdk::CallbackId);
 
 #[allow(non_camel_case_types)]
-/// Extension trait for access to the reducer `import_foreign_account`.
+/// Extension trait for access to the reducer `import_tp_account`.
 ///
 /// Implemented for [`super::RemoteReducers`].
-pub trait import_foreign_account {
-	/// Request that the remote module invoke the reducer
-	/// `import_foreign_account` to run as soon as possible.
+pub trait import_tp_account {
+	/// Request that the remote module invoke the reducer `import_tp_account` to
+	/// run as soon as possible.
 	///
 	/// This method returns immediately, and errors only if we are unable to
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
-	/// [`Self::on_import_foreign_account`] callbacks.
-	fn import_foreign_account(
-		&self, reference: ForeignAccountReference, callsign: Option<String>,
+	/// [`Self::on_import_tp_account`] callbacks.
+	fn import_tp_account(
+		&self, reference: TpAccountReference, callsign: Option<String>,
 		metadata: Option<AccountProfileMetadata>,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
-	/// the reducer `import_foreign_account`.
+	/// the reducer `import_tp_account`.
 	///
 	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
 	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`ImportForeignAccountCallbackId`] can be passed to
-	/// [`Self::remove_on_import_foreign_account`] to cancel the callback.
-	fn on_import_foreign_account(
+	/// The returned [`ImportTpAccountCallbackId`] can be passed to
+	/// [`Self::remove_on_import_tp_account`] to cancel the callback.
+	fn on_import_tp_account(
 		&self,
 		callback: impl FnMut(
 			&super::ReducerEventContext,
-			&ForeignAccountReference,
+			&TpAccountReference,
 			&Option<String>,
 			&Option<AccountProfileMetadata>,
 		) + Send
 		+ 'static,
-	) -> ImportForeignAccountCallbackId;
+	) -> ImportTpAccountCallbackId;
 	/// Cancel a callback previously registered by
-	/// [`Self::on_import_foreign_account`], causing it not to run in the
-	/// future.
-	fn remove_on_import_foreign_account(&self, callback: ImportForeignAccountCallbackId);
+	/// [`Self::on_import_tp_account`], causing it not to run in the future.
+	fn remove_on_import_tp_account(&self, callback: ImportTpAccountCallbackId);
 }
 
-impl import_foreign_account for super::RemoteReducers {
-	fn import_foreign_account(
-		&self, reference: ForeignAccountReference, callsign: Option<String>,
+impl import_tp_account for super::RemoteReducers {
+	fn import_tp_account(
+		&self, reference: TpAccountReference, callsign: Option<String>,
 		metadata: Option<AccountProfileMetadata>,
 	) -> __sdk::Result<()> {
 		self.imp
-			.call_reducer("import_foreign_account", ImportForeignAccountArgs {
+			.call_reducer("import_tp_account", ImportTpAccountArgs {
 				reference,
 				callsign,
 				metadata,
 			})
 	}
 
-	fn on_import_foreign_account(
+	fn on_import_tp_account(
 		&self,
 		mut callback: impl FnMut(
 			&super::ReducerEventContext,
-			&ForeignAccountReference,
+			&TpAccountReference,
 			&Option<String>,
 			&Option<AccountProfileMetadata>,
 		) + Send
 		+ 'static,
-	) -> ImportForeignAccountCallbackId {
-		ImportForeignAccountCallbackId(self.imp.on_reducer(
-			"import_foreign_account",
+	) -> ImportTpAccountCallbackId {
+		ImportTpAccountCallbackId(self.imp.on_reducer(
+			"import_tp_account",
 			Box::new(move |ctx: &super::ReducerEventContext| {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
 							reducer:
-								super::Reducer::ImportForeignAccount {
+								super::Reducer::ImportTpAccount {
 									reference,
 									callsign,
 									metadata,
@@ -120,33 +119,31 @@ impl import_foreign_account for super::RemoteReducers {
 		))
 	}
 
-	fn remove_on_import_foreign_account(&self, callback: ImportForeignAccountCallbackId) {
-		self.imp
-			.remove_on_reducer("import_foreign_account", callback.0)
+	fn remove_on_import_tp_account(&self, callback: ImportTpAccountCallbackId) {
+		self.imp.remove_on_reducer("import_tp_account", callback.0)
 	}
 }
 
 #[allow(non_camel_case_types)]
 #[doc(hidden)]
 /// Extension trait for setting the call-flags for the reducer
-/// `import_foreign_account`.
+/// `import_tp_account`.
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
 /// This type is currently unstable and may be removed without a major version
 /// bump.
-pub trait set_flags_for_import_foreign_account {
-	/// Set the call-reducer flags for the reducer `import_foreign_account` to
+pub trait set_flags_for_import_tp_account {
+	/// Set the call-reducer flags for the reducer `import_tp_account` to
 	/// `flags`.
 	///
 	/// This type is currently unstable and may be removed without a major
 	/// version bump.
-	fn import_foreign_account(&self, flags: __ws::CallReducerFlags);
+	fn import_tp_account(&self, flags: __ws::CallReducerFlags);
 }
 
-impl set_flags_for_import_foreign_account for super::SetReducerFlags {
-	fn import_foreign_account(&self, flags: __ws::CallReducerFlags) {
-		self.imp
-			.set_call_reducer_flags("import_foreign_account", flags);
+impl set_flags_for_import_tp_account for super::SetReducerFlags {
+	fn import_tp_account(&self, flags: __ws::CallReducerFlags) {
+		self.imp.set_call_reducer_flags("import_tp_account", flags);
 	}
 }

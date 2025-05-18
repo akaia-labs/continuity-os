@@ -38,7 +38,7 @@ pub fn client_connected(ctx: &ReducerContext) {
 			updated_at:                ctx.timestamp,
 			last_seen_at:              ctx.timestamp,
 			profile_id:                account_profile.id,
-			foreign_account_ownership: vec![],
+			tp_account_ownership: vec![],
 		});
 	}
 }

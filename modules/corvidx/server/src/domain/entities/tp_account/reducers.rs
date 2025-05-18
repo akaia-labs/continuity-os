@@ -1,6 +1,6 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::{ForeignAccount, ForeignAccountReference, foreign_account};
+use super::{TpAccount, TpAccountReference, tp_account};
 use crate::{
 	common::ports::RecordResolution,
 	domain::entities::{
@@ -11,23 +11,23 @@ use crate::{
 
 #[reducer]
 /// Registers a local representation of the given 3rd party platform account.
-pub fn import_foreign_account(
-	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,
+pub fn import_tp_account(
+	ctx: &ReducerContext, reference: TpAccountReference, callsign: Option<String>,
 	metadata: Option<AccountProfileMetadata>,
 ) -> Result<(), String> {
 	if ctx
 		.db
-		.foreign_account()
+		.tp_account()
 		.id()
 		.find(reference.to_string())
 		.is_some()
 	{
 		return Err(format!(
-			"Foreign account {reference} is already registered in the system.",
+			"Tp account {reference} is already registered in the system.",
 		));
 	}
 
-	let new_account = ctx.db.foreign_account().insert(ForeignAccount {
+	let new_account = ctx.db.tp_account().insert(TpAccount {
 		id: reference.to_string(),
 		callsign,
 		owner_id: ctx.identity(),
@@ -45,7 +45,7 @@ pub fn import_foreign_account(
 
 	let mut root_account = ctx.identity().try_resolve(ctx)?;
 
-	root_account.foreign_account_ownership.push(new_account.id);
+	root_account.tp_account_ownership.push(new_account.id);
 
 	ctx.db.native_account().id().update(NativeAccount {
 		updated_at: ctx.timestamp,
@@ -58,19 +58,19 @@ pub fn import_foreign_account(
 #[reducer]
 /// Updates the local representation
 /// of a 3rd party platform account handle / username.
-pub fn update_foreign_account_callsign(
-	ctx: &ReducerContext, reference: ForeignAccountReference, callsign: Option<String>,
+pub fn update_tp_account_callsign(
+	ctx: &ReducerContext, reference: TpAccountReference, callsign: Option<String>,
 ) -> Result<(), String> {
 	let account = ctx
 		.db
-		.foreign_account()
+		.tp_account()
 		.id()
 		.find(reference.to_string())
 		.ok_or(format!(
-			"Foreign account {reference} is not registered in the system."
+			"Tp account {reference} is not registered in the system."
 		))?;
 
-	ctx.db.foreign_account().id().update(ForeignAccount {
+	ctx.db.tp_account().id().update(TpAccount {
 		callsign,
 		..account
 	});
@@ -80,17 +80,17 @@ pub fn update_foreign_account_callsign(
 
 #[reducer]
 /// Updates the local representation of a 3rd party platform account profile.
-pub fn update_foreign_account_profile(
-	ctx: &ReducerContext, reference: ForeignAccountReference,
+pub fn update_tp_account_profile(
+	ctx: &ReducerContext, reference: TpAccountReference,
 	metadata: Option<AccountProfileMetadata>,
 ) -> Result<(), String> {
 	let account = ctx
 		.db
-		.foreign_account()
+		.tp_account()
 		.id()
 		.find(reference.to_string())
 		.ok_or(format!(
-			"Foreign account {reference} is not registered in the system."
+			"Tp account {reference} is not registered in the system."
 		))?;
 
 	let profile = if let Some(profile_id) = account.profile_id {
@@ -105,7 +105,7 @@ pub fn update_foreign_account_profile(
 		})
 	};
 
-	ctx.db.foreign_account().id().update(ForeignAccount {
+	ctx.db.tp_account().id().update(TpAccount {
 		profile_id: Some(profile.id),
 		..account
 	});

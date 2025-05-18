@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{tables::*, validation::*};
 use crate::{
-	common::ports::RecordResolution, domain::entities::foreign_account::ForeignAccountReference,
+	common::ports::RecordResolution, domain::entities::tp_account::TpAccountReference,
 };
 
 #[reducer]
@@ -33,7 +33,7 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, author_reference: ForeignAccountReference, text: String,
+	ctx: &ReducerContext, author_reference: TpAccountReference, text: String,
 ) -> Result<(), String> {
 	let author_account = author_reference.try_resolve(ctx)?;
 
@@ -49,7 +49,7 @@ pub fn import_message(
 		id: 0,
 		sender,
 		sent_at: ctx.timestamp,
-		author_id: MessageAuthorId::ForeignAccountId(author_account.id),
+		author_id: MessageAuthorId::TpAccountId(author_account.id),
 		text,
 	});
 

@@ -6,7 +6,7 @@ use crowdcomm_sdk::{
 		ports::RecordResolution,
 		presentation::DisplayName,
 		stdb::{
-			AccountProfileTableAccess, DbConnection, ErrorContext, ForeignAccountTableAccess,
+			AccountProfileTableAccess, DbConnection, ErrorContext, TpAccountTableAccess,
 			Message, MessageAuthorId, MessageTableAccess, RemoteDbContext,
 			SubscriptionEventContext,
 		},
@@ -21,7 +21,7 @@ pub fn print_message(corvidx: &impl RemoteDbContext, message: &Message) {
 			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
 
-		| MessageAuthorId::ForeignAccountId(author_id) => author_id
+		| MessageAuthorId::TpAccountId(author_id) => author_id
 			.resolve(corvidx)
 			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
@@ -94,9 +94,9 @@ fn on_sub_applied(corvidx: &SubscriptionEventContext) {
 	println!("\nFully connected and all subscriptions applied.");
 	println!("Use /callsign to set your callsign, or type a message!\n");
 
-	let foreign_accounts = corvidx.db.foreign_account().iter().collect::<Vec<_>>();
+	let tp_accounts = corvidx.db.tp_account().iter().collect::<Vec<_>>();
 
-	for account in foreign_accounts {
+	for account in tp_accounts {
 		println!("\n{:?}", account)
 	}
 
@@ -121,7 +121,7 @@ pub fn subscribe_to_tables(corvidx: &DbConnection) {
 		.subscribe([
 			"SELECT * FROM account_link_request",
 			"SELECT * FROM account_profile",
-			"SELECT * FROM foreign_account",
+			"SELECT * FROM tp_account",
 			"SELECT * FROM message",
 			// "SELECT * FROM message_channel",
 			"SELECT * FROM native_account",

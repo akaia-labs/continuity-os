@@ -3,26 +3,26 @@ use corvidx_client::{
 		ports::{ProfileResolution, RecordResolution},
 		presentation::Displayable,
 		stdb::{
-			AccountProfileMetadata, AccountProfileName, EventContext, ForeignAccountReference,
-			ForeignPlatformTag, MessageAuthorId,
+			AccountProfileMetadata, AccountProfileName, EventContext, TpAccountReference,
+			TpPlatformTag, MessageAuthorId,
 		},
 	},
 	domain::{
-		entities::foreign_platform::SupportedForeignPlatformTag, intersections::PlatformAssociation,
+		entities::tp_platform::SupportedTpPlatformTag, intersections::PlatformAssociation,
 	},
 };
-use teloxide_core::types::{ChatId, User};
+use teloxide_core::types::{ChatId, MessageId, ThreadId, User};
 
 use super::OutboundTelegramMessage;
 use crate::integrations::{
-	CorvidxMessage, ForeignAccountImport, MessageConverter, ProfileImport, TelegramMessage,
+	CorvidxMessage, TpAccountImport, MessageConverter, ProfileImport, TelegramMessage,
 };
 
-impl ForeignAccountImport for User {
-	fn into_account_reference(&self) -> ForeignAccountReference {
-		ForeignAccountReference {
+impl TpAccountImport for User {
+	fn into_account_reference(&self) -> TpAccountReference {
+		TpAccountReference {
 			id:           self.id.to_string(),
-			platform_tag: ForeignPlatformTag::Telegram,
+			platform_tag: TpPlatformTag::Telegram,
 		}
 	}
 }
@@ -47,10 +47,10 @@ impl MessageConverter<OutboundTelegramMessage> for TelegramMessage {
 	}
 
 	fn from_corvidx_message(
-		ctx: &EventContext, msg: &CorvidxMessage, target_platform_tag: SupportedForeignPlatformTag,
+		ctx: &EventContext, msg: &CorvidxMessage, target_platform_tag: SupportedTpPlatformTag,
 	) -> OutboundTelegramMessage {
 		let author_profile = match &msg.author_id {
-			| MessageAuthorId::ForeignAccountId(account_id) => account_id
+			| MessageAuthorId::TpAccountId(account_id) => account_id
 				.resolve(ctx)
 				.map_or(None, |account| account.profile(ctx)),
 
@@ -59,8 +59,8 @@ impl MessageConverter<OutboundTelegramMessage> for TelegramMessage {
 				.map(|native_account| {
 					native_account
 						.platform_association(ctx, target_platform_tag)
-						.map_or(native_account.profile(ctx), |foreign_account| {
-							foreign_account.profile(ctx)
+						.map_or(native_account.profile(ctx), |tp_account| {
+							tp_account.profile(ctx)
 						})
 				})
 				.unwrap_or_default(),
@@ -73,8 +73,9 @@ impl MessageConverter<OutboundTelegramMessage> for TelegramMessage {
 			.unwrap_or(format!("unknown-{}", msg.sender));
 
 		OutboundTelegramMessage {
-			// TODO: The chat id must be taken from MessageChannel
-			chat_id: ChatId(-1001544271932),
+			// TODO: `chat_id` and `thread_id` must be taken from MessageChannel
+			chat_id:   ChatId(-1001544271932),
+			thread_id: Some(ThreadId(MessageId(3315))),
 
 			text: format!(
 				"{}\n\n{}",
