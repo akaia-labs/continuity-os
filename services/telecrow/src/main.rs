@@ -15,7 +15,7 @@ use teloxide::{
 	dispatching::{HandlerExt, UpdateFilterExt},
 	dptree,
 	prelude::{Dispatcher, RequesterExt},
-	types::{ParseMode, Update},
+	types::{CallbackQuery, InlineQuery, Message, ParseMode, Update},
 };
 
 use crate::{
@@ -49,6 +49,23 @@ async fn main() -> Result<(), TelecrowError> {
 	);
 
 	let telegram_bridge_bot_handler = dptree::entry()
+		.branch(Update::filter_inline_query().endpoint(
+			async |_bot: BotInstanceType, iq: InlineQuery| {
+				println!("Received inline query: {}", iq.query);
+
+				Ok(())
+			},
+		))
+		.branch(Update::filter_callback_query().endpoint(
+			async |_bot: BotInstanceType, cq: CallbackQuery| {
+				println!(
+					"Received inline query: {}",
+					cq.data.unwrap_or("".to_string())
+				);
+
+				Ok(())
+			},
+		))
 		.branch(
 			Update::filter_message()
 				.filter_command::<telegram_command::BasicCommand>()
