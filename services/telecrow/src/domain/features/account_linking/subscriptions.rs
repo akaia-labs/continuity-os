@@ -28,7 +28,7 @@ pub fn subscribe(
 		while let Some(msg) = rx.recv().await {
 			let keyboard = InlineKeyboardMarkup::new([[
 				InlineKeyboardButton::callback("✅ Accept".to_string(), "accept".to_string()),
-				InlineKeyboardButton::callback("❌ Reject".to_string(), "reject".to_string()),
+				InlineKeyboardButton::callback("❎ Reject".to_string(), "reject".to_string()),
 			]]);
 
 			let _ = bridge
