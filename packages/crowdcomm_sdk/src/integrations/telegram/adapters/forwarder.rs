@@ -1,17 +1,13 @@
 use std::{str::FromStr, sync::Arc};
 
-use crowdcomm_sdk::{
-	corvidx::{
-		stdb::{EventContext, Message, MessageAuthorId, TpAccountReference},
-		tp_platform::SupportedTpPlatformTag,
-	},
-	integrations::{MessageConverter, telegram::OutboundTelegramMessage},
+use corvidx_client::{
+	common::stdb::{EventContext, Message, MessageAuthorId, TpAccountReference},
+	domain::entities::tp_platform::SupportedTpPlatformTag,
 };
 use spacetimedb_sdk::Timestamp;
-use teloxide::types::Message as TelegramMessage;
 use tokio::sync::mpsc;
 
-use crate::common::{constants::TARGET_FOREIGN_PLATFORM_TAG, runtime::AsyncHandler};
+use crate::{integrations::telegram::OutboundTelegramMessage, runtime::AsyncHandler};
 
 /// A reusable forwarder that listens to corvidx [`Message`]s
 /// and pushes them into a Telegram bridge message channel.
@@ -33,9 +29,6 @@ impl TelegramForwarder {
 	}
 
 	pub fn handle(&self, corvidx: &EventContext, msg: &Message) {
-		let tx = self.tx.clone();
-		let handle = self.async_handler.handle();
-
 		let tp_platform_tag = match &msg.author_id {
 			| MessageAuthorId::TpAccountId(account_id) => TpAccountReference::from_str(&account_id)
 				.map_or(None, |far| Some(far.platform_tag.into_supported())),
@@ -45,17 +38,15 @@ impl TelegramForwarder {
 
 		// Ignore messages originated from Telegram
 		if tp_platform_tag.is_none()
-			|| tp_platform_tag.is_some_and(|tag| tag != TARGET_FOREIGN_PLATFORM_TAG)
+			|| tp_platform_tag.is_some_and(|tag| tag != SupportedTpPlatformTag::Telegram)
 		{
 			// Only forward messages sent after handler initialization
 			if self.subscribed_at.le(&msg.sent_at) {
-				let transmitter = tx.clone();
+				let tx = self.tx.clone();
+				let dto = OutboundTelegramMessage::from_corvidx(corvidx, msg);
 
-				let dto: OutboundTelegramMessage =
-					TelegramMessage::from_corvidx_message(corvidx, msg);
-
-				handle.spawn(async move {
-					let result = transmitter.send(dto).await;
+				self.async_handler.handle().spawn(async move {
+					let result = tx.send(dto).await;
 
 					if let Err(err) = result {
 						eprintln!("Failed to forward message: {err}");

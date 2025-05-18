@@ -2,49 +2,16 @@ use corvidx_client::{
 	common::{
 		ports::{ProfileResolution, RecordResolution},
 		presentation::Displayable,
-		stdb::{
-			AccountProfileMetadata, AccountProfileName, EventContext, MessageAuthorId,
-			NativeAccountLocalRole, TpAccountReference, TpPlatformTag,
-		},
+		stdb::{EventContext, MessageAuthorId, NativeAccountLocalRole},
 	},
 	domain::{entities::tp_platform::SupportedTpPlatformTag, intersections::PlatformAssociation},
 };
-use teloxide_core::types::{ChatId, MessageId, ThreadId, User};
+use teloxide_core::types::{ChatId, MessageId, ThreadId};
 
-use super::OutboundTelegramMessage;
-use crate::integrations::{
-	CorvidxMessage, MessageConverter, ProfileImport, TelegramMessage, TpAccountImport,
-};
+use crate::integrations::{CorvidxMessage, telegram::OutboundTelegramMessage};
 
-impl TpAccountImport for User {
-	fn into_account_reference(&self) -> TpAccountReference {
-		TpAccountReference {
-			id:           self.id.to_string(),
-			platform_tag: TpPlatformTag::Telegram,
-		}
-	}
-}
-
-impl ProfileImport for User {
-	fn into_profile_metadata(&self) -> AccountProfileMetadata {
-		AccountProfileMetadata {
-			name: AccountProfileName {
-				short_name:     self.first_name.clone(),
-				name_extension: self.last_name.clone(),
-			},
-
-			// TODO: Implement bio retrieval
-			bio: "".to_string(),
-		}
-	}
-}
-
-impl MessageConverter<OutboundTelegramMessage> for TelegramMessage {
-	fn into_corvidx_message(self) -> CorvidxMessage {
-		todo!()
-	}
-
-	fn from_corvidx_message(ctx: &EventContext, msg: &CorvidxMessage) -> OutboundTelegramMessage {
+impl OutboundTelegramMessage {
+	pub fn from_corvidx(ctx: &EventContext, msg: &CorvidxMessage) -> Self {
 		let (author_role, author_profile) = match &msg.author_id {
 			| MessageAuthorId::TpAccountId(account_id) => account_id
 				.resolve(ctx)
@@ -82,6 +49,8 @@ impl MessageConverter<OutboundTelegramMessage> for TelegramMessage {
 			// TODO: `chat_id` and `thread_id` must be taken from MessageChannel
 			chat_id:   ChatId(-1001544271932),
 			thread_id: Some(ThreadId(MessageId(3315))),
+			// TODO: must be taken from Message
+			reply_to:  None,
 
 			text: format!(
 				"{}\n\n{}",

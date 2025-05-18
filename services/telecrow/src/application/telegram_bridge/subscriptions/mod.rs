@@ -2,9 +2,9 @@ mod corvidx_message;
 
 use std::sync::Arc;
 
-use crowdcomm_sdk::corvidx::stdb::DbConnection;
+use crowdcomm_sdk::{corvidx::stdb::DbConnection, runtime::AsyncHandler};
 
-use crate::{BotInstanceType, common::runtime::AsyncHandler};
+use crate::BotInstanceType;
 
 /// Aggregates all corvidx subscriptions
 pub fn subscribe(

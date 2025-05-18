@@ -2,20 +2,14 @@ use std::sync::Arc;
 
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, MessageTableAccess},
-	integrations::telegram::OutboundTelegramMessage,
+	integrations::telegram::{OutboundTelegramMessage, TelegramForwarder},
+	runtime::AsyncHandler,
 };
 use spacetimedb_sdk::Table;
-use teloxide::{
-	payloads::SendMessageSetters,
-	prelude::Requester,
-	types::{MessageId, ThreadId},
-};
+use teloxide::{payloads::SendMessageSetters, prelude::Requester};
 use tokio::sync::mpsc;
 
-use crate::{
-	BotInstanceType, application::telegram_bridge::handlers::TelegramForwarder,
-	common::runtime::AsyncHandler,
-};
+use crate::BotInstanceType;
 
 /// Sets up message forwarding from corvidx to Telegram through a Tokio channel.
 pub fn subscribe(
@@ -27,12 +21,15 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(msg) = rx.recv().await {
-			let message_request = bridge.send_message(msg.chat_id, &msg.text);
+			let basic_request = bridge.send_message(msg.chat_id, &msg.text);
 
-			let _ = message_request
-				.message_thread_id(ThreadId(MessageId(3315)))
-				.await
-				.map_err(|err| eprintln!("{:?}", err));
+			let final_request = if let Some(thread_id) = msg.thread_id {
+				basic_request.message_thread_id(thread_id)
+			} else {
+				basic_request
+			};
+
+			let _ = final_request.await.map_err(|err| eprintln!("{:?}", err));
 		}
 	});
 

@@ -24,3 +24,4 @@ spacetimedb-sdk.workspace = true
 strum.workspace = true
 strum_macros.workspace = true
 teloxide-core.workspace = true
+tokio.workspace = true

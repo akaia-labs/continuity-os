@@ -5,7 +5,10 @@ pub mod domain;
 use std::sync::Arc;
 
 use application::general_subscriptions;
-use crowdcomm_sdk::configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig};
+use crowdcomm_sdk::{
+	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
+	runtime::AsyncHandler,
+};
 use dotenvy::dotenv;
 use teloxide::{
 	Bot,
@@ -18,7 +21,7 @@ use teloxide::{
 
 use crate::{
 	application::telegram_bridge,
-	common::{clients::corvidx_client, runtime, runtime::TelecrowError},
+	common::{clients::corvidx_client, runtime::TelecrowError},
 	domain::entities::{telegram_command, telegram_update},
 };
 
@@ -30,7 +33,7 @@ async fn main() -> Result<(), TelecrowError> {
 	dotenv()?;
 
 	let CorvidSubsystemConfig { components, .. } = corvid_subsystem_config::get();
-	let async_handler = runtime::new_async_handler();
+	let async_handler = AsyncHandler::new();
 	let corvidx_connection = Arc::new(corvidx_client::connect());
 
 	let telegram_bridge_bot: BotInstanceType =
