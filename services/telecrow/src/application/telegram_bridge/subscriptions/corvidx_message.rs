@@ -41,5 +41,5 @@ pub fn subscribe(
 	corvidx
 		.db
 		.message()
-		.on_insert(move |ctx, msg| forwarder.handle(ctx, msg));
+		.on_insert(move |ctx, msg| forwarder.handle_message(ctx, msg));
 }

@@ -4,7 +4,7 @@ use capitalize::Capitalize;
 use corvutils::StringExtensions;
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::tables::{
+use super::model::{
 	AccountLinkRequest, AccountLinkRequestExpirySchedule, AccountLinkRequestId,
 	account_link_request,
 };
@@ -12,11 +12,11 @@ use crate::{
 	common::ports::RecordResolution,
 	domain::{
 		entities::{
-			tp_account::{TpAccount, TpAccountReference, tp_account},
 			message::{Message, MessageAuthorId, message},
 			native_account::native_account,
+			tp_account::{TpAccount, TpAccountReference, tp_account},
 		},
-		features::account_linking::tables::account_link_request_schedule,
+		features::account_linking::model::account_link_request_schedule,
 	},
 };
 
@@ -40,6 +40,7 @@ pub fn create_account_link_request(
 
 	let request = ctx.db.account_link_request().insert(AccountLinkRequest {
 		id:                   0,
+		issuer:               ctx.identity(),
 		created_at:           ctx.timestamp,
 		requester_account_id: native_account.id,
 		subject_account_id:   tp_account.id,
@@ -144,15 +145,16 @@ pub fn report_account_link_resolution(
 		..
 	} = request;
 
-	let display_account_reference = subject_account_id
-		.parse::<TpAccountReference>()
-		.map_or(subject_account_id, |far| {
-			format!(
-				"{platform_name} account {fa_id}",
-				platform_name = far.platform_tag.to_string().capitalize(),
-				fa_id = far.id,
-			)
-		});
+	let display_account_reference =
+		subject_account_id
+			.parse::<TpAccountReference>()
+			.map_or(subject_account_id, |far| {
+				format!(
+					"{platform_name} account {fa_id}",
+					platform_name = far.platform_tag.to_string().capitalize(),
+					fa_id = far.id,
+				)
+			});
 
 	// TODO: Send DM instead, once DMs are implemented
 	let result = ctx.db.message().try_insert(Message {

@@ -8,6 +8,7 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 #[sats(crate = __lib)]
 pub struct AccountLinkRequest {
 	pub id:                   i128,
+	pub issuer:               __sdk::Identity,
 	pub created_at:           __sdk::Timestamp,
 	pub expires_at:           __sdk::Timestamp,
 	pub requester_account_id: __sdk::Identity,

@@ -1,5 +1,6 @@
 use teloxide_core::types::{ChatId, MessageId, ThreadId};
 
+#[derive(Debug)]
 pub struct OutboundTelegramMessage {
 	pub chat_id:             ChatId,
 	pub thread_id:           Option<ThreadId>,

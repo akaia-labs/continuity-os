@@ -1,6 +1,6 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::{tables::*, validation::*};
+use super::{model::*, validation::*};
 use crate::{
 	common::ports::RecordResolution, domain::entities::tp_account::TpAccountReference,
 };

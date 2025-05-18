@@ -1,6 +1,6 @@
 use spacetimedb::ReducerContext;
 
-use super::tables::{AccountLinkRequest, AccountLinkRequestId, account_link_request};
+use super::model::{AccountLinkRequest, AccountLinkRequestId, account_link_request};
 use crate::common::ports::RecordResolution;
 
 impl RecordResolution<AccountLinkRequest> for AccountLinkRequestId {

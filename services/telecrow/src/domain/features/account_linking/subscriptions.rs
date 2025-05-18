@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, MessageTableAccess},
+	corvidx::stdb::{AccountLinkRequestTableAccess, DbConnection},
 	integrations::telegram::{OutboundTelegramMessage, TelegramForwarder},
 	runtime::AsyncHandler,
 };
@@ -11,8 +11,6 @@ use tokio::sync::mpsc;
 
 use crate::BotInstanceType;
 
-// TODO: Subscribe to account link requests and forward them to Telegram
-// TODO: with accept / decline buttons
 /// Sets up account link request forwarding from corvidx to Telegram
 /// through a Tokio channel.
 pub fn subscribe(
@@ -24,6 +22,7 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(msg) = rx.recv().await {
+			// TODO: accept / decline buttons
 			let _ = bridge
 				.send_message(msg.chat_id, &msg.text)
 				.await
@@ -36,6 +35,6 @@ pub fn subscribe(
 	// Registering the message handler
 	corvidx
 		.db
-		.message()
-		.on_insert(move |ctx, msg| forwarder.handle(ctx, msg));
+		.account_link_request()
+		.on_insert(move |ctx, msg| forwarder.handle_account_link_request(ctx, msg));
 }

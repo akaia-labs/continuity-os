@@ -19,6 +19,7 @@ impl ProfileResolution for NativeAccount {
 	}
 }
 
+// TODO: Implement try_resolve
 impl RecordResolution<NativeAccount> for NativeAccountId {
 	/// Resolves a native account by ID
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<NativeAccount> {

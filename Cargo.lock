@@ -369,6 +369,7 @@ dependencies = [
 name = "crowdcomm_sdk"
 version = "0.5.0"
 dependencies = [
+ "capitalize",
  "corvidx_client",
  "corvutils",
  "dotenvy",

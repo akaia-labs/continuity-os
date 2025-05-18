@@ -16,6 +16,7 @@ corvutils.workspace = true
 corvidx_client = { path = "../../modules/corvidx/client" }
 
 # External dependencies
+capitalize.workspace = true
 dotenvy.workspace = true
 hex.workspace = true
 serde.workspace = true

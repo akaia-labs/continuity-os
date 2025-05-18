@@ -1,7 +1,7 @@
-use spacetimedb::{ScheduleAt, Timestamp, table};
+use spacetimedb::{Identity, ScheduleAt, Timestamp, table};
 
 use super::reducers::scheduled_delete_account_link_request;
-use crate::domain::entities::{tp_account::TpAccountId, native_account::NativeAccountId};
+use crate::domain::entities::{native_account::NativeAccountId, tp_account::TpAccountId};
 
 pub type AccountLinkRequestId = i128;
 
@@ -13,6 +13,7 @@ pub struct AccountLinkRequest {
 	#[auto_inc]
 	pub id: AccountLinkRequestId,
 
+	pub issuer:               Identity,
 	pub created_at:           Timestamp,
 	pub expires_at:           Timestamp,
 	pub requester_account_id: NativeAccountId,
