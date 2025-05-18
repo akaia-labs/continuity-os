@@ -1,9 +1,9 @@
 use corvutils::ListFormat;
-use teloxide::types::{Chat, ChatKind, PublicChatKind};
+use teloxide_core::types::{Chat, ChatKind, PublicChatKind};
 
-use crate::common::traits::Summarizable;
+use crate::presentation::Summary;
 
-impl Summarizable for Chat {
+impl Summary for Chat {
 	fn summary(&self) -> String {
 		let chat_type = match &self.kind {
 			| ChatKind::Private(_) => "DM",

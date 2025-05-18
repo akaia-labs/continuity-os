@@ -4,10 +4,11 @@ use corvutils::StringExtensions;
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, send_message},
 	integrations::TpAccountImport,
+	presentation::Summary,
 };
 use teloxide::types::Update;
 
-use crate::common::{constants::SERVICE_CANONICAL_NAME, traits::Summarizable};
+use crate::common::constants::SERVICE_CANONICAL_NAME;
 
 pub fn on_unauthorized_use_attempt(corvidx: Arc<DbConnection>, event: Update) {
 	let initiator_specifier = event

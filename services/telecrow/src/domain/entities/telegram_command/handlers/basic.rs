@@ -1,4 +1,5 @@
 use corvutils::ListFormat;
+use crowdcomm_sdk::presentation::Summary;
 use teloxide::{
 	payloads::SendMessageSetters,
 	prelude::{Requester, ResponseResult},
@@ -8,7 +9,7 @@ use teloxide::{
 };
 
 use super::{super::CommandDescriptionsFormat, PrivateCommand};
-use crate::{BotInstanceType, common::traits::Summarizable};
+use crate::BotInstanceType;
 
 #[derive(BotCommands, Clone)]
 #[command(rename_rule = "lowercase")]
