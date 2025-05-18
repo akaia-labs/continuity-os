@@ -1,5 +1,4 @@
-mod corvidx_events;
-mod corvidx_messages;
+mod corvidx_message;
 
 use std::sync::Arc;
 
@@ -11,6 +10,5 @@ use crate::{BotInstanceType, common::runtime::AsyncHandler};
 pub fn subscribe(
 	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
-	corvidx_events::subscribe(&corvidx, async_handler.clone(), telegram_bot.clone());
-	corvidx_messages::subscribe(&corvidx, async_handler.clone(), telegram_bot.clone());
+	corvidx_message::subscribe(&corvidx, async_handler.clone(), telegram_bot.clone());
 }

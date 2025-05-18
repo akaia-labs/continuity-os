@@ -12,18 +12,21 @@ use teloxide::{
 };
 use tokio::sync::mpsc;
 
-use crate::{BotInstanceType, common::runtime::AsyncHandler, domain::entities::corvidx_message};
+use crate::{
+	BotInstanceType, application::telegram_bridge::handlers::TelegramForwarder,
+	common::runtime::AsyncHandler,
+};
 
 /// Sets up message forwarding from corvidx to Telegram through a Tokio channel.
 pub fn subscribe(
 	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
-	let (forward_transmitter, mut forward_receiver) = mpsc::channel::<OutboundTelegramMessage>(100);
+	let (tx, mut rx) = mpsc::channel::<OutboundTelegramMessage>(100);
 	let bridge = telegram_bot.clone();
 
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
-		while let Some(msg) = forward_receiver.recv().await {
+		while let Some(msg) = rx.recv().await {
 			let message_request = bridge.send_message(msg.chat_id, &msg.text);
 
 			let _ = message_request
@@ -33,12 +36,11 @@ pub fn subscribe(
 		}
 	});
 
+	let forwarder = TelegramForwarder::new(tx, async_handler);
+
 	// Registering the message handler
 	corvidx
 		.db
 		.message()
-		.on_insert(corvidx_message::handle_telegram_forward(
-			forward_transmitter,
-			async_handler,
-		));
+		.on_insert(move |ctx, msg| forwarder.handle(ctx, msg));
 }
