@@ -15,7 +15,7 @@ use teloxide::{
 	dispatching::{HandlerExt, UpdateFilterExt},
 	dptree,
 	prelude::{Dispatcher, RequesterExt},
-	types::{CallbackQuery, InlineQuery, Message, ParseMode, Update},
+	types::{CallbackQuery, InlineQuery, ParseMode, Update},
 };
 
 use crate::{
@@ -59,7 +59,7 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(Update::filter_callback_query().endpoint(
 			async |_bot: BotInstanceType, cq: CallbackQuery| {
 				println!(
-					"Received inline query: {}",
+					"Received callback query: {}",
 					cq.data.unwrap_or("".to_string())
 				);
 
