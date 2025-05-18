@@ -26,14 +26,14 @@ pub fn subscribe(
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
 		while let Some(msg) = rx.recv().await {
-			let keyboard = [[
+			let keyboard = InlineKeyboardMarkup::new([[
 				InlineKeyboardButton::callback("✅ Accept".to_string(), "accept".to_string()),
 				InlineKeyboardButton::callback("❌ Reject".to_string(), "reject".to_string()),
-			]];
+			]]);
 
 			let _ = bridge
 				.send_message(msg.chat_id, &msg.text)
-				.reply_markup(InlineKeyboardMarkup::new(keyboard))
+				.reply_markup(keyboard)
 				.await
 				.map_err(|err| eprintln!("{:?}", err));
 		}

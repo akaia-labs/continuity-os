@@ -10,6 +10,7 @@ use corvidx_client::{
 		intersections::PlatformAssociation,
 	},
 };
+use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, MessageId, ThreadId};
 
 use crate::integrations::{CorvidxMessage, telegram::OutboundTelegramMessage};
@@ -112,7 +113,8 @@ impl OutboundTelegramMessage {
 						If you are the not {requester_name}, please reject this request.
 					"#,
 					platform_name = SupportedTpPlatformTag::Telegram.to_string().capitalize()
-				),
+				)
+				.squash_whitespace(),
 			),
 		})
 	}
