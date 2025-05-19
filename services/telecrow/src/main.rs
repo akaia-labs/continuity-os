@@ -49,19 +49,18 @@ async fn main() -> Result<(), TelecrowError> {
 	);
 
 	let telegram_bridge_bot_handler = dptree::entry()
-		.branch(Update::filter_inline_query().endpoint(
-			async |_bot: BotInstanceType, iq: InlineQuery| {
-				println!("Received inline query: {}", iq.query);
+		// .branch(Update::filter_inline_query().endpoint(
+		// 	async |_bot: BotInstanceType, iq: InlineQuery| {
+		// 		println!("Received inline query: {}", iq.query);
 
-				Ok(())
-			},
-		))
+		// 		Ok(())
+		// 	},
+		// ))
 		.branch(Update::filter_callback_query().endpoint(
 			async |_bot: BotInstanceType, cq: CallbackQuery| {
-				println!(
-					"Received callback query: {}",
-					cq.data.unwrap_or("".to_string())
-				);
+				if let Some(data) = &cq.data {
+					println!("Received callback query: {}", data);
+				}
 
 				Ok(())
 			},

@@ -376,6 +376,7 @@ dependencies = [
  "hex",
  "serde",
  "serde-env",
+ "serde_json",
  "spacetimedb-sdk",
  "strum 0.27.1",
  "strum_macros 0.27.1",

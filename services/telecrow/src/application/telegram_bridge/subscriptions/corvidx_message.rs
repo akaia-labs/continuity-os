@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, MessageTableAccess},
-	integrations::telegram::{OutboundTelegramMessage, TelegramForwarder},
+	integrations::{
+		CorvidxEventHandler,
+		telegram::{OutboundTelegramMessage, TelegramMessageForwarder},
+	},
 	runtime::AsyncHandler,
 };
 use spacetimedb_sdk::Table;
@@ -35,11 +38,11 @@ pub fn subscribe(
 		}
 	});
 
-	let forwarder = TelegramForwarder::new(tx, async_handler);
+	let forwarder = TelegramMessageForwarder::new(tx, async_handler);
 
 	// Registering the message handler
 	corvidx
 		.db
 		.message()
-		.on_insert(move |ctx, msg| forwarder.handle_message(ctx, msg));
+		.on_insert(move |ctx, msg| forwarder.handle(ctx, msg));
 }
