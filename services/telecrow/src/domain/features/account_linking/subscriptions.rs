@@ -4,16 +4,12 @@ use crowdcomm_sdk::{
 	corvidx::stdb::{AccountLinkRequestTableAccess, DbConnection},
 	integrations::{
 		CorvidxEventHandler,
-		telegram::{OutboundTelegramMessage, TelegramActionRequestForwarder},
+		telegram::{OutboundTelegramActionRequest, TelegramActionRequestForwarder},
 	},
 	runtime::AsyncHandler,
 };
 use spacetimedb_sdk::Table;
-use teloxide::{
-	payloads::SendMessageSetters,
-	prelude::Requester,
-	types::{InlineKeyboardButton, InlineKeyboardMarkup},
-};
+use teloxide::{payloads::SendMessageSetters, prelude::Requester};
 use tokio::sync::mpsc;
 
 use crate::BotInstanceType;
@@ -23,20 +19,15 @@ use crate::BotInstanceType;
 pub fn subscribe(
 	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
-	let (tx, mut rx) = mpsc::channel::<OutboundTelegramMessage>(100);
+	let (tx, mut rx) = mpsc::channel::<OutboundTelegramActionRequest>(100);
 	let bridge = telegram_bot.clone();
 
 	// Spawning a background task that processes messages from the channel
 	async_handler.handle().spawn(async move {
-		while let Some(msg) = rx.recv().await {
-			let keyboard = InlineKeyboardMarkup::new([[
-				InlineKeyboardButton::callback("✅ Accept".to_string(), "accept".to_string()),
-				InlineKeyboardButton::callback("❎ Reject".to_string(), "reject".to_string()),
-			]]);
-
+		while let Some(req) = rx.recv().await {
 			let _ = bridge
-				.send_message(msg.chat_id, &msg.text)
-				.reply_markup(keyboard)
+				.send_message(req.chat_id, &req.text)
+				.reply_markup(req.reply_markup)
 				.await
 				.map_err(|err| eprintln!("{:?}", err));
 		}

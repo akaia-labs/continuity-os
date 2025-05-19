@@ -1,3 +1,4 @@
+mod action_request;
 mod dtos;
 mod message;
 

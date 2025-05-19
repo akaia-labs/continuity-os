@@ -5,14 +5,14 @@ use crate::corvidx::account_linking::AccountLinkRequestId;
 
 #[derive(Display, Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "id")]
-pub enum AccountLinkRequestResolution {
+pub enum AccountLinkRequestCallback {
 	#[serde(rename = "accept_account_link_request")]
 	Accept(AccountLinkRequestId),
 	#[serde(rename = "reject_account_link_request")]
 	Reject(AccountLinkRequestId),
 }
 
-impl AccountLinkRequestResolution {
+impl AccountLinkRequestCallback {
 	pub fn try_to_json(&self) -> Result<String, String> {
 		serde_json::to_string(self).map_err(|e| {
 			format!("Failed to serialize resolution command for account link request {self}: {e}")
