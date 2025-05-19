@@ -33,7 +33,7 @@ impl TelegramMessageForwarder {
 }
 
 impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
-	fn handle(&self, corvidx: &EventContext, msg: &Message) {
+	fn handle(&self, ctx: &EventContext, msg: &Message) {
 		let tp_platform_tag = match &msg.author_id {
 			| MessageAuthorId::TpAccountId(account_id) => TpAccountReference::from_str(&account_id)
 				.map_or(None, |far| Some(far.platform_tag.into_supported())),
@@ -48,7 +48,7 @@ impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
 			// Only forward messages sent after forwarder initialization
 			if self.initialized_at.le(&msg.sent_at) {
 				let tx = self.tx.clone();
-				let dto = OutboundTelegramMessage::from_native(corvidx, msg);
+				let dto = OutboundTelegramMessage::from_native(ctx, msg);
 
 				self.async_handler.handle().spawn(async move {
 					let result = tx.send(dto).await;

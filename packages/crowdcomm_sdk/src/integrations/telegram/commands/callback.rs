@@ -13,6 +13,13 @@ pub enum AccountLinkRequestCallback {
 }
 
 impl AccountLinkRequestCallback {
+	pub fn label(&self) -> String {
+		match self {
+			| AccountLinkRequestCallback::Accept(_) => "✅ Accept".to_string(),
+			| AccountLinkRequestCallback::Reject(_) => "❎ Reject".to_string(),
+		}
+	}
+
 	pub fn try_to_json(&self) -> Result<String, String> {
 		serde_json::to_string(self).map_err(|e| {
 			format!("Failed to serialize resolution command for account link request {self}: {e}")

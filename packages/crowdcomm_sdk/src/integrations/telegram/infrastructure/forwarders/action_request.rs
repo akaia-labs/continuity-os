@@ -34,12 +34,12 @@ impl TelegramActionRequestForwarder {
 }
 
 impl CorvidxEventHandler<AccountLinkRequest> for TelegramActionRequestForwarder {
-	fn handle(&self, corvidx: &EventContext, alr: &AccountLinkRequest) {
+	fn handle(&self, ctx: &EventContext, alr: &AccountLinkRequest) {
 		let platform_tag = TpAccountReference::from_str(&alr.subject_account_id)
 			.map_or(None, |tpar| Some(tpar.platform_tag.into_supported()));
 
 		if platform_tag.is_some_and(|tag| tag == SupportedTpPlatformTag::Telegram) {
-			let dto_result = OutboundTelegramActionRequest::from_account_link_request(corvidx, alr);
+			let dto_result = OutboundTelegramActionRequest::from_account_link_request(ctx, alr);
 
 			if let Ok(dto) = dto_result {
 				let tx = self.tx.clone();

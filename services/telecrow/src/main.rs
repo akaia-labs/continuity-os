@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
+	integrations::telegram::AccountLinkRequestCallback,
 	runtime::AsyncHandler,
 };
 use dotenvy::dotenv;
@@ -59,7 +60,7 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(Update::filter_callback_query().endpoint(
 			async |_bot: BotInstanceType, cq: CallbackQuery| {
 				if let Some(data) = &cq.data {
-					println!("Received callback query: {}", data);
+					println!("Received callback query: {:?}", AccountLinkRequestCallback::try_from_str(data));
 				}
 
 				Ok(())

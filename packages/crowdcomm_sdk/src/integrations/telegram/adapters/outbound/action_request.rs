@@ -11,6 +11,7 @@ use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
+use crate::integrations::telegram::AccountLinkRequestCallback;
 
 impl OutboundTelegramActionRequest {
 	pub fn from_account_link_request(
@@ -48,6 +49,8 @@ impl OutboundTelegramActionRequest {
 
 		let issuer_name = issuer_account.display_name(ctx);
 		let requester_name = requester_account.display_name(ctx);
+		let accept_callback = AccountLinkRequestCallback::Accept(alr.id);
+		let reject_callback = AccountLinkRequestCallback::Reject(alr.id);
 
 		Ok(OutboundTelegramActionRequest {
 			chat_id:             subject_user_id,
@@ -71,8 +74,14 @@ impl OutboundTelegramActionRequest {
 			),
 
 			reply_markup: InlineKeyboardMarkup::new([[
-				InlineKeyboardButton::callback("✅ Accept".to_string(), "accept".to_string()),
-				InlineKeyboardButton::callback("❎ Reject".to_string(), "reject".to_string()),
+				InlineKeyboardButton::callback(
+					accept_callback.label(),
+					accept_callback.try_to_json()?,
+				),
+				InlineKeyboardButton::callback(
+					reject_callback.label(),
+					reject_callback.try_to_json()?,
+				),
 			]]),
 		})
 	}
