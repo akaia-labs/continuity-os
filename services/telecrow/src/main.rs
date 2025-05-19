@@ -16,7 +16,7 @@ use teloxide::{
 	dispatching::{HandlerExt, UpdateFilterExt},
 	dptree,
 	prelude::{Dispatcher, RequesterExt},
-	types::{CallbackQuery, InlineQuery, ParseMode, Update},
+	types::{CallbackQuery, ParseMode, Update},
 };
 
 use crate::{
@@ -35,16 +35,16 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let CorvidSubsystemConfig { components, .. } = corvid_subsystem_config::get();
 	let async_handler = AsyncHandler::new();
-	let corvidx_connection = Arc::new(corvidx_client::connect());
+	let corvidx_conn = Arc::new(corvidx_client::connect());
 
 	let telegram_bridge_bot: BotInstanceType =
 		Bot::new(components.telecrow.auth_token).parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
-	general_subscriptions::init(&corvidx_connection);
+	general_subscriptions::init(&corvidx_conn);
 
 	telegram_bridge::subscribe(
-		&corvidx_connection,
+		&corvidx_conn,
 		async_handler.clone(),
 		telegram_bridge_bot.clone(),
 	);
@@ -59,8 +59,14 @@ async fn main() -> Result<(), TelecrowError> {
 		// ))
 		.branch(Update::filter_callback_query().endpoint(
 			async |_bot: BotInstanceType, cq: CallbackQuery| {
-				if let Some(data) = &cq.data {
-					println!("Received callback query: {:?}", AccountLinkRequestCallback::try_from_str(data));
+				let payload = cq.data.map(
+					|d| AccountLinkRequestCallback::try_from_str(d.as_str()).ok()
+				).flatten();
+
+				if let Some(data) = payload {
+					println!("Received callback query: {:?}", data);
+
+					// bot.answer_callback_query(&q.id).await?;
 				}
 
 				Ok(())
@@ -75,20 +81,20 @@ async fn main() -> Result<(), TelecrowError> {
 			Update::filter_message()
 				.filter_command::<telegram_command::PrivateCommand>()
 				.endpoint(telegram_command::private_handler(
-					corvidx_connection.clone(),
+					corvidx_conn.clone(),
 				)),
 		)
 		.branch(
 			dptree::entry()
 				.filter_map(|update: Update| update.from().cloned())
 				.endpoint(telegram_update::root_handler(
-					corvidx_connection.clone(),
+					corvidx_conn.clone(),
 					components.telecrow.delegated_authority_space_id,
 				)),
 		);
 
 	println!("\n⏳ Initializing module clients...\n");
-	corvidx_connection.run_threaded();
+	corvidx_conn.run_threaded();
 
 	println!("⌛ Starting Telegram bridge bot dispatcher...\n");
 	Dispatcher::builder(telegram_bridge_bot, telegram_bridge_bot_handler)
