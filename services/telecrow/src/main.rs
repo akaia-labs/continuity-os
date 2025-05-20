@@ -18,7 +18,7 @@ use teloxide::{
 	types::{ParseMode, Update},
 };
 
-use crate::{common::clients::corvidx_client, domain::entities::telegram_command};
+use crate::{common::clients::corvidx_client, domain::entities::command};
 
 pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 pub type BotInstanceType = DefaultParseMode<Bot>;
@@ -51,13 +51,13 @@ async fn main() -> Result<(), TelecrowError> {
 		)
 		.branch(
 			Update::filter_message()
-				.filter_command::<telegram_command::BasicCommand>()
-				.endpoint(telegram_command::on_basic_command),
+				.filter_command::<command::BasicCommand>()
+				.endpoint(command::on_basic_command),
 		)
 		.branch(
 			Update::filter_message()
-				.filter_command::<telegram_command::PrivateCommand>()
-				.endpoint(telegram_command::private_handler(corvidx_conn.clone())),
+				.filter_command::<command::PrivateCommand>()
+				.endpoint(command::private_handler(corvidx_conn.clone())),
 		)
 		.branch(
 			dptree::entry()
