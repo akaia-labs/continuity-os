@@ -9,8 +9,8 @@ setup:
 
 corvidx-generate:
     spacetime generate --lang rust \
-    	--project-path modules/corvidx/server \
-    	--out-dir modules/corvidx/client/src/common/stdb/generated_bindings
+    	--project-path core/stdb_modules/corvidx/server \
+    	--out-dir core/stdb_modules/corvidx/client/src/common/stdb/generated_bindings
 
 generate: corvidx-generate
     (echo "✅ DONE.")
@@ -28,10 +28,10 @@ jayterm-dev:
 #* TESTS
 
 corvutils-test:
-    (cd libraries/corvutils && cargo test)
+    (cd packages/corvutils && cargo test)
 
 corvutils-test-dbg:
-    (cd libraries/corvutils && cargo test -- --show-output)
+    (cd packages/corvutils && cargo test -- --show-output)
 
 
 #* DATABASE ADMINISTRATION
@@ -41,7 +41,7 @@ unsafe-local-corvidx-drop:
     (echo "✅ DONE.")
 
 local-corvidx-publish:
-    (spacetime publish -s localhost --project-path modules/corvidx/server corvidx)
+    (spacetime publish -s localhost --project-path core/stdb_modules/corvidx/server corvidx)
 
 local-corvidx-call:
     (spacetime call -s localhost corvidx)

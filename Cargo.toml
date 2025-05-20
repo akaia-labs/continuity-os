@@ -2,8 +2,7 @@
 resolver = "3"
 
 members = [
-	"libraries/*",
-	"modules/corvidx/*",
+	"core/stdb_modules/corvidx/*",
 	"packages/*",
 	"subsystem/corvi.d/services/*",
 	"userspace/apps/*",
@@ -36,7 +35,7 @@ overflow-checks = true
 
 [workspace.dependencies]
 # Internal dependencies
-corvutils = { path = "libraries/corvutils" }
+corvutils = { path = "packages/corvutils" }
 crowdcomm_sdk = { path = "packages/crowdcomm_sdk" }
 
 # External dependencies
