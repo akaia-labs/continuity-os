@@ -144,7 +144,7 @@ pub enum Reducer {
 		is_approved: bool,
 	},
 	ResolveAccountLinkRequest {
-		request_id:  i128,
+		request_id:  u64,
 		is_approved: bool,
 	},
 	ScheduledDeleteAccountLinkRequest {

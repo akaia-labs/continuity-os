@@ -6,7 +6,11 @@ use std::sync::Arc;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
-	integrations::dtos::{ActionDescriptor, ActionResolutionCommand},
+	corvidx::stdb::AccountLinkRequestTableAccess,
+	integrations::{
+		commands::AlrActionResolution,
+		dtos::{ActionDescriptor, ActionKind, ActionResolutionCommand},
+	},
 	runtime::AsyncHandler,
 };
 use dotenvy::dotenv;
@@ -59,15 +63,37 @@ async fn main() -> Result<(), TelecrowError> {
 		// ))
 		.branch(Update::filter_callback_query().endpoint(
 			async |_bot: BotInstanceType, cq: CallbackQuery| {
-				let payload = cq.data.map(
+				let action_descriptor = cq.data.as_ref().map(
 					|d| ActionDescriptor::try_from_str(d.as_str()).ok()
 				).flatten();
 
-				if let Some(data) = payload {
-					println!("Received callback query: {:?}", data);
+				if let Some(ActionDescriptor { kind: action_kind }) = action_descriptor {
+					match action_kind {
+						ActionKind::AccountLinkRequest => {
+							if let Some(payload) = cq.data {
+								let alr_response: Result<ActionResolutionCommand<AlrActionResolution>, String> =
+									ActionResolutionCommand::try_from_str(payload.as_str());
 
-					// bot.answer_callback_query(&q.id).await?;
+								if let Ok(alr_response) = alr_response {
+									match alr_response.resolution {
+										AlrActionResolution::Accept(id) => {
+											// let alr = corvidx_conn.db.account_link_request().id().find(&id)
+											// 	.ok_or(format!("Account link request {id} does not exist."));
+
+											println!("Account link request {id} has been accepted.");
+										},
+
+										AlrActionResolution::Reject(id) => {
+											println!("Account link request {id} has been rejected.");
+										},
+									}
+								}
+							}
+						}
+					}
 				}
+
+				// bot.answer_callback_query(&q.id).await?;
 
 				Ok(())
 			},

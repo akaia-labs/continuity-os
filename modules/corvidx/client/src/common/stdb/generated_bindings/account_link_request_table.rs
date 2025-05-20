@@ -83,7 +83,7 @@ impl<'ctx> __sdk::Table for AccountLinkRequestTableHandle<'ctx> {
 #[doc(hidden)]
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
 	let _table = client_cache.get_or_make_table::<AccountLinkRequest>("account_link_request");
-	_table.add_unique_constraint::<i128>("id", |row| &row.id);
+	_table.add_unique_constraint::<u64>("id", |row| &row.id);
 }
 pub struct AccountLinkRequestUpdateCallbackId(__sdk::CallbackId);
 
@@ -120,7 +120,7 @@ pub(super) fn parse_table_update(
 /// but to directly chain method calls,
 /// like `ctx.db.account_link_request().id().find(...)`.
 pub struct AccountLinkRequestIdUnique<'ctx> {
-	imp:     __sdk::UniqueConstraintHandle<AccountLinkRequest, i128>,
+	imp:     __sdk::UniqueConstraintHandle<AccountLinkRequest, u64>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -129,7 +129,7 @@ impl<'ctx> AccountLinkRequestTableHandle<'ctx> {
 	/// `account_link_request`.
 	pub fn id(&self) -> AccountLinkRequestIdUnique<'ctx> {
 		AccountLinkRequestIdUnique {
-			imp:     self.imp.get_unique_constraint::<i128>("id"),
+			imp:     self.imp.get_unique_constraint::<u64>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}
@@ -138,7 +138,7 @@ impl<'ctx> AccountLinkRequestTableHandle<'ctx> {
 impl<'ctx> AccountLinkRequestIdUnique<'ctx> {
 	/// Find the subscribed row whose `id` column value is equal to `col_val`,
 	/// if such a row is present in the client cache.
-	pub fn find(&self, col_val: &i128) -> Option<AccountLinkRequest> {
+	pub fn find(&self, col_val: &u64) -> Option<AccountLinkRequest> {
 		self.imp.find(col_val)
 	}
 }

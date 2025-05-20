@@ -1,1 +1,1 @@
-pub type AccountLinkRequestId = i128;
+pub type AccountLinkRequestId = u64;

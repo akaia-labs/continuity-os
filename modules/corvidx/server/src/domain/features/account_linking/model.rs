@@ -3,7 +3,7 @@ use spacetimedb::{Identity, ScheduleAt, Timestamp, table};
 use super::reducers::scheduled_delete_account_link_request;
 use crate::domain::entities::{native_account::NativeAccountId, tp_account::TpAccountId};
 
-pub type AccountLinkRequestId = i128;
+pub type AccountLinkRequestId = u64;
 
 #[table(name = account_link_request, public)]
 /// Represents a pending link request
