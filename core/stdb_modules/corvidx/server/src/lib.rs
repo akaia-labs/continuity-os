@@ -1,3 +1,3 @@
-mod application;
+mod app;
 mod common;
 mod domain;

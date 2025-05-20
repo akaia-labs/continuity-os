@@ -22,7 +22,7 @@ telecrow-inspect:
     (cd subsystem/corvi.d/services/telecrow && RUST_LOG=trace cargo run)
 
 jayterm-dev:
-    (cd userspace/apps/jayterm && cargo run)
+    (cd applications/jayterm && cargo run)
 
 
 #* TESTS
