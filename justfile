@@ -16,10 +16,10 @@ generate: corvidx-generate
     (echo "✅ DONE.")
 
 telecrow-dev:
-    (cd services/telecrow && cargo run)
+    (cd subsystem/corvi.d/services/telecrow && cargo run)
 
 telecrow-inspect:
-    (cd services/telecrow && RUST_LOG=trace cargo run)
+    (cd subsystem/corvi.d/services/telecrow && RUST_LOG=trace cargo run)
 
 jayterm-dev:
     (cd userspace/apps/jayterm && cargo run)

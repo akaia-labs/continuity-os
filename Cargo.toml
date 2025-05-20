@@ -5,7 +5,7 @@ members = [
 	"libraries/*",
 	"modules/corvidx/*",
 	"packages/*",
-	"services/*",
+	"subsystem/corvi.d/services/*",
 	"userspace/apps/*",
 ]
 
