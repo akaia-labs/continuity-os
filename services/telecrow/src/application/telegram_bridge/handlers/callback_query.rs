@@ -8,7 +8,7 @@ use crowdcomm_sdk::{
 		dtos::{ActionDescriptor, ActionKind, ActionResolutionCommand},
 	},
 };
-use teloxide::{RequestError, respond, types::CallbackQuery};
+use teloxide::{RequestError, prelude::Requester, respond, types::CallbackQuery};
 
 use crate::BotInstanceType;
 
@@ -18,7 +18,7 @@ pub fn root_handler(
 	BotInstanceType,
 	CallbackQuery,
 ) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
-	move |_bot: BotInstanceType, callback_query: CallbackQuery| {
+	move |bot: BotInstanceType, callback_query: CallbackQuery| {
 		let ctx = ctx.clone();
 
 		let action_descriptor = callback_query
@@ -56,8 +56,10 @@ pub fn root_handler(
 			}
 		}
 
-		// bot.answer_callback_query(&q.id).await?;
+		Box::pin(async move {
+			bot.answer_callback_query(&callback_query.id).await?;
 
-		Box::pin(async move { respond(()) })
+			respond(())
+		})
 	}
 }
