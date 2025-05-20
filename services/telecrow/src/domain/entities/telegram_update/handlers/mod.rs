@@ -15,11 +15,11 @@ use self::{event::on_unauthorized_use_attempt, message::on_message, user::on_use
 use crate::BotInstanceType;
 
 pub fn root_handler(
-	corvidx: Arc<DbConnection>, delegated_authority_groupchat_id: String,
+	ctx: Arc<DbConnection>, delegated_authority_groupchat_id: String,
 ) -> impl Fn(Update, BotInstanceType) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
 {
 	move |update: Update, _bot: BotInstanceType| {
-		let ctx = corvidx.clone();
+		let ctx = ctx.clone();
 
 		let is_origin_authorized = update
 			.chat()

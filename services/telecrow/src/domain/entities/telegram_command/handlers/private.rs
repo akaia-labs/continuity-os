@@ -21,14 +21,14 @@ pub enum PrivateCommand {
 }
 
 pub fn private_handler(
-	corvidx: Arc<DbConnection>,
+	ctx: Arc<DbConnection>,
 ) -> impl Fn(
 	BotInstanceType,
 	Message,
 	PrivateCommand,
 ) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
 	move |bot: BotInstanceType, msg: Message, cmd: PrivateCommand| {
-		let ctx = corvidx.clone();
+		let ctx = ctx.clone();
 		let user = msg.from;
 
 		Box::pin(async move {

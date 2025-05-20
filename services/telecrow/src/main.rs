@@ -6,11 +6,6 @@ use std::sync::Arc;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
-	corvidx::stdb::AccountLinkRequestTableAccess,
-	integrations::{
-		commands::AlrActionResolution,
-		dtos::{ActionDescriptor, ActionKind, ActionResolutionCommand},
-	},
 	runtime::AsyncHandler,
 };
 use dotenvy::dotenv;
@@ -20,7 +15,7 @@ use teloxide::{
 	dispatching::{HandlerExt, UpdateFilterExt},
 	dptree,
 	prelude::{Dispatcher, RequesterExt},
-	types::{CallbackQuery, ParseMode, Update},
+	types::{ParseMode, Update},
 };
 
 use crate::{
@@ -54,49 +49,8 @@ async fn main() -> Result<(), TelecrowError> {
 	);
 
 	let telegram_bridge_bot_handler = dptree::entry()
-		// .branch(Update::filter_inline_query().endpoint(
-		// 	async |_bot: BotInstanceType, iq: InlineQuery| {
-		// 		println!("Received inline query: {}", iq.query);
-
-		// 		Ok(())
-		// 	},
-		// ))
 		.branch(Update::filter_callback_query().endpoint(
-			async |_bot: BotInstanceType, cq: CallbackQuery| {
-				let action_descriptor = cq.data.as_ref().map(
-					|d| ActionDescriptor::try_from_str(d.as_str()).ok()
-				).flatten();
-
-				if let Some(ActionDescriptor { kind: action_kind }) = action_descriptor {
-					match action_kind {
-						ActionKind::AccountLinkRequest => {
-							if let Some(payload) = cq.data {
-								let alr_response: Result<ActionResolutionCommand<AlrActionResolution>, String> =
-									ActionResolutionCommand::try_from_str(payload.as_str());
-
-								if let Ok(alr_response) = alr_response {
-									match alr_response.resolution {
-										AlrActionResolution::Accept(id) => {
-											// let alr = corvidx_conn.db.account_link_request().id().find(&id)
-											// 	.ok_or(format!("Account link request {id} does not exist."));
-
-											println!("Account link request {id} has been accepted.");
-										},
-
-										AlrActionResolution::Reject(id) => {
-											println!("Account link request {id} has been rejected.");
-										},
-									}
-								}
-							}
-						}
-					}
-				}
-
-				// bot.answer_callback_query(&q.id).await?;
-
-				Ok(())
-			},
+			telegram_bridge::callback_query::root_handler(corvidx_conn.clone()),
 		))
 		.branch(
 			Update::filter_message()
@@ -106,9 +60,7 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(
 			Update::filter_message()
 				.filter_command::<telegram_command::PrivateCommand>()
-				.endpoint(telegram_command::private_handler(
-					corvidx_conn.clone(),
-				)),
+				.endpoint(telegram_command::private_handler(corvidx_conn.clone())),
 		)
 		.branch(
 			dptree::entry()
