@@ -10,7 +10,7 @@ use teloxide::types::Update;
 
 use crate::common::constants::SERVICE_CANONICAL_NAME;
 
-pub fn on_unauthorized_use_attempt(corvidx: Arc<DbConnection>, event: Update) {
+pub fn handle_unauthorized_use_attempt(corvidx: Arc<DbConnection>, event: Update) {
 	let initiator_specifier = event
 		.from()
 		.map(|user| user.into_account_reference().to_string())

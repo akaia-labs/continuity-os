@@ -6,7 +6,7 @@ use crowdcomm_sdk::{
 };
 use teloxide::types::Message;
 
-pub fn on_message(corvidx: Arc<DbConnection>, msg: Message) {
+pub fn handle_telegram_message(corvidx: Arc<DbConnection>, msg: Message) {
 	if let Some(text) = msg.text() {
 		let _result = if let Some(author) = &msg.from {
 			corvidx

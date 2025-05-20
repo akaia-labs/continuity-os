@@ -33,7 +33,7 @@ pub fn connect() -> DbConnection {
 }
 
 /// Registers subscriptions to tables.
-pub fn subscribe(corvidx: &DbConnection) {
+pub fn subscribe_to_tables(corvidx: &DbConnection) {
 	corvidx
 		.subscription_builder()
 		.on_applied(handlers::on_sub_applied)

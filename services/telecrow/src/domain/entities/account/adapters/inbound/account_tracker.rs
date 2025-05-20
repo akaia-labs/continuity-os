@@ -13,7 +13,7 @@ use crowdcomm_sdk::{
 };
 use teloxide::types::User;
 
-pub fn on_user_update(
+pub fn handle_telegram_user_update(
 	corvidx: Arc<DbConnection>, user_data: User, on_success: fn(msg: String),
 	on_error: fn(msg: String),
 ) {

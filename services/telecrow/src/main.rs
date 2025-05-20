@@ -18,10 +18,7 @@ use teloxide::{
 	types::{ParseMode, Update},
 };
 
-use crate::{
-	common::clients::corvidx_client,
-	domain::entities::{telegram_command, telegram_update},
-};
+use crate::{common::clients::corvidx_client, domain::entities::telegram_command};
 
 pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 pub type BotInstanceType = DefaultParseMode<Bot>;
@@ -65,7 +62,7 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(
 			dptree::entry()
 				.filter_map(|update: Update| update.from().cloned())
-				.endpoint(telegram_update::root_handler(
+				.endpoint(app::telegram_update_handler(
 					corvidx_conn.clone(),
 					components.telecrow.delegated_authority_space_id,
 				)),

@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, MessageTableAccess, ReducerEventContext, send_message},
+	corvidx::stdb::{DbConnection, MessageTableAccess},
 	integrations::{
 		ports::CorvidxEventHandler,
 		telegram::{OutboundTelegramMessage, TelegramMessageForwarder},
 	},
 	runtime::AsyncHandler,
 };
-use spacetimedb_sdk::{Status, Table};
+use spacetimedb_sdk::Table;
 use teloxide::{payloads::SendMessageSetters, prelude::Requester, sugar::request::RequestReplyExt};
 use tokio::sync::mpsc;
 
@@ -44,15 +44,4 @@ pub fn forward_to_telegram(
 	ctx.db
 		.message()
 		.on_insert(move |ctx, msg| forwarder.handle(ctx, msg));
-}
-
-pub fn inspect(ctx: &DbConnection) {
-	ctx.reducers.on_send_message(on_message_sent);
-}
-
-/// Prints a warning if the reducer failed.
-fn on_message_sent(ctx: &ReducerEventContext, text: &String) {
-	if let Status::Failed(err) = &ctx.event.status {
-		eprintln!("Failed to send message {:?}: {}", text, err);
-	}
 }

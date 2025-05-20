@@ -1,24 +1,24 @@
-mod event;
-mod message;
-mod user;
-
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use corvutils::{print_error, print_success};
-use crowdcomm_sdk::corvidx::stdb::DbConnection;
-use teloxide::{
-	RequestError, respond,
-	types::{Update, UpdateKind},
+use crowdcomm_sdk::{corvidx::stdb::DbConnection, integrations::ports::TelegramUpdate};
+use teloxide::{RequestError, respond, types::UpdateKind};
+
+use crate::{
+	BotInstanceType,
+	domain::{
+		entities::{account::handle_telegram_user_update, message::handle_telegram_message},
+		features::access_control::handle_unauthorized_use_attempt,
+	},
 };
 
-use self::{event::on_unauthorized_use_attempt, message::on_message, user::on_user_update};
-use crate::BotInstanceType;
-
-pub fn root_handler(
+pub fn telegram_update_handler(
 	ctx: Arc<DbConnection>, delegated_authority_groupchat_id: String,
-) -> impl Fn(Update, BotInstanceType) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>>
-{
-	move |update: Update, _bot: BotInstanceType| {
+) -> impl Fn(
+	TelegramUpdate,
+	BotInstanceType,
+) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
+	move |update: TelegramUpdate, _bot: BotInstanceType| {
 		let ctx = ctx.clone();
 
 		let is_origin_authorized = update
@@ -34,7 +34,7 @@ pub fn root_handler(
 
 		if !is_origin_authorized {
 			return Box::pin(async move {
-				on_unauthorized_use_attempt(ctx.clone(), update);
+				handle_unauthorized_use_attempt(ctx.clone(), update);
 				respond(())
 			});
 		}
@@ -47,10 +47,10 @@ pub fn root_handler(
 			Box::pin(async move {
 				// ! CRITICAL:
 				// TODO!: Only handle user updates emitted after bot's initialization
-				on_user_update(ctx.clone(), user_data, print_success, print_error);
+				handle_telegram_user_update(ctx.clone(), user_data, print_success, print_error);
 
 				match update.kind {
-					| UpdateKind::Message(msg) => on_message(ctx.clone(), msg),
+					| UpdateKind::Message(msg) => handle_telegram_message(ctx.clone(), msg),
 					| _ => {},
 				}
 

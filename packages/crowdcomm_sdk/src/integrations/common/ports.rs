@@ -1,5 +1,5 @@
 use corvidx_client::common::stdb::{AccountProfileMetadata, EventContext, TpAccountReference};
-pub use teloxide_core::types::Message as TelegramMessage;
+pub use teloxide_core::types::{Message as TelegramMessage, Update as TelegramUpdate};
 
 pub use crate::corvidx::stdb::Message as CorvidxMessage;
 

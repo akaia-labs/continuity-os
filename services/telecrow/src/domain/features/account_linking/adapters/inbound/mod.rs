@@ -1,3 +1,3 @@
-mod callback_query;
+mod request_callback;
 
-pub use callback_query::*;
+pub use request_callback::*;
