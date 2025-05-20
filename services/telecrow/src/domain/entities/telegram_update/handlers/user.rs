@@ -9,7 +9,7 @@ use crowdcomm_sdk::{
 			update_tp_account_callsign, update_tp_account_profile,
 		},
 	},
-	integrations::{ProfileImport, TpAccountImport},
+	integrations::ports::{ProfileImport, TpAccountImport},
 };
 use teloxide::types::User;
 

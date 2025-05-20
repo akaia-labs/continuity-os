@@ -3,7 +3,7 @@ use std::sync::Arc;
 use corvutils::StringExtensions;
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, send_message},
-	integrations::TpAccountImport,
+	integrations::ports::TpAccountImport,
 	presentation::Summary,
 };
 use teloxide::types::Update;

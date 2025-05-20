@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, MessageTableAccess},
 	integrations::{
-		CorvidxEventHandler,
+		ports::CorvidxEventHandler,
 		telegram::{OutboundTelegramMessage, TelegramMessageForwarder},
 	},
 	runtime::AsyncHandler,
