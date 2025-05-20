@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
-	integrations::ports::AccountLinkRequestCallback,
+	integrations::dtos::ActionResolutionCommand,
 	runtime::AsyncHandler,
 };
 use dotenvy::dotenv;
@@ -60,7 +60,7 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(Update::filter_callback_query().endpoint(
 			async |_bot: BotInstanceType, cq: CallbackQuery| {
 				let payload = cq.data.map(
-					|d| AccountLinkRequestCallback::try_from_str(d.as_str()).ok()
+					|d| ActionResolutionCommand::try_from_str(d.as_str()).ok()
 				).flatten();
 
 				if let Some(data) = payload {

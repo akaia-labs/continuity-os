@@ -1,3 +1,3 @@
-mod action_request;
+mod action_resolution;
 
-pub use action_request::*;
+pub use action_resolution::*;

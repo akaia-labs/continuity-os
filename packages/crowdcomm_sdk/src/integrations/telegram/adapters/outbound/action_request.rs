@@ -11,7 +11,10 @@ use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
-use crate::integrations::common::commands::AccountLinkRequestCallback;
+use crate::integrations::{
+	commands::ActionRequestResolution,
+	dtos::{ActionKind, ActionResolutionCommand},
+};
 
 impl OutboundTelegramActionRequest {
 	pub fn from_account_link_request(
@@ -49,8 +52,8 @@ impl OutboundTelegramActionRequest {
 
 		let issuer_name = issuer_account.display_name(ctx);
 		let requester_name = requester_account.display_name(ctx);
-		let accept_callback = AccountLinkRequestCallback::Accept(alr.id);
-		let reject_callback = AccountLinkRequestCallback::Reject(alr.id);
+		let accept_choice = ActionRequestResolution::Accept(alr.id);
+		let reject_choice = ActionRequestResolution::Reject(alr.id);
 
 		Ok(OutboundTelegramActionRequest {
 			chat_id:             subject_user_id,
@@ -75,12 +78,20 @@ impl OutboundTelegramActionRequest {
 
 			reply_markup: InlineKeyboardMarkup::new([[
 				InlineKeyboardButton::callback(
-					accept_callback.label(),
-					accept_callback.try_to_json()?,
+					accept_choice.label(),
+					ActionResolutionCommand {
+						kind:       ActionKind::AccountLinkRequest,
+						resolution: accept_choice,
+					}
+					.try_to_string()?,
 				),
 				InlineKeyboardButton::callback(
-					reject_callback.label(),
-					reject_callback.try_to_json()?,
+					reject_choice.label(),
+					ActionResolutionCommand {
+						kind:       ActionKind::AccountLinkRequest,
+						resolution: reject_choice,
+					}
+					.try_to_string()?,
 				),
 			]]),
 		})

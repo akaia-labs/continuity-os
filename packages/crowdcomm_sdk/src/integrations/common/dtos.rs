@@ -7,34 +7,32 @@ pub enum ActionKind {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ActionResolutionPayload<TCallbackCommand> {
-	pub kind:     ActionKind,
-	pub callback: TCallbackCommand,
+pub struct ActionResolutionCommand<TResolutionCommand> {
+	pub kind:       ActionKind,
+	pub resolution: TResolutionCommand,
 }
 
-impl<TCallbackCommand> ActionResolutionPayload<TCallbackCommand>
-where TCallbackCommand: Serialize + for<'de> Deserialize<'de>
+impl<TResolutionCommand> ActionResolutionCommand<TResolutionCommand>
+where TResolutionCommand: Serialize + for<'de> Deserialize<'de>
 {
-	/// Deserializes from a JSON string into
-	/// `ActionResolutionPayload<TCallbackCommand>`.
-	pub fn try_from_str(input: &str) -> Result<Self, String> {
-		serde_json::from_str(input).map_err(|e| {
-			format!(
-				"Failed to deserialize ActionResolutionPayload<{}>: {}",
-				std::any::type_name::<TCallbackCommand>(),
-				e
-			)
-		})
-	}
-
-	/// Serializes `ActionResolutionPayload<TCallbackCommand>`
+	/// Serializes `ActionResolutionCommand<TResolutionCommand>`
 	/// into a JSON string.
 	pub fn try_to_string(&self) -> Result<String, String> {
 		serde_json::to_string(self).map_err(|e| {
 			format!(
-				"Failed to serialize ActionResolutionPayload<{}>: {}",
-				std::any::type_name::<TCallbackCommand>(),
-				e
+				"Failed to serialize ActionResolutionCommand<{callback_command_type}>: {e}",
+				callback_command_type = std::any::type_name::<TResolutionCommand>(),
+			)
+		})
+	}
+
+	/// Deserializes from a JSON string into
+	/// `ActionResolutionCommand<TResolutionCommand>`.
+	pub fn try_from_str(input: &str) -> Result<Self, String> {
+		serde_json::from_str(input).map_err(|e| {
+			format!(
+				"Failed to deserialize ActionResolutionCommand<{callback_command_type}>: {e}",
+				callback_command_type = std::any::type_name::<TResolutionCommand>(),
 			)
 		})
 	}
