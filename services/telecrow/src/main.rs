@@ -1,4 +1,4 @@
-pub mod application;
+mod app;
 pub mod common;
 pub mod domain;
 
@@ -19,7 +19,6 @@ use teloxide::{
 };
 
 use crate::{
-	application::{general_subscriptions, telegram_bridge},
 	common::clients::corvidx_client,
 	domain::entities::{telegram_command, telegram_update},
 };
@@ -40,18 +39,19 @@ async fn main() -> Result<(), TelecrowError> {
 		Bot::new(components.telecrow.auth_token).parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
-	general_subscriptions::init(&corvidx_conn);
+	app::on_init(&corvidx_conn);
 
-	telegram_bridge::subscribe(
+	app::subscribe_to_corvidx(
+		telegram_bridge_bot.clone(),
 		&corvidx_conn,
 		async_handler.clone(),
-		telegram_bridge_bot.clone(),
 	);
 
 	let telegram_bridge_bot_handler = dptree::entry()
-		.branch(Update::filter_callback_query().endpoint(
-			telegram_bridge::callback_query::root_handler(corvidx_conn.clone()),
-		))
+		.branch(
+			Update::filter_callback_query()
+				.endpoint(app::callback_query_handler(corvidx_conn.clone())),
+		)
 		.branch(
 			Update::filter_message()
 				.filter_command::<telegram_command::BasicCommand>()

@@ -16,8 +16,8 @@ use crate::BotInstanceType;
 
 /// Sets up account link request forwarding from corvidx to Telegram
 /// through a Tokio channel.
-pub fn subscribe(
-	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
+pub fn forward_to_telegram(
+	ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
 	let (tx, mut rx) = mpsc::channel::<OutboundTelegramActionRequest>(100);
 	let bridge = telegram_bot.clone();
@@ -36,8 +36,7 @@ pub fn subscribe(
 	let forwarder = TelegramActionRequestForwarder::new(tx, async_handler);
 
 	// Registering the message handler
-	corvidx
-		.db
+	ctx.db
 		.account_link_request()
 		.on_insert(move |ctx, alr| forwarder.handle(ctx, alr));
 }

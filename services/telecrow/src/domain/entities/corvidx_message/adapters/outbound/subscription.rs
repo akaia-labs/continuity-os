@@ -1,22 +1,22 @@
 use std::sync::Arc;
 
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, MessageTableAccess},
+	corvidx::stdb::{DbConnection, MessageTableAccess, ReducerEventContext, send_message},
 	integrations::{
 		ports::CorvidxEventHandler,
 		telegram::{OutboundTelegramMessage, TelegramMessageForwarder},
 	},
 	runtime::AsyncHandler,
 };
-use spacetimedb_sdk::Table;
+use spacetimedb_sdk::{Status, Table};
 use teloxide::{payloads::SendMessageSetters, prelude::Requester, sugar::request::RequestReplyExt};
 use tokio::sync::mpsc;
 
 use crate::BotInstanceType;
 
 /// Sets up message forwarding from corvidx to Telegram through a Tokio channel.
-pub fn subscribe(
-	corvidx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
+pub fn forward_to_telegram(
+	ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {
 	let (tx, mut rx) = mpsc::channel::<OutboundTelegramMessage>(100);
 	let bridge = telegram_bot.clone();
@@ -41,8 +41,18 @@ pub fn subscribe(
 	let forwarder = TelegramMessageForwarder::new(tx, async_handler);
 
 	// Registering the message handler
-	corvidx
-		.db
+	ctx.db
 		.message()
 		.on_insert(move |ctx, msg| forwarder.handle(ctx, msg));
+}
+
+pub fn inspect(ctx: &DbConnection) {
+	ctx.reducers.on_send_message(on_message_sent);
+}
+
+/// Prints a warning if the reducer failed.
+fn on_message_sent(ctx: &ReducerEventContext, text: &String) {
+	if let Status::Failed(err) = &ctx.event.status {
+		eprintln!("Failed to send message {:?}: {}", text, err);
+	}
 }

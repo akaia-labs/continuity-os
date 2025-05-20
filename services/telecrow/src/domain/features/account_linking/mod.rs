@@ -1,3 +1,3 @@
-mod subscriptions;
+mod adapters;
 
-pub use subscriptions::subscribe;
+pub use adapters::{inbound::*, outbound::*};
