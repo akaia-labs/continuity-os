@@ -52,7 +52,8 @@ impl CorvidxEventHandler<AccountLinkRequest> for TelegramActionRequestForwarder 
 					}
 				});
 			} else {
-				eprintln!("Failed to format account link request: {dto_result:?}");
+				let err = dto_result.unwrap_err();
+				eprintln!("Failed to format account link request: {err}");
 			}
 		}
 	}

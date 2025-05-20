@@ -15,6 +15,9 @@ pub struct ActionDescriptor {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActionResolutionCommand<TResolutionCommand> {
-	pub kind:       ActionKind,
+	pub kind: ActionKind,
+
+	#[serde(rename = "res")]
+	/// Action resolution command
 	pub resolution: TResolutionCommand,
 }

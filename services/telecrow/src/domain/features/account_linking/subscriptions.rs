@@ -29,7 +29,7 @@ pub fn subscribe(
 				.send_message(req.chat_id, &req.text)
 				.reply_markup(req.reply_markup)
 				.await
-				.map_err(|err| eprintln!("{:?}", err));
+				.map_err(|err| eprintln!("{:?}", err.to_string()));
 		}
 	});
 

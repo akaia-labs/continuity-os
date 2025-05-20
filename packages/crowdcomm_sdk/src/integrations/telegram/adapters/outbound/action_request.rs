@@ -12,8 +12,9 @@ use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
 use crate::integrations::{
-	commands::ActionRequestResolution,
+	commands::AlrActionResolution,
 	dtos::{ActionKind, ActionResolutionCommand},
+	telegram::shared::constants::TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT,
 };
 
 impl OutboundTelegramActionRequest {
@@ -52,8 +53,46 @@ impl OutboundTelegramActionRequest {
 
 		let issuer_name = issuer_account.display_name(ctx);
 		let requester_name = requester_account.display_name(ctx);
-		let accept_choice = ActionRequestResolution::Accept(alr.id);
-		let reject_choice = ActionRequestResolution::Reject(alr.id);
+
+		// TODO: Abstract the choice mapping away, along with error handling
+		let accept_choice = AlrActionResolution::Accept(alr.id);
+		let reject_choice = AlrActionResolution::Reject(alr.id);
+
+		let accept_callback_payload = ActionResolutionCommand {
+			kind:       ActionKind::AccountLinkRequest,
+			resolution: accept_choice,
+		}
+		.try_to_string()?;
+
+		let reject_callback_payload = ActionResolutionCommand {
+			kind:       ActionKind::AccountLinkRequest,
+			resolution: reject_choice,
+		}
+		.try_to_string()?;
+
+		if accept_callback_payload.len() > TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT {
+			return Err(format!(
+				r#"
+					Telegram callback payload cannot exceed
+					{TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT} bytes,
+					but the current length of `accept_callback_payload` is {length} bytes
+				"#,
+				length = accept_callback_payload.len()
+			)
+			.squash_whitespace());
+		}
+
+		if reject_callback_payload.len() > TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT {
+			return Err(format!(
+				r#"
+					Telegram callback payload cannot exceed
+					{TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT} bytes,
+					but the current length of `reject_callback_payload` is {length} bytes.
+				"#,
+				length = reject_callback_payload.len()
+			)
+			.squash_whitespace());
+		}
 
 		Ok(OutboundTelegramActionRequest {
 			chat_id:             subject_user_id,
@@ -77,22 +116,8 @@ impl OutboundTelegramActionRequest {
 			),
 
 			reply_markup: InlineKeyboardMarkup::new([[
-				InlineKeyboardButton::callback(
-					accept_choice.label(),
-					ActionResolutionCommand {
-						kind:       ActionKind::AccountLinkRequest,
-						resolution: accept_choice,
-					}
-					.try_to_string()?,
-				),
-				InlineKeyboardButton::callback(
-					reject_choice.label(),
-					ActionResolutionCommand {
-						kind:       ActionKind::AccountLinkRequest,
-						resolution: reject_choice,
-					}
-					.try_to_string()?,
-				),
+				InlineKeyboardButton::callback(accept_choice.label(), accept_callback_payload),
+				InlineKeyboardButton::callback(reject_choice.label(), reject_callback_payload),
 			]]),
 		})
 	}
