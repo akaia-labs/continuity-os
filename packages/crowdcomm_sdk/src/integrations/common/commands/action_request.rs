@@ -4,19 +4,17 @@ use strum::Display;
 use crate::corvidx::account_linking::AccountLinkRequestId;
 
 #[derive(Display, Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", content = "id")]
+#[serde(tag = "resolution", content = "request_id")]
 pub enum AccountLinkRequestCallback {
-	#[serde(rename = "accept_account_link_request")]
 	Accept(AccountLinkRequestId),
-	#[serde(rename = "reject_account_link_request")]
 	Reject(AccountLinkRequestId),
 }
 
 impl AccountLinkRequestCallback {
 	pub fn label(&self) -> String {
 		match self {
-			| AccountLinkRequestCallback::Accept(_) => "✅ Accept".to_string(),
-			| AccountLinkRequestCallback::Reject(_) => "❎ Reject".to_string(),
+			| Self::Accept(_) => "✅ Accept".into(),
+			| Self::Reject(_) => "❎ Reject".into(),
 		}
 	}
 

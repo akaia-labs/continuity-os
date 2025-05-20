@@ -11,7 +11,7 @@ use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
-use crate::integrations::telegram::AccountLinkRequestCallback;
+use crate::integrations::common::commands::AccountLinkRequestCallback;
 
 impl OutboundTelegramActionRequest {
 	pub fn from_account_link_request(

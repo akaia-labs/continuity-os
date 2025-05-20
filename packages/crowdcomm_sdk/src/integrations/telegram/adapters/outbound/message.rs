@@ -11,7 +11,7 @@ use corvidx_client::{
 };
 use teloxide_core::types::{ChatId, MessageId, ThreadId};
 
-use crate::integrations::{CorvidxMessage, telegram::OutboundTelegramMessage};
+use crate::integrations::{ports::CorvidxMessage, telegram::OutboundTelegramMessage};
 
 impl OutboundTelegramMessage {
 	pub fn from_native(ctx: &EventContext, msg: &CorvidxMessage) -> Self {

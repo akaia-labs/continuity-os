@@ -3,7 +3,7 @@ use corvidx_client::common::stdb::{
 };
 use teloxide_core::types::User;
 
-use crate::integrations::{ProfileImport, TpAccountImport};
+use crate::integrations::ports::{ProfileImport, TpAccountImport};
 
 impl TpAccountImport for User {
 	fn into_account_reference(&self) -> TpAccountReference {

@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
-	integrations::telegram::AccountLinkRequestCallback,
+	integrations::ports::AccountLinkRequestCallback,
 	runtime::AsyncHandler,
 };
 use dotenvy::dotenv;

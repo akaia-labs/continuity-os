@@ -8,7 +8,7 @@ use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
 
 use crate::{
-	integrations::{CorvidxEventHandler, telegram::OutboundTelegramMessage},
+	integrations::{ports::CorvidxEventHandler, telegram::OutboundTelegramMessage},
 	runtime::AsyncHandler,
 };
 
