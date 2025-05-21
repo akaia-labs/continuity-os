@@ -41,9 +41,10 @@ pub struct NativeAccount {
 
 impl RecordResolution<NativeAccount> for NativeAccountId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<NativeAccount, String> {
-		ctx.db.native_account().id().find(ctx.sender).ok_or(format!(
-			"Identity {id} does not have an account.",
-			id = ctx.sender
-		))
+		ctx.db
+			.native_account()
+			.id()
+			.find(self)
+			.ok_or(format!("Identity {self} does not have an account.",))
 	}
 }
