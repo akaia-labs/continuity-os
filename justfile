@@ -1,3 +1,7 @@
+set dotenv-load
+set positional-arguments
+
+
 # `curl -sSf https://install.spacetimedb.com | sh` ?
 setup:
     (mise trust)
@@ -9,45 +13,51 @@ setup:
 
 corvidx-generate:
     spacetime generate --lang rust \
-    	--project-path modules/corvidx/server \
-    	--out-dir modules/corvidx/client/src/common/stdb/generated_bindings
+    	--project-path core/stdb_modules/corvidx/server \
+    	--out-dir core/stdb_modules/corvidx/client/src/common/stdb/generated_bindings
 
 generate: corvidx-generate
     (echo "✅ DONE.")
 
 telecrow-dev:
-    (cd services/telecrow && cargo run)
+    (cd subsystem/corvi.d/services/telecrow && cargo run)
 
 telecrow-inspect:
-    (cd services/telecrow && RUST_LOG=trace cargo run)
+    (cd subsystem/corvi.d/services/telecrow && RUST_LOG=trace cargo run)
 
 jayterm-dev:
-    (cd userspace/apps/jayterm && cargo run)
+    (cd applications/jayterm && cargo run)
 
 
 #* TESTS
 
 corvutils-test:
-    (cd libraries/corvutils && cargo test)
+    (cd packages/corvutils && cargo test)
 
 corvutils-test-dbg:
-    (cd libraries/corvutils && cargo test -- --show-output)
+    (cd packages/corvutils && cargo test -- --show-output)
 
 
 #* DATABASE ADMINISTRATION
 
 unsafe-local-corvidx-drop:
-    (spacetime delete -s localhost corvidx)
+    (spacetime delete -s localhost $CORVID_MODULES_CORE_DBNAME)
     (echo "✅ DONE.")
 
 local-corvidx-publish:
-    (spacetime publish -s localhost --project-path modules/corvidx/server corvidx)
+    (spacetime publish -s localhost --project-path core/stdb_modules/corvidx/server $CORVID_MODULES_CORE_DBNAME)
 
 local-corvidx-call:
-    (spacetime call -s localhost corvidx)
+    (spacetime call -s localhost $CORVID_MODULES_CORE_DBNAME)
+
+local-corvidx-sql *args='':
+    (spacetime sql -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
+
+local-corvidx-subscribe *args='':
+    (spacetime subscribe -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
 
 local-corvidx-log:
-    (spacetime logs -s localhost -f corvidx)
+    (spacetime logs -s localhost -f $CORVID_MODULES_CORE_DBNAME)
 
 local-publish: local-corvidx-publish
     (echo "✅ DONE.")

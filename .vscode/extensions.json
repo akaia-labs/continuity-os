@@ -5,6 +5,7 @@
 		"rust-lang.rust-analyzer",
 		"cordx56.rustowl-vscode",
 		"nefrob.vscode-just-syntax",
-		"streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries"
+		"streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries",
+		"jeff-hykin.code-eol"
 	]
 }

@@ -1,6 +1,7 @@
 mod adapters;
-mod dtos;
+mod infrastructure;
+mod shared;
 mod views;
 
 pub use adapters::*;
-pub use dtos::*;
+pub use infrastructure::*;

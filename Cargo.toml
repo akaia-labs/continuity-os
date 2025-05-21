@@ -2,11 +2,10 @@
 resolver = "3"
 
 members = [
-	"libraries/*",
-	"modules/corvidx/*",
+	"applications/*",
+	"core/stdb_modules/corvidx/*",
 	"packages/*",
-	"services/*",
-	"userspace/apps/*",
+	"subsystem/corvi.d/services/*",
 ]
 
 
@@ -36,7 +35,7 @@ overflow-checks = true
 
 [workspace.dependencies]
 # Internal dependencies
-corvutils = { path = "libraries/corvutils" }
+corvutils = { path = "packages/corvutils" }
 crowdcomm_sdk = { path = "packages/crowdcomm_sdk" }
 
 # External dependencies
@@ -47,6 +46,7 @@ log = "0.4"
 pretty_env_logger = "0.5"
 serde = { version = "1.0", features = ["derive"] }
 serde-env = "0.2.0"
+serde_json = { version = "1.0" }
 sequoia-openpgp = { version = "2.0.0", default-features = false }
 spacetimedb = "1.1.2"
 spacetimedb-sdk = "1.1.1"

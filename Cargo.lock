@@ -369,12 +369,14 @@ dependencies = [
 name = "crowdcomm_sdk"
 version = "0.5.0"
 dependencies = [
+ "capitalize",
  "corvidx_client",
  "corvutils",
  "dotenvy",
  "hex",
  "serde",
  "serde-env",
+ "serde_json",
  "spacetimedb-sdk",
  "strum 0.27.1",
  "strum_macros 0.27.1",

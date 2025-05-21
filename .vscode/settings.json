@@ -1,5 +1,6 @@
 {
 	"cSpell.words": [
+		"Akaia",
 		"AUTHTKN",
 		"buildlog",
 		"callsign",
@@ -57,6 +58,8 @@
 		"Summarizable",
 		"Supergroup",
 		"telecrow",
+		"teloxide",
+		"tpar",
 		"tsup",
 		"userspace",
 		"vfio"
