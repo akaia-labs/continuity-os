@@ -32,19 +32,14 @@ async fn main() -> Result<(), TelecrowError> {
 	let async_handler = AsyncHandler::new();
 	let corvidx_conn = Arc::new(corvidx_client::connect());
 
-	let telegram_bridge_bot: BotInstanceType =
+	let telegram_bot: BotInstanceType =
 		Bot::new(components.telecrow.auth_token).parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
 	app::on_init(&corvidx_conn);
+	app::subscribe_to_corvidx(telegram_bot.clone(), &corvidx_conn, async_handler.clone());
 
-	app::subscribe_to_corvidx(
-		telegram_bridge_bot.clone(),
-		&corvidx_conn,
-		async_handler.clone(),
-	);
-
-	let telegram_bridge_bot_handler = dptree::entry()
+	let telegram_bot_handler = dptree::entry()
 		.branch(
 			Update::filter_callback_query()
 				.endpoint(app::callback_query_handler(corvidx_conn.clone())),
@@ -72,7 +67,7 @@ async fn main() -> Result<(), TelecrowError> {
 	corvidx_conn.run_threaded();
 
 	println!("⌛ Starting Telegram bridge bot dispatcher...\n");
-	Dispatcher::builder(telegram_bridge_bot, telegram_bridge_bot_handler)
+	Dispatcher::builder(telegram_bot, telegram_bot_handler)
 		.build()
 		.dispatch()
 		.await;

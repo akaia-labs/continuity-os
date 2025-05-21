@@ -59,14 +59,14 @@ impl OutboundTelegramActionRequest {
 		let reject_choice = AlrActionResolution::Reject(alr.id);
 
 		let accept_callback_payload = ActionResolutionCommand {
-			kind:       ActionKind::AccountLinkRequest,
-			resolution: accept_choice,
+			kind:    ActionKind::AccountLinkRequest,
+			payload: accept_choice,
 		}
 		.try_to_string()?;
 
 		let reject_callback_payload = ActionResolutionCommand {
-			kind:       ActionKind::AccountLinkRequest,
-			resolution: reject_choice,
+			kind:    ActionKind::AccountLinkRequest,
+			payload: reject_choice,
 		}
 		.try_to_string()?;
 

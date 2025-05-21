@@ -17,7 +17,7 @@ pub struct ActionDescriptor {
 pub struct ActionResolutionCommand<TResolutionCommand> {
 	pub kind: ActionKind,
 
-	#[serde(rename = "res")]
+	#[serde(rename = "pl")]
 	/// Action resolution command
-	pub resolution: TResolutionCommand,
+	pub payload: TResolutionCommand,
 }

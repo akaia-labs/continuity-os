@@ -9,12 +9,13 @@
 - [ ] First class Telegram integration
 - [ ] Partial compatibility with the Matrix standard
 - [ ] Community-driven continuous knowledge base development
+- [ ] Blockchain integrations for decentralized community governance
 
 ..._🚧 TBD 🚧_...
 
 - [ ] Self-hosted isolated subsystem encapsulated in a Cloud Hypervisor microVM
 - [ ] Full compatibility with the Matrix standard
-- [ ] Blockchain integrations for decentralized community governance
+- [ ] Collaborative project development tools
 - [ ] IoT integrations for environmental awareness
 
 ## Development
