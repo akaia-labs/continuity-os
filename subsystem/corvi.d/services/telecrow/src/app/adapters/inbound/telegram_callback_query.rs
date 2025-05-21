@@ -3,8 +3,8 @@ use std::{future::Future, pin::Pin, sync::Arc};
 use crowdcomm_sdk::{
 	corvidx::stdb::DbConnection,
 	integrations::{
-		commands::AlrActionResolution,
-		dtos::{ActionDescriptor, ActionKind, ActionResolutionCommand},
+		commands::AccountLinkRequestAction,
+		dtos::{ActionCommand, ActionDescriptor, ActionKind},
 	},
 };
 use teloxide::{RequestError, prelude::Requester, respond, types::CallbackQuery};
@@ -38,11 +38,12 @@ pub fn callback_query_handler(
 
 		match action_kind {
 			| ActionKind::AccountLinkRequest => {
-				let command: Result<ActionResolutionCommand<AlrActionResolution>, String> =
-					ActionResolutionCommand::try_from_str(query_payload.as_str());
+				let command: Result<ActionCommand<AccountLinkRequestAction>, String> =
+					ActionCommand::try_from_str(query_payload.as_str());
 
 				if let Ok(command) = command {
 					return Box::pin(async move {
+						bot.answer_callback_query(&callback_query.id).await?;
 						account_linking::handle_request_callback(ctx, bot.clone(), command);
 						respond(())
 					});

@@ -12,8 +12,8 @@ use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
 use crate::integrations::{
-	commands::AlrActionResolution,
-	dtos::{ActionKind, ActionResolutionCommand},
+	commands::AccountLinkRequestAction,
+	dtos::{ActionKind, ActionCommand},
 	telegram::shared::constants::TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT,
 };
 
@@ -55,16 +55,16 @@ impl OutboundTelegramActionRequest {
 		let requester_name = requester_account.display_name(ctx);
 
 		// TODO: Abstract the choice mapping away, along with error handling
-		let accept_choice = AlrActionResolution::Accept(alr.id);
-		let reject_choice = AlrActionResolution::Reject(alr.id);
+		let accept_choice = AccountLinkRequestAction::Accept(alr.id);
+		let reject_choice = AccountLinkRequestAction::Reject(alr.id);
 
-		let accept_callback_payload = ActionResolutionCommand {
+		let accept_callback_payload = ActionCommand {
 			kind:    ActionKind::AccountLinkRequest,
 			payload: accept_choice,
 		}
 		.try_to_string()?;
 
-		let reject_callback_payload = ActionResolutionCommand {
+		let reject_callback_payload = ActionCommand {
 			kind:    ActionKind::AccountLinkRequest,
 			payload: reject_choice,
 		}

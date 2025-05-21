@@ -6,12 +6,12 @@ use crate::corvidx::account_linking::AccountLinkRequestId;
 #[derive(Display, Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(tag = "choice", content = "id")]
 /// Action request resolution for account link request.
-pub enum AlrActionResolution {
+pub enum AccountLinkRequestAction {
 	Accept(AccountLinkRequestId),
 	Reject(AccountLinkRequestId),
 }
 
-impl AlrActionResolution {
+impl AccountLinkRequestAction {
 	pub fn label(&self) -> String {
 		match self {
 			| Self::Accept(_) => "✅ Accept".into(),

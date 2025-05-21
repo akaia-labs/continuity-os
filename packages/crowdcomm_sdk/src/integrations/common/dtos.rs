@@ -14,10 +14,10 @@ pub struct ActionDescriptor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ActionResolutionCommand<TResolutionCommand> {
+pub struct ActionCommand<TPayload> {
 	pub kind: ActionKind,
 
 	#[serde(rename = "pl")]
 	/// Action resolution command
-	pub payload: TResolutionCommand,
+	pub payload: TPayload,
 }
