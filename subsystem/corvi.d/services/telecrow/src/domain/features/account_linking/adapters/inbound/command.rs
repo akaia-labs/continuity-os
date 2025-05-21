@@ -3,13 +3,15 @@ use std::sync::Arc;
 use corvutils::{print_error, print_success};
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, resolve_account_link_request},
-	integrations::{commands::AccountLinkRequestAction, dtos::ActionCommand},
+	integrations::{commands::AccountLinkRequestAction, dtos::ActionCommand, ports::TelegramUser},
 };
+use teloxide::{prelude::Requester, types::MaybeInaccessibleMessage};
 
 use crate::BotInstanceType;
 
-pub fn handle_request_callback(
-	ctx: Arc<DbConnection>, bot: BotInstanceType, command: ActionCommand<AccountLinkRequestAction>,
+pub async fn handle_command(
+	ctx: Arc<DbConnection>, bot: BotInstanceType, prompt_msg: Option<MaybeInaccessibleMessage>,
+	command: ActionCommand<AccountLinkRequestAction>, caller: TelegramUser,
 ) {
 	match command.payload {
 		| AccountLinkRequestAction::Accept(id) => {
@@ -17,6 +19,10 @@ pub fn handle_request_callback(
 
 			if result.is_ok() {
 				print_success(format!("Account link request {id} has been accepted."));
+
+				if let Err(err) = bot.send_message(caller.id, format!("Done.")).await {
+					print_error(format!("Failed to send message: {err}"));
+				};
 			} else if let Err(err) = result {
 				print_error(format!("Failed to accept account link request {id}: {err}"));
 			}
@@ -27,9 +33,17 @@ pub fn handle_request_callback(
 
 			if result.is_ok() {
 				print_success(format!("Account link request {id} has been rejected."));
+
+				if let Err(err) = bot.send_message(caller.id, format!("Done.")).await {
+					print_error(format!("Failed to send message: {err}"));
+				};
 			} else if let Err(err) = result {
 				print_error(format!("Failed to reject account link request {id}: {err}"));
 			}
 		},
+	}
+
+	if let Some(msg) = prompt_msg {
+		let _ = bot.delete_message(caller.id, msg.id()).await;
 	}
 }

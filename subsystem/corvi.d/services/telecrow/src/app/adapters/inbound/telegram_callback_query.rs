@@ -19,6 +19,8 @@ pub fn callback_query_handler(
 ) -> Pin<Box<dyn Future<Output = Result<(), RequestError>> + Send>> {
 	move |bot: BotInstanceType, callback_query: CallbackQuery| {
 		let ctx = ctx.clone();
+		let prompt_msg = callback_query.message;
+		let caller = callback_query.from;
 
 		let action_descriptor = callback_query
 			.data
@@ -44,7 +46,16 @@ pub fn callback_query_handler(
 				if let Ok(command) = command {
 					return Box::pin(async move {
 						bot.answer_callback_query(&callback_query.id).await?;
-						account_linking::handle_request_callback(ctx, bot.clone(), command);
+
+						account_linking::handle_command(
+							ctx,
+							bot.clone(),
+							prompt_msg,
+							command,
+							caller,
+						)
+						.await;
+
 						respond(())
 					});
 				}
