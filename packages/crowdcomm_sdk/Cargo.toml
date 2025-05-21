@@ -13,7 +13,7 @@ path = "src/lib.rs"
 [dependencies]
 # Internal dependencies
 corvutils.workspace = true
-corvidx_client = { path = "../../core/stdb_modules/corvidx/client" }
+corvidx_client = { path = "../../core/stdb/modules/corvidx/client" }
 
 # External dependencies
 capitalize.workspace = true

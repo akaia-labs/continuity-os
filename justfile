@@ -13,8 +13,8 @@ setup:
 
 corvidx-generate:
     spacetime generate --lang rust \
-    	--project-path core/stdb_modules/corvidx/server \
-    	--out-dir core/stdb_modules/corvidx/client/src/common/stdb/generated_bindings
+    	--project-path core/stdb/modules/corvidx/server \
+    	--out-dir core/stdb/modules/corvidx/client/src/common/stdb/generated_bindings
 
 generate: corvidx-generate
     (echo "✅ DONE.")
@@ -45,7 +45,7 @@ unsafe-local-corvidx-drop:
     (echo "✅ DONE.")
 
 local-corvidx-publish:
-    (spacetime publish -s localhost --project-path core/stdb_modules/corvidx/server $CORVID_MODULES_CORE_DBNAME)
+    (spacetime publish -s localhost --project-path core/stdb/modules/corvidx/server $CORVID_MODULES_CORE_DBNAME)
 
 local-corvidx-call:
     (spacetime call -s localhost $CORVID_MODULES_CORE_DBNAME)
