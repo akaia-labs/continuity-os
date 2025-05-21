@@ -9,9 +9,9 @@ pub enum MessageType {
 impl MessageType {
 	pub fn symbol(&self) -> &'static str {
 		match self {
-			| MessageType::System => "ℹ️",
-			| MessageType::Content => "💬",
-			| MessageType::Unknown => "❓",
+			| Self::System => "ℹ️",
+			| Self::Content => "💬",
+			| Self::Unknown => "❓",
 		}
 	}
 
@@ -19,13 +19,13 @@ impl MessageType {
 		match role {
 			| Some(known_role) => match known_role {
 				| NativeAccountLocalRole::Admin | NativeAccountLocalRole::Interactor => {
-					MessageType::Content
+					Self::Content
 				},
 
-				| NativeAccountLocalRole::Service => MessageType::System,
+				| NativeAccountLocalRole::Service => Self::System,
 			},
 
-			| _ => MessageType::Unknown,
+			| _ => Self::Content,
 		}
 	}
 
