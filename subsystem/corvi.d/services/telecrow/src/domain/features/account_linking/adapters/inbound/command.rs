@@ -18,9 +18,10 @@ pub async fn handle_command(
 			let result = ctx.reducers.resolve_account_link_request(id, true);
 
 			if result.is_ok() {
-				print_success(format!("Account link request {id} has been accepted."));
+				let success_msg = format!("Account link request {id} has been accepted.");
+				print_success(success_msg.clone());
 
-				if let Err(err) = bot.send_message(caller.id, format!("Done.")).await {
+				if let Err(err) = bot.send_message(caller.id, success_msg).await {
 					print_error(format!("Failed to send message: {err}"));
 				};
 			} else if let Err(err) = result {
@@ -32,9 +33,10 @@ pub async fn handle_command(
 			let result = ctx.reducers.resolve_account_link_request(id, false);
 
 			if result.is_ok() {
-				print_success(format!("Account link request {id} has been rejected."));
+				let success_msg_text = format!("Account link request {id} has been rejected.");
+				print_success(success_msg_text.clone());
 
-				if let Err(err) = bot.send_message(caller.id, format!("Done.")).await {
+				if let Err(err) = bot.send_message(caller.id, success_msg_text).await {
 					print_error(format!("Failed to send message: {err}"));
 				};
 			} else if let Err(err) = result {
