@@ -17,7 +17,7 @@ pub fn mirror_tp_profile(
 	let native_account = ctx.sender.try_resolve(ctx)?;
 	let tp_account = reference.try_resolve(ctx)?;
 
-	if tp_account.owner_id != native_account.id {
+	if tp_account.owner_id != Some(native_account.id) {
 		return Err(format!(
 			"Account {id} is not linked to the third-party account {reference}.",
 			id = ctx.sender,
@@ -29,9 +29,7 @@ pub fn mirror_tp_profile(
 	} else {
 		None
 	}
-	.ok_or(format!(
-		"Tp account {reference} does not have a profile."
-	))?;
+	.ok_or(format!("Tp account {reference} does not have a profile."))?;
 
 	ctx.db.account_profile().id().update(AccountProfile {
 		id:       native_account.profile_id,

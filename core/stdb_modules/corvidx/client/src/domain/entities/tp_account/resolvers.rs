@@ -2,8 +2,8 @@ use super::TpAccountId;
 use crate::common::{
 	ports::{ProfileResolution, RecordResolution},
 	stdb::{
-		AccountProfile, AccountProfileTableAccess, TpAccount, TpAccountReference,
-		TpAccountTableAccess, NativeAccountTableAccess, RemoteDbContext,
+		AccountProfile, AccountProfileTableAccess, NativeAccountTableAccess, RemoteDbContext,
+		TpAccount, TpAccountReference, TpAccountTableAccess,
 	},
 };
 
@@ -20,7 +20,10 @@ impl ProfileResolution for TpAccount {
 	/// Walks the ownership tree starting from the bound internal account
 	/// (if present) to retrieve the first available account profile
 	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<AccountProfile> {
-		if let Some(owner) = ctx.db().native_account().id().find(&self.owner_id) {
+		if let Some(owner) = self
+			.owner_id
+			.and_then(|id| ctx.db().native_account().id().find(&id))
+		{
 			owner.native_profile(ctx)
 		} else if let Some(profile_id) = self.profile_id {
 			ctx.db().account_profile().id().find(&profile_id)

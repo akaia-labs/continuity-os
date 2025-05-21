@@ -1,9 +1,7 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{model::*, validation::*};
-use crate::{
-	common::ports::RecordResolution, domain::entities::tp_account::TpAccountReference,
-};
+use crate::{common::ports::RecordResolution, domain::entities::tp_account::TpAccountReference};
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality
@@ -37,8 +35,8 @@ pub fn import_message(
 ) -> Result<(), String> {
 	let author_account = author_reference.try_resolve(ctx)?;
 
-	let sender = if author_account.owner_id != ctx.identity() {
-		author_account.owner_id
+	let sender = if let Some(owner_id) = author_account.owner_id {
+		owner_id
 	} else {
 		ctx.sender
 	};

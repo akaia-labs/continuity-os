@@ -1,12 +1,8 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{TpAccount, TpAccountReference, tp_account};
-use crate::{
-	common::ports::RecordResolution,
-	domain::entities::{
-		account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
-		native_account::{NativeAccount, native_account},
-	},
+use crate::domain::entities::account_profile::{
+	AccountProfile, AccountProfileMetadata, account_profile,
 };
 
 #[reducer]
@@ -27,10 +23,10 @@ pub fn import_tp_account(
 		));
 	}
 
-	let new_account = ctx.db.tp_account().insert(TpAccount {
+	ctx.db.tp_account().insert(TpAccount {
 		id: reference.to_string(),
 		callsign,
-		owner_id: ctx.identity(),
+		owner_id: None,
 
 		profile_id: Some(
 			ctx.db
@@ -41,15 +37,6 @@ pub fn import_tp_account(
 				})
 				.id,
 		),
-	});
-
-	let mut root_account = ctx.identity().try_resolve(ctx)?;
-
-	root_account.tp_account_ownership.push(new_account.id);
-
-	ctx.db.native_account().id().update(NativeAccount {
-		updated_at: ctx.timestamp,
-		..root_account
 	});
 
 	Ok(())
@@ -81,8 +68,7 @@ pub fn update_tp_account_callsign(
 #[reducer]
 /// Updates the local representation of a 3rd party platform account profile.
 pub fn update_tp_account_profile(
-	ctx: &ReducerContext, reference: TpAccountReference,
-	metadata: Option<AccountProfileMetadata>,
+	ctx: &ReducerContext, reference: TpAccountReference, metadata: Option<AccountProfileMetadata>,
 ) -> Result<(), String> {
 	let account = ctx
 		.db

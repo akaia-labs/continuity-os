@@ -9,8 +9,8 @@ use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 use crate::{
 	common::ports::RecordResolution,
 	domain::entities::{
-		account_profile::AccountProfileId, tp_platform::TpPlatformTag,
-		native_account::NativeAccountId,
+		account_profile::AccountProfileId, native_account::NativeAccountId,
+		tp_platform::TpPlatformTag,
 	},
 };
 
@@ -30,7 +30,7 @@ pub struct TpAccount {
 	pub callsign: Option<String>,
 
 	#[index(btree)]
-	pub owner_id: NativeAccountId,
+	pub owner_id: Option<NativeAccountId>,
 
 	#[unique]
 	#[index(btree)]

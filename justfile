@@ -1,3 +1,7 @@
+set dotenv-load
+set positional-arguments
+
+
 # `curl -sSf https://install.spacetimedb.com | sh` ?
 setup:
     (mise trust)
@@ -37,17 +41,23 @@ corvutils-test-dbg:
 #* DATABASE ADMINISTRATION
 
 unsafe-local-corvidx-drop:
-    (spacetime delete -s localhost corvidx)
+    (spacetime delete -s localhost $CORVID_MODULES_CORE_DBNAME)
     (echo "✅ DONE.")
 
 local-corvidx-publish:
-    (spacetime publish -s localhost --project-path core/stdb_modules/corvidx/server corvidx)
+    (spacetime publish -s localhost --project-path core/stdb_modules/corvidx/server $CORVID_MODULES_CORE_DBNAME)
 
 local-corvidx-call:
-    (spacetime call -s localhost corvidx)
+    (spacetime call -s localhost $CORVID_MODULES_CORE_DBNAME)
+
+local-corvidx-sql *args='':
+    (spacetime sql -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
+
+local-corvidx-subscribe *args='':
+    (spacetime subscribe -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
 
 local-corvidx-log:
-    (spacetime logs -s localhost -f corvidx)
+    (spacetime logs -s localhost -f $CORVID_MODULES_CORE_DBNAME)
 
 local-publish: local-corvidx-publish
     (echo "✅ DONE.")

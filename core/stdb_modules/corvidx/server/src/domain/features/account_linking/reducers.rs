@@ -30,7 +30,7 @@ pub fn create_account_link_request(
 ) -> Result<(), String> {
 	let tp_account = reference.try_resolve(ctx)?;
 
-	if tp_account.owner_id != ctx.identity() {
+	if tp_account.owner_id.is_some() {
 		return Err(format!(
 			"Tp account {reference} is already linked to another native account.",
 		));
@@ -88,7 +88,7 @@ pub fn resolve_account_link_request(
 		let tp_account = subject_account_id.try_resolve(ctx)?;
 
 		ctx.db.tp_account().id().update(TpAccount {
-			owner_id: native_account.id,
+			owner_id: Some(native_account.id),
 			..tp_account
 		});
 
@@ -113,7 +113,7 @@ pub fn unlink_tp_account(
 	let mut native_account = ctx.sender.try_resolve(ctx)?;
 	let tp_account = reference.try_resolve(ctx)?;
 
-	if tp_account.owner_id != native_account.id {
+	if tp_account.owner_id != Some(native_account.id) {
 		return Err(format!(
 			"Account {id} is not linked to the third-party account {reference}.",
 			id = ctx.sender,
@@ -121,7 +121,7 @@ pub fn unlink_tp_account(
 	}
 
 	ctx.db.tp_account().id().update(TpAccount {
-		owner_id: ctx.identity(),
+		owner_id: None,
 		..tp_account
 	});
 
