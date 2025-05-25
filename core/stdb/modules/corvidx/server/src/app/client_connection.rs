@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use crate::domain::entities::{
 	account::{Account, AccountRole, account},
-	actor_profile::{ActorProfile, ActorProfileMetadata, account_profile},
+	actor_profile::{ActorProfile, ActorProfileMetadata, actor_profile},
 };
 
 #[reducer(client_connected)]
@@ -14,12 +14,12 @@ pub fn client_connected(ctx: &ReducerContext) {
 			..account
 		});
 	} else {
-		let initial_profile = ctx.db.account_profile().insert(ActorProfile {
+		let initial_profile = ctx.db.actor_profile().insert(ActorProfile {
 			id:       0,
 			metadata: ActorProfileMetadata::default(),
 		});
 
-		let account_profile = ctx.db.account_profile().id().update(ActorProfile {
+		let actor_profile = ctx.db.actor_profile().id().update(ActorProfile {
 			//*  Ensuring the profile name is unique upon profile creation.
 			metadata: ActorProfileMetadata::default_with_name(format!(
 				"{}-{}",
@@ -37,7 +37,7 @@ pub fn client_connected(ctx: &ReducerContext) {
 			created_at:        ctx.timestamp,
 			updated_at:        ctx.timestamp,
 			last_seen_at:      ctx.timestamp,
-			profile:           account_profile.id,
+			profile:           actor_profile.id,
 			exac_associations: vec![],
 		});
 	}

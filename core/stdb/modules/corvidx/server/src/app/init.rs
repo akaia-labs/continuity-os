@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use crate::domain::entities::{
 	account::{Account, AccountRole, account},
-	actor_profile::{ActorProfile, ActorProfileMetadata, ActorProfileName, account_profile},
+	actor_profile::{ActorProfile, ActorProfileMetadata, ActorProfileName, actor_profile},
 };
 
 #[reducer(init)]
@@ -20,7 +20,7 @@ pub fn init(ctx: &ReducerContext) {
 
 		profile: ctx
 			.db
-			.account_profile()
+			.actor_profile()
 			.insert(ActorProfile {
 				id: 0,
 

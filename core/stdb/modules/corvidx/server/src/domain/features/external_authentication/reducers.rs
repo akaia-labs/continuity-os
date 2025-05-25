@@ -24,8 +24,8 @@ const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 
 // TODO Implement rate limit
 #[reducer]
-/// Creates a third-party to internal account link request.
-pub fn create_external_authentication_request(
+/// Creates an external authentication request.
+pub fn initiate_external_authentication(
 	ctx: &ReducerContext, exref: ExternalActorReference,
 ) -> Result<(), String> {
 	let external_actor = exref.try_resolve(ctx)?;

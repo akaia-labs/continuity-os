@@ -5,7 +5,7 @@ use corvidx_client::{
 		presentation::DisplayName,
 		stdb::{ExternalAuthenticationRequest, EventContext, ExternalActorReference},
 	},
-	domain::entities::{message::MessageType, external_platform::SupportedExternalPlatformTag},
+	domain::entities::{message::MessageType, external_platform::SupportedExternalActorOrigin},
 };
 use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
@@ -40,7 +40,7 @@ impl OutboundTelegramActionRequest {
 
 		//* Double checking the platform tag
 		//* In case of the forwarder letting it through unverified
-		if platform_tag.into_supported() != SupportedExternalPlatformTag::Telegram {
+		if platform_tag.into_supported() != SupportedExternalActorOrigin::Telegram {
 			return Err(format!(
 				"Platform tag {platform_tag} does not match Telegram."
 			));
@@ -110,7 +110,7 @@ impl OutboundTelegramActionRequest {
 						{requester_name} has requested to link this {platform_name} account.
 						If you are the not {requester_name}, please reject this request.
 					"#,
-					platform_name = SupportedExternalPlatformTag::Telegram.to_string().capitalize()
+					platform_name = SupportedExternalActorOrigin::Telegram.to_string().capitalize()
 				)
 				.squash_whitespace(),
 			),

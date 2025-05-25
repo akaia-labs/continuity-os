@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::common::stdb::{ExternalActorReference, ExternalPlatformTag};
+use crate::common::stdb::{ExternalActorReference, ExternalActorOrigin};
 
 pub type ExternalActorReferenceParseErr = &'static str;
 
@@ -13,7 +13,7 @@ impl FromStr for ExternalActorReference {
 		let id = parts.next().ok_or("missing id")?;
 
 		let platform_tag = platform_name_str
-			.parse::<ExternalPlatformTag>()
+			.parse::<ExternalActorOrigin>()
 			.map_err(|_| "invalid or unsupported platform specifier")?;
 
 		Ok(ExternalActorReference {

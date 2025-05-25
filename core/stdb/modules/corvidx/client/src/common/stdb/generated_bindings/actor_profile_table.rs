@@ -6,46 +6,46 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 use super::{actor_profile_metadata_type::ActorProfileMetadata, actor_profile_type::ActorProfile};
 
-/// Table handle for the table `account_profile`.
+/// Table handle for the table `actor_profile`.
 ///
-/// Obtain a handle from the [`AccountProfileTableAccess::account_profile`]
-/// method on [`super::RemoteTables`], like `ctx.db.account_profile()`.
+/// Obtain a handle from the [`ActorProfileTableAccess::actor_profile`] method
+/// on [`super::RemoteTables`], like `ctx.db.actor_profile()`.
 ///
 /// Users are encouraged not to explicitly reference this type,
 /// but to directly chain method calls,
-/// like `ctx.db.account_profile().on_insert(...)`.
-pub struct AccountProfileTableHandle<'ctx> {
+/// like `ctx.db.actor_profile().on_insert(...)`.
+pub struct ActorProfileTableHandle<'ctx> {
 	imp: __sdk::TableHandle<ActorProfile>,
 	ctx: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
 #[allow(non_camel_case_types)]
-/// Extension trait for access to the table `account_profile`.
+/// Extension trait for access to the table `actor_profile`.
 ///
 /// Implemented for [`super::RemoteTables`].
-pub trait AccountProfileTableAccess {
+pub trait ActorProfileTableAccess {
 	#[allow(non_snake_case)]
-	/// Obtain a [`AccountProfileTableHandle`], which mediates access to the
-	/// table `account_profile`.
-	fn account_profile(&self) -> AccountProfileTableHandle<'_>;
+	/// Obtain a [`ActorProfileTableHandle`], which mediates access to the table
+	/// `actor_profile`.
+	fn actor_profile(&self) -> ActorProfileTableHandle<'_>;
 }
 
-impl AccountProfileTableAccess for super::RemoteTables {
-	fn account_profile(&self) -> AccountProfileTableHandle<'_> {
-		AccountProfileTableHandle {
-			imp: self.imp.get_table::<ActorProfile>("account_profile"),
+impl ActorProfileTableAccess for super::RemoteTables {
+	fn actor_profile(&self) -> ActorProfileTableHandle<'_> {
+		ActorProfileTableHandle {
+			imp: self.imp.get_table::<ActorProfile>("actor_profile"),
 			ctx: std::marker::PhantomData,
 		}
 	}
 }
 
-pub struct AccountProfileInsertCallbackId(__sdk::CallbackId);
-pub struct AccountProfileDeleteCallbackId(__sdk::CallbackId);
+pub struct ActorProfileInsertCallbackId(__sdk::CallbackId);
+pub struct ActorProfileDeleteCallbackId(__sdk::CallbackId);
 
-impl<'ctx> __sdk::Table for AccountProfileTableHandle<'ctx> {
-	type DeleteCallbackId = AccountProfileDeleteCallbackId;
+impl<'ctx> __sdk::Table for ActorProfileTableHandle<'ctx> {
+	type DeleteCallbackId = ActorProfileDeleteCallbackId;
 	type EventContext = super::EventContext;
-	type InsertCallbackId = AccountProfileInsertCallbackId;
+	type InsertCallbackId = ActorProfileInsertCallbackId;
 	type Row = ActorProfile;
 
 	fn count(&self) -> u64 {
@@ -58,42 +58,42 @@ impl<'ctx> __sdk::Table for AccountProfileTableHandle<'ctx> {
 
 	fn on_insert(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
-	) -> AccountProfileInsertCallbackId {
-		AccountProfileInsertCallbackId(self.imp.on_insert(Box::new(callback)))
+	) -> ActorProfileInsertCallbackId {
+		ActorProfileInsertCallbackId(self.imp.on_insert(Box::new(callback)))
 	}
 
-	fn remove_on_insert(&self, callback: AccountProfileInsertCallbackId) {
+	fn remove_on_insert(&self, callback: ActorProfileInsertCallbackId) {
 		self.imp.remove_on_insert(callback.0)
 	}
 
 	fn on_delete(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row) + Send + 'static,
-	) -> AccountProfileDeleteCallbackId {
-		AccountProfileDeleteCallbackId(self.imp.on_delete(Box::new(callback)))
+	) -> ActorProfileDeleteCallbackId {
+		ActorProfileDeleteCallbackId(self.imp.on_delete(Box::new(callback)))
 	}
 
-	fn remove_on_delete(&self, callback: AccountProfileDeleteCallbackId) {
+	fn remove_on_delete(&self, callback: ActorProfileDeleteCallbackId) {
 		self.imp.remove_on_delete(callback.0)
 	}
 }
 
 #[doc(hidden)]
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
-	let _table = client_cache.get_or_make_table::<ActorProfile>("account_profile");
+	let _table = client_cache.get_or_make_table::<ActorProfile>("actor_profile");
 	_table.add_unique_constraint::<i128>("id", |row| &row.id);
 }
-pub struct AccountProfileUpdateCallbackId(__sdk::CallbackId);
+pub struct ActorProfileUpdateCallbackId(__sdk::CallbackId);
 
-impl<'ctx> __sdk::TableWithPrimaryKey for AccountProfileTableHandle<'ctx> {
-	type UpdateCallbackId = AccountProfileUpdateCallbackId;
+impl<'ctx> __sdk::TableWithPrimaryKey for ActorProfileTableHandle<'ctx> {
+	type UpdateCallbackId = ActorProfileUpdateCallbackId;
 
 	fn on_update(
 		&self, callback: impl FnMut(&Self::EventContext, &Self::Row, &Self::Row) + Send + 'static,
-	) -> AccountProfileUpdateCallbackId {
-		AccountProfileUpdateCallbackId(self.imp.on_update(Box::new(callback)))
+	) -> ActorProfileUpdateCallbackId {
+		ActorProfileUpdateCallbackId(self.imp.on_update(Box::new(callback)))
 	}
 
-	fn remove_on_update(&self, callback: AccountProfileUpdateCallbackId) {
+	fn remove_on_update(&self, callback: ActorProfileUpdateCallbackId) {
 		self.imp.remove_on_update(callback.0)
 	}
 }
@@ -109,29 +109,29 @@ pub(super) fn parse_table_update(
 	})
 }
 
-/// Access to the `id` unique index on the table `account_profile`,
+/// Access to the `id` unique index on the table `actor_profile`,
 /// which allows point queries on the field of the same name
-/// via the [`AccountProfileIdUnique::find`] method.
+/// via the [`ActorProfileIdUnique::find`] method.
 ///
 /// Users are encouraged not to explicitly reference this type,
 /// but to directly chain method calls,
-/// like `ctx.db.account_profile().id().find(...)`.
-pub struct AccountProfileIdUnique<'ctx> {
+/// like `ctx.db.actor_profile().id().find(...)`.
+pub struct ActorProfileIdUnique<'ctx> {
 	imp:     __sdk::UniqueConstraintHandle<ActorProfile, i128>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
-impl<'ctx> AccountProfileTableHandle<'ctx> {
-	/// Get a handle on the `id` unique index on the table `account_profile`.
-	pub fn id(&self) -> AccountProfileIdUnique<'ctx> {
-		AccountProfileIdUnique {
+impl<'ctx> ActorProfileTableHandle<'ctx> {
+	/// Get a handle on the `id` unique index on the table `actor_profile`.
+	pub fn id(&self) -> ActorProfileIdUnique<'ctx> {
+		ActorProfileIdUnique {
 			imp:     self.imp.get_unique_constraint::<i128>("id"),
 			phantom: std::marker::PhantomData,
 		}
 	}
 }
 
-impl<'ctx> AccountProfileIdUnique<'ctx> {
+impl<'ctx> ActorProfileIdUnique<'ctx> {
 	/// Find the subscribed row whose `id` column value is equal to `col_val`,
 	/// if such a row is present in the client cache.
 	pub fn find(&self, col_val: &i128) -> Option<ActorProfile> {

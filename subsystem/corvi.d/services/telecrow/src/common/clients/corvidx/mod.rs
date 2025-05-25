@@ -41,7 +41,7 @@ pub fn subscribe_to_tables(corvidx: &DbConnection) {
 		// Facilitating creation of a local partial replica of the database.
 		.subscribe([
 			"SELECT * FROM external_authentication_request",
-			"SELECT * FROM account_profile",
+			"SELECT * FROM actor_profile",
 			"SELECT * FROM external_actor",
 			"SELECT * FROM message",
 			// "SELECT * FROM message_channel",

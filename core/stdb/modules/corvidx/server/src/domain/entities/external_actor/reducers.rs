@@ -1,7 +1,7 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{ExternalActor, ExternalActorReference, external_actor};
-use crate::domain::entities::actor_profile::{ActorProfile, ActorProfileMetadata, account_profile};
+use crate::domain::entities::actor_profile::{ActorProfile, ActorProfileMetadata, actor_profile};
 
 #[reducer]
 /// Registers a local representation of the given 3rd party platform account.
@@ -28,7 +28,7 @@ pub fn import_external_actor(
 
 		profile: Some(
 			ctx.db
-				.account_profile()
+				.actor_profile()
 				.insert(ActorProfile {
 					id:       0,
 					metadata: metadata.unwrap_or_default(),
@@ -78,12 +78,12 @@ pub fn update_external_actor_profile(
 		))?;
 
 	let profile = if let Some(profile_id) = account.profile {
-		ctx.db.account_profile().id().update(ActorProfile {
+		ctx.db.actor_profile().id().update(ActorProfile {
 			id:       profile_id,
 			metadata: metadata.unwrap_or_default(),
 		})
 	} else {
-		ctx.db.account_profile().insert(ActorProfile {
+		ctx.db.actor_profile().insert(ActorProfile {
 			id:       0,
 			metadata: metadata.unwrap_or_default(),
 		})

@@ -1,6 +1,6 @@
 use crate::common::stdb::ExternalActorReference;
 
-/// "{String}@{ExternalPlatformTag}"
+/// "{String}@{ExternalActorOrigin}"
 pub type ExternalActorId = String;
 
 impl ExternalActorReference {

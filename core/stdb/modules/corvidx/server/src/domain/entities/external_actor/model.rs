@@ -5,22 +5,21 @@ use std::{
 
 use capitalize::Capitalize;
 use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
+use strum_macros::{Display, EnumString};
 
 use crate::{
 	common::ports::RecordResolution,
-	domain::entities::{
-		account::AccountId, actor_profile::ActorProfileId, external_platform::ExternalPlatformTag,
-	},
+	domain::entities::{account::AccountId, actor_profile::ActorProfileId},
 };
 
-/// "{String}@{ExternalPlatformTag}"
+/// "{String}@{ExternalActorOrigin}"
 pub type ExternalActorId = String;
 
 #[table(name = external_actor, public)]
 /// Locally recognized format for third-party accounts
 pub struct ExternalActor {
 	#[primary_key]
-	/// "{String}@{ExternalPlatformTag}"
+	/// "{String}@{ExternalActorOrigin}"
 	pub id: ExternalActorId,
 
 	#[index(btree)]
@@ -55,7 +54,14 @@ impl RecordResolution<ExternalActor> for ExternalActorId {
 #[derive(SpacetimeType, Clone)]
 pub struct ExternalActorReference {
 	pub id:           String,
-	pub platform_tag: ExternalPlatformTag,
+	pub platform_tag: ExternalActorOrigin,
+}
+
+#[derive(SpacetimeType, Debug, Clone, PartialEq, Display, EnumString)]
+#[strum(serialize_all = "lowercase")]
+pub enum ExternalActorOrigin {
+	Telegram,
+	Unknown,
 }
 
 impl RecordResolution<ExternalActor> for ExternalActorReference {
@@ -91,7 +97,7 @@ impl FromStr for ExternalActorReference {
 		let id = parts.next().ok_or("missing id")?;
 
 		let platform_tag = platform_name_str
-			.parse::<ExternalPlatformTag>()
+			.parse::<ExternalActorOrigin>()
 			.map_err(|_| "invalid or unsupported platform specifier")?;
 
 		Ok(ExternalActorReference {

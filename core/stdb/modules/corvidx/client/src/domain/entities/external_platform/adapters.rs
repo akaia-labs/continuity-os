@@ -1,40 +1,40 @@
 use std::str::FromStr;
 
-use super::SupportedExternalPlatformTag;
-use crate::common::stdb::ExternalPlatformTag;
+use super::SupportedExternalActorOrigin;
+use crate::common::stdb::ExternalActorOrigin;
 
-impl ExternalPlatformTag {
-	pub fn into_supported(&self) -> SupportedExternalPlatformTag {
+impl ExternalActorOrigin {
+	pub fn into_supported(&self) -> SupportedExternalActorOrigin {
 		(*self).into()
 	}
 }
 
-impl From<SupportedExternalPlatformTag> for ExternalPlatformTag {
-	fn from(name_reference: SupportedExternalPlatformTag) -> Self {
+impl From<SupportedExternalActorOrigin> for ExternalActorOrigin {
+	fn from(name_reference: SupportedExternalActorOrigin) -> Self {
 		match name_reference {
-			| SupportedExternalPlatformTag::Telegram => ExternalPlatformTag::Telegram,
-			| SupportedExternalPlatformTag::Unknown => ExternalPlatformTag::Unknown,
+			| SupportedExternalActorOrigin::Telegram => ExternalActorOrigin::Telegram,
+			| SupportedExternalActorOrigin::Unknown => ExternalActorOrigin::Unknown,
 		}
 	}
 }
 
-impl Into<SupportedExternalPlatformTag> for ExternalPlatformTag {
-	fn into(self) -> SupportedExternalPlatformTag {
+impl Into<SupportedExternalActorOrigin> for ExternalActorOrigin {
+	fn into(self) -> SupportedExternalActorOrigin {
 		match self {
-			| ExternalPlatformTag::Telegram => SupportedExternalPlatformTag::Telegram,
-			| ExternalPlatformTag::Unknown => SupportedExternalPlatformTag::Unknown,
+			| ExternalActorOrigin::Telegram => SupportedExternalActorOrigin::Telegram,
+			| ExternalActorOrigin::Unknown => SupportedExternalActorOrigin::Unknown,
 		}
 	}
 }
 
-impl FromStr for ExternalPlatformTag {
+impl FromStr for ExternalActorOrigin {
 	type Err = &'static str;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		Ok(ExternalPlatformTag::from(
-			match s.parse::<SupportedExternalPlatformTag>() {
+		Ok(ExternalActorOrigin::from(
+			match s.parse::<SupportedExternalActorOrigin>() {
 				| Ok(platform_tag) => platform_tag,
-				| Err(_) => SupportedExternalPlatformTag::Unknown,
+				| Err(_) => SupportedExternalActorOrigin::Unknown,
 			},
 		))
 	}

@@ -4,7 +4,7 @@ use spacetimedb::{SpacetimeType, table};
 
 pub type ActorProfileId = i128;
 
-#[table(name = account_profile, public)]
+#[table(name = actor_profile, public)]
 pub struct ActorProfile {
 	#[auto_inc]
 	#[primary_key]

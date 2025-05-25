@@ -5,7 +5,7 @@ use corvidx_client::{
 		stdb::{EventContext, MessageAuthorId},
 	},
 	domain::{
-		entities::{message::MessageType, external_platform::SupportedExternalPlatformTag},
+		entities::{message::MessageType, external_platform::SupportedExternalActorOrigin},
 		intersections::PlatformAssociation,
 	},
 };
@@ -24,7 +24,7 @@ impl OutboundTelegramMessage {
 				.resolve(ctx)
 				.map(|account| {
 					account
-						.platform_association(ctx, SupportedExternalPlatformTag::Telegram)
+						.platform_association(ctx, SupportedExternalActorOrigin::Telegram)
 						.map_or(
 							(Some(account.role), account.profile(ctx)),
 							|external_actor| (None, external_actor.profile(ctx)),

@@ -4,17 +4,17 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-pub mod account_profile_table;
 pub mod account_role_type;
 pub mod account_table;
 pub mod account_type;
 pub mod actor_profile_metadata_type;
 pub mod actor_profile_name_type;
+pub mod actor_profile_table;
 pub mod actor_profile_type;
 pub mod admin_set_account_role_reducer;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
-pub mod create_external_authentication_request_reducer;
+pub mod external_actor_origin_type;
 pub mod external_actor_reference_type;
 pub mod external_actor_table;
 pub mod external_actor_type;
@@ -22,9 +22,9 @@ pub mod external_authentication_request_expiry_schedule_type;
 pub mod external_authentication_request_schedule_table;
 pub mod external_authentication_request_table;
 pub mod external_authentication_request_type;
-pub mod external_platform_tag_type;
 pub mod import_external_actor_reducer;
 pub mod import_message_reducer;
+pub mod initiate_external_authentication_reducer;
 pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
@@ -40,12 +40,12 @@ pub mod unlink_external_actor_reducer;
 pub mod update_external_actor_callsign_reducer;
 pub mod update_external_actor_profile_reducer;
 
-pub use account_profile_table::*;
 pub use account_role_type::AccountRole;
 pub use account_table::*;
 pub use account_type::Account;
 pub use actor_profile_metadata_type::ActorProfileMetadata;
 pub use actor_profile_name_type::ActorProfileName;
+pub use actor_profile_table::*;
 pub use actor_profile_type::ActorProfile;
 pub use admin_set_account_role_reducer::{
 	AdminSetAccountRoleCallbackId, admin_set_account_role, set_flags_for_admin_set_account_role,
@@ -56,10 +56,7 @@ pub use client_connected_reducer::{
 pub use client_disconnected_reducer::{
 	ClientDisconnectedCallbackId, client_disconnected, set_flags_for_client_disconnected,
 };
-pub use create_external_authentication_request_reducer::{
-	CreateExternalAuthenticationRequestCallbackId, create_external_authentication_request,
-	set_flags_for_create_external_authentication_request,
-};
+pub use external_actor_origin_type::ExternalActorOrigin;
 pub use external_actor_reference_type::ExternalActorReference;
 pub use external_actor_table::*;
 pub use external_actor_type::ExternalActor;
@@ -67,12 +64,15 @@ pub use external_authentication_request_expiry_schedule_type::ExternalAuthentica
 pub use external_authentication_request_schedule_table::*;
 pub use external_authentication_request_table::*;
 pub use external_authentication_request_type::ExternalAuthenticationRequest;
-pub use external_platform_tag_type::ExternalPlatformTag;
 pub use import_external_actor_reducer::{
 	ImportExternalActorCallbackId, import_external_actor, set_flags_for_import_external_actor,
 };
 pub use import_message_reducer::{
 	ImportMessageCallbackId, import_message, set_flags_for_import_message,
+};
+pub use initiate_external_authentication_reducer::{
+	InitiateExternalAuthenticationCallbackId, initiate_external_authentication,
+	set_flags_for_initiate_external_authentication,
 };
 pub use message_author_id_type::MessageAuthorId;
 pub use message_table::*;
@@ -125,9 +125,6 @@ pub enum Reducer {
 	},
 	ClientConnected,
 	ClientDisconnected,
-	CreateExternalAuthenticationRequest {
-		exref: ExternalActorReference,
-	},
 	ImportExternalActor {
 		reference: ExternalActorReference,
 		callsign:  Option<String>,
@@ -136,6 +133,9 @@ pub enum Reducer {
 	ImportMessage {
 		author_reference: ExternalActorReference,
 		text:             String,
+	},
+	InitiateExternalAuthentication {
+		exref: ExternalActorReference,
 	},
 	MirrorExternalProfile {
 		reference: ExternalActorReference,
@@ -180,11 +180,9 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
-			| Reducer::CreateExternalAuthenticationRequest { .. } => {
-				"create_external_authentication_request"
-			},
 			| Reducer::ImportExternalActor { .. } => "import_external_actor",
 			| Reducer::ImportMessage { .. } => "import_message",
+			| Reducer::InitiateExternalAuthentication { .. } => "initiate_external_authentication",
 			| Reducer::MirrorExternalProfile { .. } => "mirror_external_profile",
 			| Reducer::ReportExternalAuthenticationResolution { .. } => {
 				"report_external_authentication_resolution"
@@ -211,9 +209,9 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
                         "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<admin_set_account_role_reducer::AdminSetAccountRoleArgs>("admin_set_account_role", &value.args)?.into()),
             "client_connected" => Ok(__sdk::parse_reducer_args::<client_connected_reducer::ClientConnectedArgs>("client_connected", &value.args)?.into()),
             "client_disconnected" => Ok(__sdk::parse_reducer_args::<client_disconnected_reducer::ClientDisconnectedArgs>("client_disconnected", &value.args)?.into()),
-            "create_external_authentication_request" => Ok(__sdk::parse_reducer_args::<create_external_authentication_request_reducer::CreateExternalAuthenticationRequestArgs>("create_external_authentication_request", &value.args)?.into()),
             "import_external_actor" => Ok(__sdk::parse_reducer_args::<import_external_actor_reducer::ImportExternalActorArgs>("import_external_actor", &value.args)?.into()),
             "import_message" => Ok(__sdk::parse_reducer_args::<import_message_reducer::ImportMessageArgs>("import_message", &value.args)?.into()),
+            "initiate_external_authentication" => Ok(__sdk::parse_reducer_args::<initiate_external_authentication_reducer::InitiateExternalAuthenticationArgs>("initiate_external_authentication", &value.args)?.into()),
             "mirror_external_profile" => Ok(__sdk::parse_reducer_args::<mirror_external_profile_reducer::MirrorExternalProfileArgs>("mirror_external_profile", &value.args)?.into()),
             "report_external_authentication_resolution" => Ok(__sdk::parse_reducer_args::<report_external_authentication_resolution_reducer::ReportExternalAuthenticationResolutionArgs>("report_external_authentication_resolution", &value.args)?.into()),
             "resolve_external_authentication_request" => Ok(__sdk::parse_reducer_args::<resolve_external_authentication_request_reducer::ResolveExternalAuthenticationRequestArgs>("resolve_external_authentication_request", &value.args)?.into()),
@@ -233,7 +231,7 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 #[doc(hidden)]
 pub struct DbUpdate {
 	account: __sdk::TableUpdate<Account>,
-	account_profile: __sdk::TableUpdate<ActorProfile>,
+	actor_profile: __sdk::TableUpdate<ActorProfile>,
 	external_actor: __sdk::TableUpdate<ExternalActor>,
 	external_authentication_request: __sdk::TableUpdate<ExternalAuthenticationRequest>,
 	external_authentication_request_schedule:
@@ -250,9 +248,8 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 		for table_update in raw.tables {
 			match &table_update.table_name[..] {
 				| "account" => db_update.account = account_table::parse_table_update(table_update)?,
-				| "account_profile" => {
-					db_update.account_profile =
-						account_profile_table::parse_table_update(table_update)?
+				| "actor_profile" => {
+					db_update.actor_profile = actor_profile_table::parse_table_update(table_update)?
 				},
 				| "external_actor" => {
 					db_update.external_actor =
@@ -300,8 +297,8 @@ impl __sdk::DbUpdate for DbUpdate {
 		diff.account = cache
 			.apply_diff_to_table::<Account>("account", &self.account)
 			.with_updates_by_pk(|row| &row.id);
-		diff.account_profile = cache
-			.apply_diff_to_table::<ActorProfile>("account_profile", &self.account_profile)
+		diff.actor_profile = cache
+			.apply_diff_to_table::<ActorProfile>("actor_profile", &self.actor_profile)
 			.with_updates_by_pk(|row| &row.id);
 		diff.external_actor = cache
 			.apply_diff_to_table::<ExternalActor>("external_actor", &self.external_actor)
@@ -334,7 +331,7 @@ impl __sdk::DbUpdate for DbUpdate {
 #[doc(hidden)]
 pub struct AppliedDiff<'r> {
 	account: __sdk::TableAppliedDiff<'r, Account>,
-	account_profile: __sdk::TableAppliedDiff<'r, ActorProfile>,
+	actor_profile: __sdk::TableAppliedDiff<'r, ActorProfile>,
 	external_actor: __sdk::TableAppliedDiff<'r, ExternalActor>,
 	external_authentication_request: __sdk::TableAppliedDiff<'r, ExternalAuthenticationRequest>,
 	external_authentication_request_schedule:
@@ -353,8 +350,8 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 	) {
 		callbacks.invoke_table_row_callbacks::<Account>("account", &self.account, event);
 		callbacks.invoke_table_row_callbacks::<ActorProfile>(
-			"account_profile",
-			&self.account_profile,
+			"actor_profile",
+			&self.actor_profile,
 			event,
 		);
 		callbacks.invoke_table_row_callbacks::<ExternalActor>(
@@ -1008,7 +1005,7 @@ impl __sdk::SpacetimeModule for RemoteModule {
 
 	fn register_tables(client_cache: &mut __sdk::ClientCache<Self>) {
 		account_table::register_table(client_cache);
-		account_profile_table::register_table(client_cache);
+		actor_profile_table::register_table(client_cache);
 		external_actor_table::register_table(client_cache);
 		external_authentication_request_table::register_table(client_cache);
 		external_authentication_request_schedule_table::register_table(client_cache);

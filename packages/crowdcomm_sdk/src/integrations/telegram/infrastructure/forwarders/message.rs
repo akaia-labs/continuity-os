@@ -2,7 +2,7 @@ use std::{str::FromStr, sync::Arc};
 
 use corvidx_client::{
 	common::stdb::{EventContext, Message, MessageAuthorId, ExternalActorReference},
-	domain::entities::external_platform::SupportedExternalPlatformTag,
+	domain::entities::external_platform::SupportedExternalActorOrigin,
 };
 use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
@@ -43,7 +43,7 @@ impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
 
 		// Ignore messages originated from Telegram
 		if external_platform_tag.is_none()
-			|| external_platform_tag.is_some_and(|tag| tag != SupportedExternalPlatformTag::Telegram)
+			|| external_platform_tag.is_some_and(|tag| tag != SupportedExternalActorOrigin::Telegram)
 		{
 			// Only forward messages sent after forwarder initialization
 			if self.initialized_at.le(&msg.sent_at) {

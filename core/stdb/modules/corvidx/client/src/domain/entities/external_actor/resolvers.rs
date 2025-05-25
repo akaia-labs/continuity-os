@@ -2,16 +2,16 @@ use super::ExternalActorId;
 use crate::common::{
 	ports::{ProfileResolution, RecordResolution},
 	stdb::{
-		ActorProfile, ActorProfileTableAccess, AccountTableAccess, RemoteDbContext,
-		ExternalActor, ExternalActorReference, ExternalActorTableAccess,
+		AccountTableAccess, ActorProfile, ActorProfileTableAccess, ExternalActor,
+		ExternalActorReference, ExternalActorTableAccess, RemoteDbContext,
 	},
 };
 
 impl ProfileResolution for ExternalActor {
 	/// Resolves a third-party account profile
 	fn profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
-		if let Some(profile_id) = self.profile_id {
-			ctx.db().account_profile().id().find(&profile_id)
+		if let Some(profile_id) = self.profile {
+			ctx.db().actor_profile().id().find(&profile_id)
 		} else {
 			None
 		}
@@ -25,8 +25,8 @@ impl ProfileResolution for ExternalActor {
 			.and_then(|id| ctx.db().account().id().find(&id))
 		{
 			owner.native_profile(ctx)
-		} else if let Some(profile_id) = self.profile_id {
-			ctx.db().account_profile().id().find(&profile_id)
+		} else if let Some(profile_id) = self.profile {
+			ctx.db().actor_profile().id().find(&profile_id)
 		} else {
 			None
 		}

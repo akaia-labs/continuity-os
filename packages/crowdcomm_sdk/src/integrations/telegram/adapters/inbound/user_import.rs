@@ -1,5 +1,5 @@
 use corvidx_client::common::stdb::{
-	ActorProfileMetadata, ActorProfileName, ExternalActorReference, ExternalPlatformTag,
+	ActorProfileMetadata, ActorProfileName, ExternalActorReference, ExternalActorOrigin,
 };
 use teloxide_core::types::User;
 
@@ -9,7 +9,7 @@ impl ExternalActorImport for User {
 	fn into_account_reference(&self) -> ExternalActorReference {
 		ExternalActorReference {
 			id:           self.id.to_string(),
-			platform_tag: ExternalPlatformTag::Telegram,
+			platform_tag: ExternalActorOrigin::Telegram,
 		}
 	}
 }

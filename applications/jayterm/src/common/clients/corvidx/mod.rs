@@ -104,7 +104,7 @@ fn on_sub_applied(corvidx: &SubscriptionEventContext) {
 		println!("\n{:?}", account)
 	}
 
-	let profiles = corvidx.db.account_profile().iter().collect::<Vec<_>>();
+	let profiles = corvidx.db.actor_profile().iter().collect::<Vec<_>>();
 
 	for profile in profiles {
 		println!("\n{:?}", profile)
@@ -124,7 +124,7 @@ pub fn subscribe_to_tables(corvidx: &DbConnection) {
 		.on_error(on_sub_error)
 		.subscribe([
 			"SELECT * FROM external_authentication_request",
-			"SELECT * FROM account_profile",
+			"SELECT * FROM actor_profile",
 			"SELECT * FROM external_actor",
 			"SELECT * FROM message",
 			// "SELECT * FROM message_channel",

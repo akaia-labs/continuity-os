@@ -1,1 +1,1 @@
-mod mirroring_reducers;
+mod reducers;

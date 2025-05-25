@@ -2,7 +2,7 @@ use std::{str::FromStr, sync::Arc};
 
 use corvidx_client::{
 	common::stdb::{ExternalAuthenticationRequest, EventContext, ExternalActorReference},
-	domain::entities::external_platform::SupportedExternalPlatformTag,
+	domain::entities::external_platform::SupportedExternalActorOrigin,
 };
 use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
@@ -38,7 +38,7 @@ impl CorvidxEventHandler<ExternalAuthenticationRequest> for TelegramActionReques
 		let platform_tag = ExternalActorReference::from_str(&alr.subject_account_id)
 			.map_or(None, |tpar| Some(tpar.platform_tag.into_supported()));
 
-		if platform_tag.is_some_and(|tag| tag == SupportedExternalPlatformTag::Telegram) {
+		if platform_tag.is_some_and(|tag| tag == SupportedExternalActorOrigin::Telegram) {
 			let dto_result = OutboundTelegramActionRequest::from_external_authentication_request(ctx, alr);
 
 			if let Ok(dto) = dto_result {

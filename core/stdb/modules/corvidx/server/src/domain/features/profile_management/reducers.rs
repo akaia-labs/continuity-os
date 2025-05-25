@@ -3,7 +3,7 @@ use spacetimedb::{ReducerContext, reducer};
 use crate::{
 	common::ports::RecordResolution,
 	domain::entities::{
-		actor_profile::{ActorProfile, account_profile},
+		actor_profile::{ActorProfile, actor_profile},
 		external_actor::ExternalActorReference,
 	},
 };
@@ -25,7 +25,7 @@ pub fn mirror_external_profile(
 	}
 
 	let external_profile = if let Some(external_profile_id) = external_actor.profile {
-		ctx.db.account_profile().id().find(external_profile_id)
+		ctx.db.actor_profile().id().find(external_profile_id)
 	} else {
 		None
 	}
@@ -33,7 +33,7 @@ pub fn mirror_external_profile(
 		"External account {reference} does not have a profile."
 	))?;
 
-	ctx.db.account_profile().id().update(ActorProfile {
+	ctx.db.actor_profile().id().update(ActorProfile {
 		id:       account.profile,
 		metadata: external_profile.metadata,
 	});

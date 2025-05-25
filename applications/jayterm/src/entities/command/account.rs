@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
 use crowdcomm_sdk::corvidx::stdb::{
-	DbConnection, ExternalActorReference, create_external_authentication_request, mirror_external_profile,
-	set_account_callsign, unlink_external_actor,
+	DbConnection, ExternalActorReference, initiate_external_authentication,
+	mirror_external_profile, set_account_callsign, unlink_external_actor,
 };
 use strum_macros::{Display, EnumString};
 
@@ -30,7 +30,7 @@ pub fn on_account_command(
 
 			corvidx
 				.reducers
-				.create_external_authentication_request(exref)
+				.initiate_external_authentication(exref)
 				.map_err(|e| e.to_string())
 		},
 

@@ -4,13 +4,13 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::external_platform_tag_type::ExternalPlatformTag;
+use super::external_actor_origin_type::ExternalActorOrigin;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct ExternalActorReference {
 	pub id:           String,
-	pub platform_tag: ExternalPlatformTag,
+	pub platform_tag: ExternalActorOrigin,
 }
 
 impl __sdk::InModule for ExternalActorReference {
