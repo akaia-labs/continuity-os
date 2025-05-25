@@ -7,9 +7,9 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub enum MessageAuthorId {
-	NativeAccountId(__sdk::Identity),
+	AccountId(__sdk::Identity),
 
-	ExternalAccountId(String),
+	ExternalActorId(String),
 
 	Unknown,
 }

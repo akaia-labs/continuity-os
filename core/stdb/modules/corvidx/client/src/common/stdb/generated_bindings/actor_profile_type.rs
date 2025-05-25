@@ -4,15 +4,15 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::account_profile_name_type::AccountProfileName;
+use super::actor_profile_metadata_type::ActorProfileMetadata;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub struct AccountProfileMetadata {
-	pub name: AccountProfileName,
-	pub bio:  String,
+pub struct ActorProfile {
+	pub id:       i128,
+	pub metadata: ActorProfileMetadata,
 }
 
-impl __sdk::InModule for AccountProfileMetadata {
+impl __sdk::InModule for ActorProfile {
 	type Module = super::RemoteModule;
 }

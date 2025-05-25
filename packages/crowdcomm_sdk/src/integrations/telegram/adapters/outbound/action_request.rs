@@ -3,7 +3,7 @@ use corvidx_client::{
 	common::{
 		ports::RecordResolution,
 		presentation::DisplayName,
-		stdb::{AccountLinkRequest, EventContext, ExternalActorReference},
+		stdb::{ExternalAuthenticationRequest, EventContext, ExternalActorReference},
 	},
 	domain::entities::{message::MessageType, external_platform::SupportedExternalPlatformTag},
 };
@@ -12,14 +12,14 @@ use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
 use crate::integrations::{
-	commands::AccountLinkRequestAction,
+	commands::ExternalAuthenticationRequestAction,
 	dtos::{ActionKind, ActionCommand},
 	telegram::shared::constants::TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT,
 };
 
 impl OutboundTelegramActionRequest {
-	pub fn from_account_link_request(
-		ctx: &EventContext, alr: &AccountLinkRequest,
+	pub fn from_external_authentication_request(
+		ctx: &EventContext, alr: &ExternalAuthenticationRequest,
 	) -> Result<Self, String> {
 		let issuer_account = alr
 			.issuer
@@ -55,17 +55,17 @@ impl OutboundTelegramActionRequest {
 		let requester_name = requester_account.display_name(ctx);
 
 		// TODO: Abstract the choice mapping away, along with error handling
-		let accept_choice = AccountLinkRequestAction::Accept(alr.id);
-		let reject_choice = AccountLinkRequestAction::Reject(alr.id);
+		let accept_choice = ExternalAuthenticationRequestAction::Accept(alr.id);
+		let reject_choice = ExternalAuthenticationRequestAction::Reject(alr.id);
 
 		let accept_callback_payload = ActionCommand {
-			kind:    ActionKind::AccountLinkRequest,
+			kind:    ActionKind::ExternalAuthenticationRequest,
 			payload: accept_choice,
 		}
 		.try_to_string()?;
 
 		let reject_callback_payload = ActionCommand {
-			kind:    ActionKind::AccountLinkRequest,
+			kind:    ActionKind::ExternalAuthenticationRequest,
 			payload: reject_choice,
 		}
 		.try_to_string()?;

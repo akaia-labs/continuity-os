@@ -5,8 +5,8 @@ use corvutils::StringExtensions;
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::model::{
-	AccountLinkRequest, AccountLinkRequestExpirySchedule, AccountLinkRequestId,
-	account_link_request,
+	ExternalAuthenticationRequest, ExternalAuthenticationRequestExpirySchedule,
+	ExternalAuthenticationRequestId, external_authentication_request,
 };
 use crate::{
 	common::ports::RecordResolution,
@@ -16,7 +16,7 @@ use crate::{
 			external_actor::{ExternalActor, ExternalActorReference, external_actor},
 			message::{Message, MessageAuthorId, message},
 		},
-		features::external_authentication::model::account_link_request_schedule,
+		features::external_authentication::external_authentication_request_schedule,
 	},
 };
 
@@ -25,7 +25,7 @@ const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 // TODO Implement rate limit
 #[reducer]
 /// Creates a third-party to internal account link request.
-pub fn create_account_link_request(
+pub fn create_external_authentication_request(
 	ctx: &ReducerContext, exref: ExternalActorReference,
 ) -> Result<(), String> {
 	let external_actor = exref.try_resolve(ctx)?;
@@ -38,28 +38,31 @@ pub fn create_account_link_request(
 
 	let account = ctx.sender.try_resolve(ctx)?;
 
-	let request = ctx.db.account_link_request().insert(AccountLinkRequest {
-		id:                   0,
-		issuer:               ctx.identity(),
-		created_at:           ctx.timestamp,
-		requester_account_id: account.id,
-		subject_account_id:   external_actor.id,
+	let request = ctx
+		.db
+		.external_authentication_request()
+		.insert(ExternalAuthenticationRequest {
+			id:                   0,
+			issuer:               ctx.identity(),
+			created_at:           ctx.timestamp,
+			requester_account_id: account.id,
+			subject_account_id:   external_actor.id,
 
-		expires_at: ctx
-			.timestamp
-			.checked_add(LINK_REQUEST_TIMEOUT.into())
-			.ok_or(format!(
-				"Unable to calculate account link request expiration date for {exref}."
-			))?,
-	});
+			expires_at: ctx
+				.timestamp
+				.checked_add(LINK_REQUEST_TIMEOUT.into())
+				.ok_or(format!(
+					"Unable to calculate account link request expiration date for {exref}."
+				))?,
+		});
 
-	ctx.db
-		.account_link_request_schedule()
-		.insert(AccountLinkRequestExpirySchedule {
+	ctx.db.external_authentication_request_schedule().insert(
+		ExternalAuthenticationRequestExpirySchedule {
 			scheduled_id: 0,
 			scheduled_at: request.expires_at.into(),
 			request_id:   request.id,
-		});
+		},
+	);
 
 	log::info!(
 		"{requester} created an account link request {id} for third-party account {exref}.",
@@ -72,12 +75,12 @@ pub fn create_account_link_request(
 
 #[reducer]
 /// Binds a third-party account to a internal account.
-pub fn resolve_account_link_request(
-	ctx: &ReducerContext, request_id: AccountLinkRequestId, is_approved: bool,
+pub fn resolve_external_authentication_request(
+	ctx: &ReducerContext, request_id: ExternalAuthenticationRequestId, is_approved: bool,
 ) -> Result<(), String> {
 	let request = request_id.try_resolve(ctx)?;
 
-	let AccountLinkRequest {
+	let ExternalAuthenticationRequest {
 		requester_account_id,
 		subject_account_id,
 		..
@@ -99,8 +102,11 @@ pub fn resolve_account_link_request(
 		ctx.db.account().id().update(account);
 	}
 
-	ctx.db.account_link_request().id().delete(request_id);
-	report_account_link_resolution(ctx, request, is_approved);
+	ctx.db
+		.external_authentication_request()
+		.id()
+		.delete(request_id);
+	report_external_authentication_resolution(ctx, request, is_approved);
 
 	Ok(())
 }
@@ -136,10 +142,10 @@ pub fn unlink_external_actor(
 
 #[reducer]
 /// Reports account link resolution outcome.
-pub fn report_account_link_resolution(
-	ctx: &ReducerContext, request: AccountLinkRequest, is_approved: bool,
+pub fn report_external_authentication_resolution(
+	ctx: &ReducerContext, request: ExternalAuthenticationRequest, is_approved: bool,
 ) {
-	let AccountLinkRequest {
+	let ExternalAuthenticationRequest {
 		requester_account_id: _,
 		subject_account_id,
 		..
@@ -178,19 +184,22 @@ pub fn report_account_link_resolution(
 #[reducer]
 /// Removes an account link request.
 /// Should only be invoked via a scheduled task.
-pub fn scheduled_delete_account_link_request(
-	ctx: &ReducerContext, args: AccountLinkRequestExpirySchedule,
+pub fn scheduled_delete_external_authentication_request(
+	ctx: &ReducerContext, args: ExternalAuthenticationRequestExpirySchedule,
 ) -> Result<(), String> {
 	if ctx.sender != ctx.identity() {
 		return Err(r#"
-			Reducer `scheduled_delete_account_link_request`
+			Reducer `scheduled_delete_external_authentication_request`
 			may not be invoked by clients, only via scheduling.
 		"#
 		.to_string()
 		.squash_whitespace());
 	}
 
-	ctx.db.account_link_request().id().delete(args.request_id);
+	ctx.db
+		.external_authentication_request()
+		.id()
+		.delete(args.request_id);
 	log::info!("Account link request {} expired.", args.request_id);
 
 	Ok(())

@@ -123,7 +123,7 @@ pub fn subscribe_to_tables(corvidx: &DbConnection) {
 		.on_applied(on_sub_applied)
 		.on_error(on_sub_error)
 		.subscribe([
-			"SELECT * FROM account_link_request",
+			"SELECT * FROM external_authentication_request",
 			"SELECT * FROM account_profile",
 			"SELECT * FROM external_actor",
 			"SELECT * FROM message",

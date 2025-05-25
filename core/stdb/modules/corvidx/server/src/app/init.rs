@@ -18,7 +18,7 @@ pub fn init(ctx: &ReducerContext) {
 		updated_at:        ctx.timestamp,
 		exac_associations: vec![],
 
-		profile_id: ctx
+		profile: ctx
 			.db
 			.account_profile()
 			.insert(ActorProfile {

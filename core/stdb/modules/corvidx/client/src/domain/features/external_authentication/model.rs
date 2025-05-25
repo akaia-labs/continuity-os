@@ -1,1 +1,1 @@
-pub type AccountLinkRequestId = u64;
+pub type ExternalAuthenticationRequestId = u64;

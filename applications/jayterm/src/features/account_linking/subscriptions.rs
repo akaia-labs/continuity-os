@@ -1,9 +1,9 @@
 use corvutils::StringExtensions;
 use crowdcomm_sdk::corvidx::{
-	external_authentication::AccountLinkRequestId,
+	external_authentication::ExternalAuthenticationRequestId,
 	stdb::{
 		DbConnection, ExternalActorReference, ReducerEventContext, mirror_external_profile,
-		resolve_account_link_request, unlink_external_actor,
+		resolve_external_authentication_request, unlink_external_actor,
 	},
 };
 use spacetimedb_sdk::Status;
@@ -11,7 +11,7 @@ use spacetimedb_sdk::Status;
 pub fn subscribe(corvidx: &DbConnection) {
 	corvidx
 		.reducers
-		.on_resolve_account_link_request(on_resolve_account_link_request);
+		.on_resolve_external_authentication_request(on_resolve_external_authentication_request);
 
 	corvidx
 		.reducers
@@ -23,8 +23,8 @@ pub fn subscribe(corvidx: &DbConnection) {
 }
 
 // TODO: Send service DM to the particular requester instead
-fn on_resolve_account_link_request(
-	corvidx: &ReducerEventContext, request_id: &AccountLinkRequestId, is_approved: &bool,
+fn on_resolve_external_authentication_request(
+	corvidx: &ReducerEventContext, request_id: &ExternalAuthenticationRequestId, is_approved: &bool,
 ) {
 	match &corvidx.event.status {
 		| Status::Committed => {

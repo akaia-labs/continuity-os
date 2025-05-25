@@ -4,9 +4,7 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::{
-	account_profile_metadata_type::AccountProfileMetadata, account_profile_type::AccountProfile,
-};
+use super::{actor_profile_metadata_type::ActorProfileMetadata, actor_profile_type::ActorProfile};
 
 /// Table handle for the table `account_profile`.
 ///
@@ -17,7 +15,7 @@ use super::{
 /// but to directly chain method calls,
 /// like `ctx.db.account_profile().on_insert(...)`.
 pub struct AccountProfileTableHandle<'ctx> {
-	imp: __sdk::TableHandle<AccountProfile>,
+	imp: __sdk::TableHandle<ActorProfile>,
 	ctx: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -35,7 +33,7 @@ pub trait AccountProfileTableAccess {
 impl AccountProfileTableAccess for super::RemoteTables {
 	fn account_profile(&self) -> AccountProfileTableHandle<'_> {
 		AccountProfileTableHandle {
-			imp: self.imp.get_table::<AccountProfile>("account_profile"),
+			imp: self.imp.get_table::<ActorProfile>("account_profile"),
 			ctx: std::marker::PhantomData,
 		}
 	}
@@ -48,13 +46,13 @@ impl<'ctx> __sdk::Table for AccountProfileTableHandle<'ctx> {
 	type DeleteCallbackId = AccountProfileDeleteCallbackId;
 	type EventContext = super::EventContext;
 	type InsertCallbackId = AccountProfileInsertCallbackId;
-	type Row = AccountProfile;
+	type Row = ActorProfile;
 
 	fn count(&self) -> u64 {
 		self.imp.count()
 	}
 
-	fn iter(&self) -> impl Iterator<Item = AccountProfile> + '_ {
+	fn iter(&self) -> impl Iterator<Item = ActorProfile> + '_ {
 		self.imp.iter()
 	}
 
@@ -81,7 +79,7 @@ impl<'ctx> __sdk::Table for AccountProfileTableHandle<'ctx> {
 
 #[doc(hidden)]
 pub(super) fn register_table(client_cache: &mut __sdk::ClientCache<super::RemoteModule>) {
-	let _table = client_cache.get_or_make_table::<AccountProfile>("account_profile");
+	let _table = client_cache.get_or_make_table::<ActorProfile>("account_profile");
 	_table.add_unique_constraint::<i128>("id", |row| &row.id);
 }
 pub struct AccountProfileUpdateCallbackId(__sdk::CallbackId);
@@ -103,9 +101,9 @@ impl<'ctx> __sdk::TableWithPrimaryKey for AccountProfileTableHandle<'ctx> {
 #[doc(hidden)]
 pub(super) fn parse_table_update(
 	raw_updates: __ws::TableUpdate<__ws::BsatnFormat>,
-) -> __sdk::Result<__sdk::TableUpdate<AccountProfile>> {
+) -> __sdk::Result<__sdk::TableUpdate<ActorProfile>> {
 	__sdk::TableUpdate::parse_table_update(raw_updates).map_err(|e| {
-		__sdk::InternalError::failed_parse("TableUpdate<AccountProfile>", "TableUpdate")
+		__sdk::InternalError::failed_parse("TableUpdate<ActorProfile>", "TableUpdate")
 			.with_cause(e)
 			.into()
 	})
@@ -119,7 +117,7 @@ pub(super) fn parse_table_update(
 /// but to directly chain method calls,
 /// like `ctx.db.account_profile().id().find(...)`.
 pub struct AccountProfileIdUnique<'ctx> {
-	imp:     __sdk::UniqueConstraintHandle<AccountProfile, i128>,
+	imp:     __sdk::UniqueConstraintHandle<ActorProfile, i128>,
 	phantom: std::marker::PhantomData<&'ctx super::RemoteTables>,
 }
 
@@ -136,7 +134,7 @@ impl<'ctx> AccountProfileTableHandle<'ctx> {
 impl<'ctx> AccountProfileIdUnique<'ctx> {
 	/// Find the subscribed row whose `id` column value is equal to `col_val`,
 	/// if such a row is present in the client cache.
-	pub fn find(&self, col_val: &i128) -> Option<AccountProfile> {
+	pub fn find(&self, col_val: &i128) -> Option<ActorProfile> {
 		self.imp.find(col_val)
 	}
 }

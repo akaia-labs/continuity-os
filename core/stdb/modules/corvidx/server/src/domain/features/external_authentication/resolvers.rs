@@ -1,12 +1,12 @@
 use spacetimedb::ReducerContext;
 
-use super::model::{AccountLinkRequest, AccountLinkRequestId, account_link_request};
+use super::model::{ExternalAuthenticationRequest, ExternalAuthenticationRequestId, external_authentication_request};
 use crate::common::ports::RecordResolution;
 
-impl RecordResolution<AccountLinkRequest> for AccountLinkRequestId {
-	fn try_resolve(&self, ctx: &ReducerContext) -> Result<AccountLinkRequest, String> {
+impl RecordResolution<ExternalAuthenticationRequest> for ExternalAuthenticationRequestId {
+	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ExternalAuthenticationRequest, String> {
 		ctx.db
-			.account_link_request()
+			.external_authentication_request()
 			.id()
 			.find(*self)
 			.ok_or(format!("Account link request {self} does not exist."))

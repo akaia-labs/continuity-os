@@ -4,50 +4,49 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-pub mod account_link_request_expiry_schedule_type;
-pub mod account_link_request_schedule_table;
-pub mod account_link_request_table;
-pub mod account_link_request_type;
-pub mod account_profile_metadata_type;
-pub mod account_profile_name_type;
 pub mod account_profile_table;
-pub mod account_profile_type;
+pub mod account_role_type;
+pub mod account_table;
+pub mod account_type;
+pub mod actor_profile_metadata_type;
+pub mod actor_profile_name_type;
+pub mod actor_profile_type;
 pub mod admin_set_account_role_reducer;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
-pub mod create_account_link_request_reducer;
-pub mod external_account_reference_type;
-pub mod external_account_table;
-pub mod external_account_type;
+pub mod create_external_authentication_request_reducer;
+pub mod external_actor_reference_type;
+pub mod external_actor_table;
+pub mod external_actor_type;
+pub mod external_authentication_request_expiry_schedule_type;
+pub mod external_authentication_request_schedule_table;
+pub mod external_authentication_request_table;
+pub mod external_authentication_request_type;
 pub mod external_platform_tag_type;
-pub mod import_external_account_reducer;
+pub mod import_external_actor_reducer;
 pub mod import_message_reducer;
 pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
 pub mod mirror_external_profile_reducer;
-pub mod native_account_local_role_type;
-pub mod native_account_table;
-pub mod native_account_type;
-pub mod report_account_link_resolution_reducer;
-pub mod resolve_account_link_request_reducer;
-pub mod scheduled_delete_account_link_request_reducer;
+pub mod report_external_authentication_resolution_reducer;
+pub mod resolve_external_authentication_request_reducer;
+pub mod scheduled_delete_external_authentication_request_reducer;
 pub mod send_message_reducer;
 pub mod set_account_callsign_reducer;
 pub mod text_channel_table;
 pub mod text_channel_type;
-pub mod unlink_external_account_reducer;
-pub mod update_external_account_callsign_reducer;
-pub mod update_external_account_profile_reducer;
+pub mod unlink_external_actor_reducer;
+pub mod update_external_actor_callsign_reducer;
+pub mod update_external_actor_profile_reducer;
 
-pub use account_link_request_expiry_schedule_type::AccountLinkRequestExpirySchedule;
-pub use account_link_request_schedule_table::*;
-pub use account_link_request_table::*;
-pub use account_link_request_type::AccountLinkRequest;
-pub use account_profile_metadata_type::AccountProfileMetadata;
-pub use account_profile_name_type::AccountProfileName;
 pub use account_profile_table::*;
-pub use account_profile_type::AccountProfile;
+pub use account_role_type::AccountRole;
+pub use account_table::*;
+pub use account_type::Account;
+pub use actor_profile_metadata_type::ActorProfileMetadata;
+pub use actor_profile_name_type::ActorProfileName;
+pub use actor_profile_type::ActorProfile;
 pub use admin_set_account_role_reducer::{
 	AdminSetAccountRoleCallbackId, admin_set_account_role, set_flags_for_admin_set_account_role,
 };
@@ -57,16 +56,20 @@ pub use client_connected_reducer::{
 pub use client_disconnected_reducer::{
 	ClientDisconnectedCallbackId, client_disconnected, set_flags_for_client_disconnected,
 };
-pub use create_account_link_request_reducer::{
-	CreateAccountLinkRequestCallbackId, create_account_link_request,
-	set_flags_for_create_account_link_request,
+pub use create_external_authentication_request_reducer::{
+	CreateExternalAuthenticationRequestCallbackId, create_external_authentication_request,
+	set_flags_for_create_external_authentication_request,
 };
-pub use external_account_reference_type::ExternalAccountReference;
-pub use external_account_table::*;
-pub use external_account_type::ExternalAccount;
+pub use external_actor_reference_type::ExternalActorReference;
+pub use external_actor_table::*;
+pub use external_actor_type::ExternalActor;
+pub use external_authentication_request_expiry_schedule_type::ExternalAuthenticationRequestExpirySchedule;
+pub use external_authentication_request_schedule_table::*;
+pub use external_authentication_request_table::*;
+pub use external_authentication_request_type::ExternalAuthenticationRequest;
 pub use external_platform_tag_type::ExternalPlatformTag;
-pub use import_external_account_reducer::{
-	ImportExternalAccountCallbackId, import_external_account, set_flags_for_import_external_account,
+pub use import_external_actor_reducer::{
+	ImportExternalActorCallbackId, import_external_actor, set_flags_for_import_external_actor,
 };
 pub use import_message_reducer::{
 	ImportMessageCallbackId, import_message, set_flags_for_import_message,
@@ -77,20 +80,18 @@ pub use message_type::Message;
 pub use mirror_external_profile_reducer::{
 	MirrorExternalProfileCallbackId, mirror_external_profile, set_flags_for_mirror_external_profile,
 };
-pub use native_account_local_role_type::NativeAccountLocalRole;
-pub use native_account_table::*;
-pub use native_account_type::NativeAccount;
-pub use report_account_link_resolution_reducer::{
-	ReportAccountLinkResolutionCallbackId, report_account_link_resolution,
-	set_flags_for_report_account_link_resolution,
+pub use report_external_authentication_resolution_reducer::{
+	ReportExternalAuthenticationResolutionCallbackId, report_external_authentication_resolution,
+	set_flags_for_report_external_authentication_resolution,
 };
-pub use resolve_account_link_request_reducer::{
-	ResolveAccountLinkRequestCallbackId, resolve_account_link_request,
-	set_flags_for_resolve_account_link_request,
+pub use resolve_external_authentication_request_reducer::{
+	ResolveExternalAuthenticationRequestCallbackId, resolve_external_authentication_request,
+	set_flags_for_resolve_external_authentication_request,
 };
-pub use scheduled_delete_account_link_request_reducer::{
-	ScheduledDeleteAccountLinkRequestCallbackId, scheduled_delete_account_link_request,
-	set_flags_for_scheduled_delete_account_link_request,
+pub use scheduled_delete_external_authentication_request_reducer::{
+	ScheduledDeleteExternalAuthenticationRequestCallbackId,
+	scheduled_delete_external_authentication_request,
+	set_flags_for_scheduled_delete_external_authentication_request,
 };
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
 pub use set_account_callsign_reducer::{
@@ -98,16 +99,16 @@ pub use set_account_callsign_reducer::{
 };
 pub use text_channel_table::*;
 pub use text_channel_type::TextChannel;
-pub use unlink_external_account_reducer::{
-	UnlinkExternalAccountCallbackId, set_flags_for_unlink_external_account, unlink_external_account,
+pub use unlink_external_actor_reducer::{
+	UnlinkExternalActorCallbackId, set_flags_for_unlink_external_actor, unlink_external_actor,
 };
-pub use update_external_account_callsign_reducer::{
-	UpdateExternalAccountCallsignCallbackId, set_flags_for_update_external_account_callsign,
-	update_external_account_callsign,
+pub use update_external_actor_callsign_reducer::{
+	UpdateExternalActorCallsignCallbackId, set_flags_for_update_external_actor_callsign,
+	update_external_actor_callsign,
 };
-pub use update_external_account_profile_reducer::{
-	UpdateExternalAccountProfileCallbackId, set_flags_for_update_external_account_profile,
-	update_external_account_profile,
+pub use update_external_actor_profile_reducer::{
+	UpdateExternalActorProfileCallbackId, set_flags_for_update_external_actor_profile,
+	update_external_actor_profile,
 };
 
 #[derive(Clone, PartialEq, Debug)]
@@ -120,35 +121,35 @@ pub use update_external_account_profile_reducer::{
 pub enum Reducer {
 	AdminSetAccountRole {
 		account_id: __sdk::Identity,
-		role:       NativeAccountLocalRole,
+		role:       AccountRole,
 	},
 	ClientConnected,
 	ClientDisconnected,
-	CreateAccountLinkRequest {
-		reference: ExternalAccountReference,
+	CreateExternalAuthenticationRequest {
+		exref: ExternalActorReference,
 	},
-	ImportExternalAccount {
-		reference: ExternalAccountReference,
+	ImportExternalActor {
+		reference: ExternalActorReference,
 		callsign:  Option<String>,
-		metadata:  Option<AccountProfileMetadata>,
+		metadata:  Option<ActorProfileMetadata>,
 	},
 	ImportMessage {
-		author_reference: ExternalAccountReference,
+		author_reference: ExternalActorReference,
 		text:             String,
 	},
 	MirrorExternalProfile {
-		reference: ExternalAccountReference,
+		reference: ExternalActorReference,
 	},
-	ReportAccountLinkResolution {
-		request:     AccountLinkRequest,
+	ReportExternalAuthenticationResolution {
+		request:     ExternalAuthenticationRequest,
 		is_approved: bool,
 	},
-	ResolveAccountLinkRequest {
+	ResolveExternalAuthenticationRequest {
 		request_id:  u64,
 		is_approved: bool,
 	},
-	ScheduledDeleteAccountLinkRequest {
-		args: AccountLinkRequestExpirySchedule,
+	ScheduledDeleteExternalAuthenticationRequest {
+		args: ExternalAuthenticationRequestExpirySchedule,
 	},
 	SendMessage {
 		text: String,
@@ -156,16 +157,16 @@ pub enum Reducer {
 	SetAccountCallsign {
 		callsign: String,
 	},
-	UnlinkExternalAccount {
-		reference: ExternalAccountReference,
+	UnlinkExternalActor {
+		exref: ExternalActorReference,
 	},
-	UpdateExternalAccountCallsign {
-		reference: ExternalAccountReference,
+	UpdateExternalActorCallsign {
+		reference: ExternalActorReference,
 		callsign:  Option<String>,
 	},
-	UpdateExternalAccountProfile {
-		reference: ExternalAccountReference,
-		metadata:  Option<AccountProfileMetadata>,
+	UpdateExternalActorProfile {
+		reference: ExternalActorReference,
+		metadata:  Option<ActorProfileMetadata>,
 	},
 }
 
@@ -179,20 +180,26 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
-			| Reducer::CreateAccountLinkRequest { .. } => "create_account_link_request",
-			| Reducer::ImportExternalAccount { .. } => "import_external_account",
+			| Reducer::CreateExternalAuthenticationRequest { .. } => {
+				"create_external_authentication_request"
+			},
+			| Reducer::ImportExternalActor { .. } => "import_external_actor",
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::MirrorExternalProfile { .. } => "mirror_external_profile",
-			| Reducer::ReportAccountLinkResolution { .. } => "report_account_link_resolution",
-			| Reducer::ResolveAccountLinkRequest { .. } => "resolve_account_link_request",
-			| Reducer::ScheduledDeleteAccountLinkRequest { .. } => {
-				"scheduled_delete_account_link_request"
+			| Reducer::ReportExternalAuthenticationResolution { .. } => {
+				"report_external_authentication_resolution"
+			},
+			| Reducer::ResolveExternalAuthenticationRequest { .. } => {
+				"resolve_external_authentication_request"
+			},
+			| Reducer::ScheduledDeleteExternalAuthenticationRequest { .. } => {
+				"scheduled_delete_external_authentication_request"
 			},
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetAccountCallsign { .. } => "set_account_callsign",
-			| Reducer::UnlinkExternalAccount { .. } => "unlink_external_account",
-			| Reducer::UpdateExternalAccountCallsign { .. } => "update_external_account_callsign",
-			| Reducer::UpdateExternalAccountProfile { .. } => "update_external_account_profile",
+			| Reducer::UnlinkExternalActor { .. } => "unlink_external_actor",
+			| Reducer::UpdateExternalActorCallsign { .. } => "update_external_actor_callsign",
+			| Reducer::UpdateExternalActorProfile { .. } => "update_external_actor_profile",
 		}
 	}
 }
@@ -204,18 +211,18 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
                         "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<admin_set_account_role_reducer::AdminSetAccountRoleArgs>("admin_set_account_role", &value.args)?.into()),
             "client_connected" => Ok(__sdk::parse_reducer_args::<client_connected_reducer::ClientConnectedArgs>("client_connected", &value.args)?.into()),
             "client_disconnected" => Ok(__sdk::parse_reducer_args::<client_disconnected_reducer::ClientDisconnectedArgs>("client_disconnected", &value.args)?.into()),
-            "create_account_link_request" => Ok(__sdk::parse_reducer_args::<create_account_link_request_reducer::CreateAccountLinkRequestArgs>("create_account_link_request", &value.args)?.into()),
-            "import_external_account" => Ok(__sdk::parse_reducer_args::<import_external_account_reducer::ImportExternalAccountArgs>("import_external_account", &value.args)?.into()),
+            "create_external_authentication_request" => Ok(__sdk::parse_reducer_args::<create_external_authentication_request_reducer::CreateExternalAuthenticationRequestArgs>("create_external_authentication_request", &value.args)?.into()),
+            "import_external_actor" => Ok(__sdk::parse_reducer_args::<import_external_actor_reducer::ImportExternalActorArgs>("import_external_actor", &value.args)?.into()),
             "import_message" => Ok(__sdk::parse_reducer_args::<import_message_reducer::ImportMessageArgs>("import_message", &value.args)?.into()),
             "mirror_external_profile" => Ok(__sdk::parse_reducer_args::<mirror_external_profile_reducer::MirrorExternalProfileArgs>("mirror_external_profile", &value.args)?.into()),
-            "report_account_link_resolution" => Ok(__sdk::parse_reducer_args::<report_account_link_resolution_reducer::ReportAccountLinkResolutionArgs>("report_account_link_resolution", &value.args)?.into()),
-            "resolve_account_link_request" => Ok(__sdk::parse_reducer_args::<resolve_account_link_request_reducer::ResolveAccountLinkRequestArgs>("resolve_account_link_request", &value.args)?.into()),
-            "scheduled_delete_account_link_request" => Ok(__sdk::parse_reducer_args::<scheduled_delete_account_link_request_reducer::ScheduledDeleteAccountLinkRequestArgs>("scheduled_delete_account_link_request", &value.args)?.into()),
+            "report_external_authentication_resolution" => Ok(__sdk::parse_reducer_args::<report_external_authentication_resolution_reducer::ReportExternalAuthenticationResolutionArgs>("report_external_authentication_resolution", &value.args)?.into()),
+            "resolve_external_authentication_request" => Ok(__sdk::parse_reducer_args::<resolve_external_authentication_request_reducer::ResolveExternalAuthenticationRequestArgs>("resolve_external_authentication_request", &value.args)?.into()),
+            "scheduled_delete_external_authentication_request" => Ok(__sdk::parse_reducer_args::<scheduled_delete_external_authentication_request_reducer::ScheduledDeleteExternalAuthenticationRequestArgs>("scheduled_delete_external_authentication_request", &value.args)?.into()),
             "send_message" => Ok(__sdk::parse_reducer_args::<send_message_reducer::SendMessageArgs>("send_message", &value.args)?.into()),
             "set_account_callsign" => Ok(__sdk::parse_reducer_args::<set_account_callsign_reducer::SetAccountCallsignArgs>("set_account_callsign", &value.args)?.into()),
-            "unlink_external_account" => Ok(__sdk::parse_reducer_args::<unlink_external_account_reducer::UnlinkExternalAccountArgs>("unlink_external_account", &value.args)?.into()),
-            "update_external_account_callsign" => Ok(__sdk::parse_reducer_args::<update_external_account_callsign_reducer::UpdateExternalAccountCallsignArgs>("update_external_account_callsign", &value.args)?.into()),
-            "update_external_account_profile" => Ok(__sdk::parse_reducer_args::<update_external_account_profile_reducer::UpdateExternalAccountProfileArgs>("update_external_account_profile", &value.args)?.into()),
+            "unlink_external_actor" => Ok(__sdk::parse_reducer_args::<unlink_external_actor_reducer::UnlinkExternalActorArgs>("unlink_external_actor", &value.args)?.into()),
+            "update_external_actor_callsign" => Ok(__sdk::parse_reducer_args::<update_external_actor_callsign_reducer::UpdateExternalActorCallsignArgs>("update_external_actor_callsign", &value.args)?.into()),
+            "update_external_actor_profile" => Ok(__sdk::parse_reducer_args::<update_external_actor_profile_reducer::UpdateExternalActorProfileArgs>("update_external_actor_profile", &value.args)?.into()),
             unknown => Err(__sdk::InternalError::unknown_name("reducer", unknown, "ReducerCallInfo").into()),
 }
 	}
@@ -225,13 +232,14 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct DbUpdate {
-	account_link_request:          __sdk::TableUpdate<AccountLinkRequest>,
-	account_link_request_schedule: __sdk::TableUpdate<AccountLinkRequestExpirySchedule>,
-	account_profile:               __sdk::TableUpdate<AccountProfile>,
-	external_account:              __sdk::TableUpdate<ExternalAccount>,
-	message:                       __sdk::TableUpdate<Message>,
-	native_account:                __sdk::TableUpdate<NativeAccount>,
-	text_channel:                  __sdk::TableUpdate<TextChannel>,
+	account: __sdk::TableUpdate<Account>,
+	account_profile: __sdk::TableUpdate<ActorProfile>,
+	external_actor: __sdk::TableUpdate<ExternalActor>,
+	external_authentication_request: __sdk::TableUpdate<ExternalAuthenticationRequest>,
+	external_authentication_request_schedule:
+		__sdk::TableUpdate<ExternalAuthenticationRequestExpirySchedule>,
+	message: __sdk::TableUpdate<Message>,
+	text_channel: __sdk::TableUpdate<TextChannel>,
 }
 
 impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
@@ -241,27 +249,26 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 		let mut db_update = DbUpdate::default();
 		for table_update in raw.tables {
 			match &table_update.table_name[..] {
-				| "account_link_request" => {
-					db_update.account_link_request =
-						account_link_request_table::parse_table_update(table_update)?
-				},
-				| "account_link_request_schedule" => {
-					db_update.account_link_request_schedule =
-						account_link_request_schedule_table::parse_table_update(table_update)?
-				},
+				| "account" => db_update.account = account_table::parse_table_update(table_update)?,
 				| "account_profile" => {
 					db_update.account_profile =
 						account_profile_table::parse_table_update(table_update)?
 				},
-				| "external_account" => {
-					db_update.external_account =
-						external_account_table::parse_table_update(table_update)?
+				| "external_actor" => {
+					db_update.external_actor =
+						external_actor_table::parse_table_update(table_update)?
+				},
+				| "external_authentication_request" => {
+					db_update.external_authentication_request =
+						external_authentication_request_table::parse_table_update(table_update)?
+				},
+				| "external_authentication_request_schedule" => {
+					db_update.external_authentication_request_schedule =
+						external_authentication_request_schedule_table::parse_table_update(
+							table_update,
+						)?
 				},
 				| "message" => db_update.message = message_table::parse_table_update(table_update)?,
-				| "native_account" => {
-					db_update.native_account =
-						native_account_table::parse_table_update(table_update)?
-				},
 				| "text_channel" => {
 					db_update.text_channel = text_channel_table::parse_table_update(table_update)?
 				},
@@ -290,29 +297,29 @@ impl __sdk::DbUpdate for DbUpdate {
 	) -> AppliedDiff<'_> {
 		let mut diff = AppliedDiff::default();
 
-		diff.account_link_request = cache
-			.apply_diff_to_table::<AccountLinkRequest>(
-				"account_link_request",
-				&self.account_link_request,
+		diff.account = cache
+			.apply_diff_to_table::<Account>("account", &self.account)
+			.with_updates_by_pk(|row| &row.id);
+		diff.account_profile = cache
+			.apply_diff_to_table::<ActorProfile>("account_profile", &self.account_profile)
+			.with_updates_by_pk(|row| &row.id);
+		diff.external_actor = cache
+			.apply_diff_to_table::<ExternalActor>("external_actor", &self.external_actor)
+			.with_updates_by_pk(|row| &row.id);
+		diff.external_authentication_request = cache
+			.apply_diff_to_table::<ExternalAuthenticationRequest>(
+				"external_authentication_request",
+				&self.external_authentication_request,
 			)
 			.with_updates_by_pk(|row| &row.id);
-		diff.account_link_request_schedule = cache
-			.apply_diff_to_table::<AccountLinkRequestExpirySchedule>(
-				"account_link_request_schedule",
-				&self.account_link_request_schedule,
+		diff.external_authentication_request_schedule = cache
+			.apply_diff_to_table::<ExternalAuthenticationRequestExpirySchedule>(
+				"external_authentication_request_schedule",
+				&self.external_authentication_request_schedule,
 			)
 			.with_updates_by_pk(|row| &row.scheduled_id);
-		diff.account_profile = cache
-			.apply_diff_to_table::<AccountProfile>("account_profile", &self.account_profile)
-			.with_updates_by_pk(|row| &row.id);
-		diff.external_account = cache
-			.apply_diff_to_table::<ExternalAccount>("external_account", &self.external_account)
-			.with_updates_by_pk(|row| &row.id);
 		diff.message = cache
 			.apply_diff_to_table::<Message>("message", &self.message)
-			.with_updates_by_pk(|row| &row.id);
-		diff.native_account = cache
-			.apply_diff_to_table::<NativeAccount>("native_account", &self.native_account)
 			.with_updates_by_pk(|row| &row.id);
 		diff.text_channel = cache
 			.apply_diff_to_table::<TextChannel>("text_channel", &self.text_channel)
@@ -326,13 +333,14 @@ impl __sdk::DbUpdate for DbUpdate {
 #[allow(non_snake_case)]
 #[doc(hidden)]
 pub struct AppliedDiff<'r> {
-	account_link_request:          __sdk::TableAppliedDiff<'r, AccountLinkRequest>,
-	account_link_request_schedule: __sdk::TableAppliedDiff<'r, AccountLinkRequestExpirySchedule>,
-	account_profile:               __sdk::TableAppliedDiff<'r, AccountProfile>,
-	external_account:              __sdk::TableAppliedDiff<'r, ExternalAccount>,
-	message:                       __sdk::TableAppliedDiff<'r, Message>,
-	native_account:                __sdk::TableAppliedDiff<'r, NativeAccount>,
-	text_channel:                  __sdk::TableAppliedDiff<'r, TextChannel>,
+	account: __sdk::TableAppliedDiff<'r, Account>,
+	account_profile: __sdk::TableAppliedDiff<'r, ActorProfile>,
+	external_actor: __sdk::TableAppliedDiff<'r, ExternalActor>,
+	external_authentication_request: __sdk::TableAppliedDiff<'r, ExternalAuthenticationRequest>,
+	external_authentication_request_schedule:
+		__sdk::TableAppliedDiff<'r, ExternalAuthenticationRequestExpirySchedule>,
+	message: __sdk::TableAppliedDiff<'r, Message>,
+	text_channel: __sdk::TableAppliedDiff<'r, TextChannel>,
 }
 
 impl __sdk::InModule for AppliedDiff<'_> {
@@ -343,32 +351,28 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 	fn invoke_row_callbacks(
 		&self, event: &EventContext, callbacks: &mut __sdk::DbCallbacks<RemoteModule>,
 	) {
-		callbacks.invoke_table_row_callbacks::<AccountLinkRequest>(
-			"account_link_request",
-			&self.account_link_request,
-			event,
-		);
-		callbacks.invoke_table_row_callbacks::<AccountLinkRequestExpirySchedule>(
-			"account_link_request_schedule",
-			&self.account_link_request_schedule,
-			event,
-		);
-		callbacks.invoke_table_row_callbacks::<AccountProfile>(
+		callbacks.invoke_table_row_callbacks::<Account>("account", &self.account, event);
+		callbacks.invoke_table_row_callbacks::<ActorProfile>(
 			"account_profile",
 			&self.account_profile,
 			event,
 		);
-		callbacks.invoke_table_row_callbacks::<ExternalAccount>(
-			"external_account",
-			&self.external_account,
+		callbacks.invoke_table_row_callbacks::<ExternalActor>(
+			"external_actor",
+			&self.external_actor,
+			event,
+		);
+		callbacks.invoke_table_row_callbacks::<ExternalAuthenticationRequest>(
+			"external_authentication_request",
+			&self.external_authentication_request,
+			event,
+		);
+		callbacks.invoke_table_row_callbacks::<ExternalAuthenticationRequestExpirySchedule>(
+			"external_authentication_request_schedule",
+			&self.external_authentication_request_schedule,
 			event,
 		);
 		callbacks.invoke_table_row_callbacks::<Message>("message", &self.message, event);
-		callbacks.invoke_table_row_callbacks::<NativeAccount>(
-			"native_account",
-			&self.native_account,
-			event,
-		);
 		callbacks.invoke_table_row_callbacks::<TextChannel>(
 			"text_channel",
 			&self.text_channel,
@@ -1003,12 +1007,12 @@ impl __sdk::SpacetimeModule for RemoteModule {
 	type SubscriptionHandle = SubscriptionHandle;
 
 	fn register_tables(client_cache: &mut __sdk::ClientCache<Self>) {
-		account_link_request_table::register_table(client_cache);
-		account_link_request_schedule_table::register_table(client_cache);
+		account_table::register_table(client_cache);
 		account_profile_table::register_table(client_cache);
-		external_account_table::register_table(client_cache);
+		external_actor_table::register_table(client_cache);
+		external_authentication_request_table::register_table(client_cache);
+		external_authentication_request_schedule_table::register_table(client_cache);
 		message_table::register_table(client_cache);
-		native_account_table::register_table(client_cache);
 		text_channel_table::register_table(client_cache);
 	}
 }

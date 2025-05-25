@@ -4,17 +4,15 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
+use super::external_platform_tag_type::ExternalPlatformTag;
+
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-#[derive(Copy, Eq, Hash)]
-pub enum NativeAccountLocalRole {
-	Service,
-
-	Admin,
-
-	Interactor,
+pub struct ExternalActorReference {
+	pub id:           String,
+	pub platform_tag: ExternalPlatformTag,
 }
 
-impl __sdk::InModule for NativeAccountLocalRole {
+impl __sdk::InModule for ExternalActorReference {
 	type Module = super::RemoteModule;
 }

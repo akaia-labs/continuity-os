@@ -3,7 +3,7 @@ use std::{future::Future, pin::Pin, sync::Arc};
 use crowdcomm_sdk::{
 	corvidx::stdb::DbConnection,
 	integrations::{
-		commands::AccountLinkRequestAction,
+		commands::ExternalAuthenticationRequestAction,
 		dtos::{ActionCommand, ActionDescriptor, ActionKind},
 	},
 };
@@ -39,8 +39,8 @@ pub fn callback_query_handler(
 		let query_payload = callback_query.data.unwrap();
 
 		match action_kind {
-			| ActionKind::AccountLinkRequest => {
-				let command: Result<ActionCommand<AccountLinkRequestAction>, String> =
+			| ActionKind::ExternalAuthenticationRequest => {
+				let command: Result<ActionCommand<ExternalAuthenticationRequestAction>, String> =
 					ActionCommand::try_from_str(query_payload.as_str());
 
 				if let Ok(command) = command {

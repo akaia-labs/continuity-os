@@ -1,7 +1,7 @@
 use std::{str::FromStr, sync::Arc};
 
 use corvidx_client::{
-	common::stdb::{AccountLinkRequest, EventContext, ExternalActorReference},
+	common::stdb::{ExternalAuthenticationRequest, EventContext, ExternalActorReference},
 	domain::entities::external_platform::SupportedExternalPlatformTag,
 };
 use spacetimedb_sdk::Timestamp;
@@ -33,13 +33,13 @@ impl TelegramActionRequestForwarder {
 	}
 }
 
-impl CorvidxEventHandler<AccountLinkRequest> for TelegramActionRequestForwarder {
-	fn handle(&self, ctx: &EventContext, alr: &AccountLinkRequest) {
+impl CorvidxEventHandler<ExternalAuthenticationRequest> for TelegramActionRequestForwarder {
+	fn handle(&self, ctx: &EventContext, alr: &ExternalAuthenticationRequest) {
 		let platform_tag = ExternalActorReference::from_str(&alr.subject_account_id)
 			.map_or(None, |tpar| Some(tpar.platform_tag.into_supported()));
 
 		if platform_tag.is_some_and(|tag| tag == SupportedExternalPlatformTag::Telegram) {
-			let dto_result = OutboundTelegramActionRequest::from_account_link_request(ctx, alr);
+			let dto_result = OutboundTelegramActionRequest::from_external_authentication_request(ctx, alr);
 
 			if let Ok(dto) = dto_result {
 				let tx = self.tx.clone();

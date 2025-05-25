@@ -4,12 +4,12 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::external_account_reference_type::ExternalAccountReference;
+use super::external_actor_reference_type::ExternalActorReference;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct MirrorExternalProfileArgs {
-	pub reference: ExternalAccountReference,
+	pub reference: ExternalActorReference,
 }
 
 impl From<MirrorExternalProfileArgs> for super::Reducer {
@@ -38,7 +38,7 @@ pub trait mirror_external_profile {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_mirror_external_profile`] callbacks.
-	fn mirror_external_profile(&self, reference: ExternalAccountReference) -> __sdk::Result<()>;
+	fn mirror_external_profile(&self, reference: ExternalActorReference) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `mirror_external_profile`.
 	///
@@ -49,7 +49,7 @@ pub trait mirror_external_profile {
 	/// [`Self::remove_on_mirror_external_profile`] to cancel the callback.
 	fn on_mirror_external_profile(
 		&self,
-		callback: impl FnMut(&super::ReducerEventContext, &ExternalAccountReference) + Send + 'static,
+		callback: impl FnMut(&super::ReducerEventContext, &ExternalActorReference) + Send + 'static,
 	) -> MirrorExternalProfileCallbackId;
 	/// Cancel a callback previously registered by
 	/// [`Self::on_mirror_external_profile`], causing it not to run in the
@@ -58,7 +58,7 @@ pub trait mirror_external_profile {
 }
 
 impl mirror_external_profile for super::RemoteReducers {
-	fn mirror_external_profile(&self, reference: ExternalAccountReference) -> __sdk::Result<()> {
+	fn mirror_external_profile(&self, reference: ExternalActorReference) -> __sdk::Result<()> {
 		self.imp
 			.call_reducer("mirror_external_profile", MirrorExternalProfileArgs {
 				reference,
@@ -67,9 +67,7 @@ impl mirror_external_profile for super::RemoteReducers {
 
 	fn on_mirror_external_profile(
 		&self,
-		mut callback: impl FnMut(&super::ReducerEventContext, &ExternalAccountReference)
-		+ Send
-		+ 'static,
+		mut callback: impl FnMut(&super::ReducerEventContext, &ExternalActorReference) + Send + 'static,
 	) -> MirrorExternalProfileCallbackId {
 		MirrorExternalProfileCallbackId(self.imp.on_reducer(
 			"mirror_external_profile",

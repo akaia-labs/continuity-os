@@ -40,7 +40,7 @@ pub fn subscribe_to_tables(corvidx: &DbConnection) {
 		.on_error(handlers::on_sub_error)
 		// Facilitating creation of a local partial replica of the database.
 		.subscribe([
-			"SELECT * FROM account_link_request",
+			"SELECT * FROM external_authentication_request",
 			"SELECT * FROM account_profile",
 			"SELECT * FROM external_actor",
 			"SELECT * FROM message",
