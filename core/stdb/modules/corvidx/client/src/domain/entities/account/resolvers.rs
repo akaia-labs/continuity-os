@@ -1,10 +1,7 @@
 use super::AccountId;
 use crate::common::{
 	ports::{ProfileResolution, RecordResolution},
-	stdb::{
-		ActorProfile, ActorProfileTableAccess, Account, AccountTableAccess,
-		RemoteDbContext,
-	},
+	stdb::{Account, AccountTableAccess, ActorProfile, ActorProfileTableAccess, RemoteDbContext},
 };
 
 impl ProfileResolution for Account {
@@ -14,7 +11,7 @@ impl ProfileResolution for Account {
 	}
 
 	/// Equivalent to `.profile` for internal accounts
-	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
+	fn root_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
 		self.profile(ctx)
 	}
 }

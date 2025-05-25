@@ -10,9 +10,10 @@ pub trait ProfileResolution {
 
 	/// Retrieves the associated local profile, if present.
 	///
-	/// For **internal accounts** this should be equivalent to [`Self::profile`].
+	/// For **internal accounts** this should be equivalent to
+	/// [`Self::profile`].
 	///
 	/// For **third-party accounts owned by internal accounts**, the profile
 	/// of the owner account should take precedence.
-	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile>;
+	fn root_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile>;
 }

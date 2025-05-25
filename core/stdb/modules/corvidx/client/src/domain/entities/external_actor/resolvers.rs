@@ -8,7 +8,7 @@ use crate::common::{
 };
 
 impl ProfileResolution for ExternalActor {
-	/// Resolves a third-party account profile
+	/// Resolves a third-party platform profile
 	fn profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
 		if let Some(profile_id) = self.profile {
 			ctx.db().actor_profile().id().find(&profile_id)
@@ -17,14 +17,14 @@ impl ProfileResolution for ExternalActor {
 		}
 	}
 
-	/// Walks the ownership tree starting from the bound internal account
+	/// Walks the ownership tree starting from the linked account
 	/// (if present) to retrieve the first available account profile
-	fn native_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
+	fn root_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
 		if let Some(owner) = self
 			.owner_id
 			.and_then(|id| ctx.db().account().id().find(&id))
 		{
-			owner.native_profile(ctx)
+			owner.root_profile(ctx)
 		} else if let Some(profile_id) = self.profile {
 			ctx.db().actor_profile().id().find(&profile_id)
 		} else {
