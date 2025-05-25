@@ -5,12 +5,12 @@ use crate::common::{
 };
 
 impl ProfileResolution for Account {
-	/// Resolves a third-party account profile
+	/// Resolves an account profile
 	fn profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
-		ctx.db().actor_profile().id().find(&self.profile_id)
+		ctx.db().actor_profile().id().find(&self.profile)
 	}
 
-	/// Equivalent to `.profile` for internal accounts
+	/// Equivalent to `.profile`
 	fn root_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
 		self.profile(ctx)
 	}
