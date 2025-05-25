@@ -30,9 +30,9 @@ pub fn initiate_external_authentication(
 ) -> Result<(), String> {
 	let external_actor = exref.try_resolve(ctx)?;
 
-	if external_actor.owner_id.is_some() {
+	if external_actor.account.is_some() {
 		return Err(format!(
-			"External account {exref} is already linked to another internal account.",
+			"External actor {exref} is already linked to another account.",
 		));
 	}
 
@@ -91,7 +91,7 @@ pub fn resolve_external_authentication_request(
 		let external_actor = subject_account_id.try_resolve(ctx)?;
 
 		ctx.db.external_actor().id().update(ExternalActor {
-			owner_id: Some(account.id),
+			account: Some(account.id),
 			..external_actor
 		});
 
@@ -106,6 +106,7 @@ pub fn resolve_external_authentication_request(
 		.external_authentication_request()
 		.id()
 		.delete(request_id);
+
 	report_external_authentication_resolution(ctx, request, is_approved);
 
 	Ok(())
@@ -119,7 +120,7 @@ pub fn unlink_external_actor(
 	let mut account = ctx.sender.try_resolve(ctx)?;
 	let external_actor = exref.try_resolve(ctx)?;
 
-	if external_actor.owner_id != Some(account.id) {
+	if external_actor.account != Some(account.id) {
 		return Err(format!(
 			"Account {id} is not linked to the third-party account {exref}.",
 			id = ctx.sender,
@@ -127,7 +128,7 @@ pub fn unlink_external_actor(
 	}
 
 	ctx.db.external_actor().id().update(ExternalActor {
-		owner_id: None,
+		account: None,
 		..external_actor
 	});
 
@@ -151,16 +152,16 @@ pub fn report_external_authentication_resolution(
 		..
 	} = request;
 
-	let display_account_reference =
-		subject_account_id
-			.parse::<ExternalActorReference>()
-			.map_or(subject_account_id, |far| {
-				format!(
-					"{platform_name} account {fa_id}",
-					platform_name = far.platform_tag.to_string().capitalize(),
-					fa_id = far.id,
-				)
-			});
+	let display_exref = subject_account_id.parse::<ExternalActorReference>().map_or(
+		subject_account_id,
+		|ext_ref| {
+			format!(
+				"{platform_name} account {fa_id}",
+				platform_name = ext_ref.origin.to_string().capitalize(),
+				fa_id = ext_ref.id,
+			)
+		},
+	);
 
 	// TODO: Send DM instead, once DMs are implemented
 	let result = ctx.db.message().try_insert(Message {
@@ -170,9 +171,9 @@ pub fn report_external_authentication_resolution(
 		author_id: MessageAuthorId::AccountId(ctx.identity()),
 
 		text: if is_approved {
-			format!("{display_account_reference} has been linked to your account.")
+			format!("{display_exref} has been linked to your account.")
 		} else {
-			format!("Account link request for {display_account_reference} has been rejected.")
+			format!("Account link request for {display_exref} has been rejected.")
 		},
 	});
 

@@ -1,21 +1,21 @@
-use corvidx_client::common::stdb::{
-	ActorProfileMetadata, ActorProfileName, ExternalActorReference, ExternalActorOrigin,
+use crate::{
+	corvidx::stdb::{
+		ActorProfileMetadata, ActorProfileName, ExternalActorOrigin, ExternalActorReference,
+	},
+	integrations::ports::{ExternalActorIdentification, ProfileImport, TelegramUser},
 };
-use teloxide_core::types::User;
 
-use crate::integrations::ports::{ExternalActorImport, ProfileImport};
-
-impl ExternalActorImport for User {
-	fn into_account_reference(&self) -> ExternalActorReference {
+impl ExternalActorIdentification for TelegramUser {
+	fn into_exref(&self) -> ExternalActorReference {
 		ExternalActorReference {
-			id:           self.id.to_string(),
-			platform_tag: ExternalActorOrigin::Telegram,
+			id:     self.id.to_string(),
+			origin: ExternalActorOrigin::Telegram,
 		}
 	}
 }
 
-impl ProfileImport for User {
-	fn into_profile_metadata(&self) -> ActorProfileMetadata {
+impl ProfileImport for TelegramUser {
+	fn into_actor_profile_metadata(&self) -> ActorProfileMetadata {
 		ActorProfileMetadata {
 			name: ActorProfileName {
 				short_name:     self.first_name.clone(),

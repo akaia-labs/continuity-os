@@ -9,15 +9,15 @@ use super::external_actor_reference_type::ExternalActorReference;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct ImportMessageArgs {
-	pub author_reference: ExternalActorReference,
-	pub text:             String,
+	pub author_exref: ExternalActorReference,
+	pub text:         String,
 }
 
 impl From<ImportMessageArgs> for super::Reducer {
 	fn from(args: ImportMessageArgs) -> Self {
 		Self::ImportMessage {
-			author_reference: args.author_reference,
-			text:             args.text,
+			author_exref: args.author_exref,
+			text:         args.text,
 		}
 	}
 }
@@ -41,7 +41,7 @@ pub trait import_message {
 	///  and its status can be observed by listening for
 	/// [`Self::on_import_message`] callbacks.
 	fn import_message(
-		&self, author_reference: ExternalActorReference, text: String,
+		&self, author_exref: ExternalActorReference, text: String,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `import_message`.
@@ -64,12 +64,10 @@ pub trait import_message {
 
 impl import_message for super::RemoteReducers {
 	fn import_message(
-		&self, author_reference: ExternalActorReference, text: String,
+		&self, author_exref: ExternalActorReference, text: String,
 	) -> __sdk::Result<()> {
-		self.imp.call_reducer("import_message", ImportMessageArgs {
-			author_reference,
-			text,
-		})
+		self.imp
+			.call_reducer("import_message", ImportMessageArgs { author_exref, text })
 	}
 
 	fn on_import_message(
@@ -84,11 +82,7 @@ impl import_message for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer:
-								super::Reducer::ImportMessage {
-									author_reference,
-									text,
-								},
+							reducer: super::Reducer::ImportMessage { author_exref, text },
 							..
 						},
 					..
@@ -96,7 +90,7 @@ impl import_message for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, author_reference, text)
+				callback(ctx, author_exref, text)
 			}),
 		))
 	}

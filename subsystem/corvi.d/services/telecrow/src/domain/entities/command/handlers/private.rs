@@ -2,7 +2,7 @@ use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, ExternalActorTableAccess},
-	integrations::ports::ExternalActorImport,
+	integrations::ports::ExternalActorIdentification,
 };
 use teloxide::{
 	RequestError, payloads::SendMessageSetters, prelude::Requester,
@@ -52,7 +52,7 @@ pub fn private_handler(
 					.db
 					.external_actor()
 					.id()
-					.find(&user.into_account_reference().to_string());
+					.find(&user.into_exref().to_string());
 
 				match cmd {
 					| PrivateCommand::MyAccountId => {

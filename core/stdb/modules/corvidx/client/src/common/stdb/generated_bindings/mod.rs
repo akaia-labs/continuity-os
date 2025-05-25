@@ -22,13 +22,13 @@ pub mod external_authentication_request_expiry_schedule_type;
 pub mod external_authentication_request_schedule_table;
 pub mod external_authentication_request_table;
 pub mod external_authentication_request_type;
-pub mod import_external_actor_reducer;
 pub mod import_message_reducer;
 pub mod initiate_external_authentication_reducer;
 pub mod message_author_id_type;
 pub mod message_table;
 pub mod message_type;
 pub mod mirror_external_profile_reducer;
+pub mod register_external_actor_reducer;
 pub mod report_external_authentication_resolution_reducer;
 pub mod resolve_external_authentication_request_reducer;
 pub mod scheduled_delete_external_authentication_request_reducer;
@@ -64,9 +64,6 @@ pub use external_authentication_request_expiry_schedule_type::ExternalAuthentica
 pub use external_authentication_request_schedule_table::*;
 pub use external_authentication_request_table::*;
 pub use external_authentication_request_type::ExternalAuthenticationRequest;
-pub use import_external_actor_reducer::{
-	ImportExternalActorCallbackId, import_external_actor, set_flags_for_import_external_actor,
-};
 pub use import_message_reducer::{
 	ImportMessageCallbackId, import_message, set_flags_for_import_message,
 };
@@ -79,6 +76,9 @@ pub use message_table::*;
 pub use message_type::Message;
 pub use mirror_external_profile_reducer::{
 	MirrorExternalProfileCallbackId, mirror_external_profile, set_flags_for_mirror_external_profile,
+};
+pub use register_external_actor_reducer::{
+	RegisterExternalActorCallbackId, register_external_actor, set_flags_for_register_external_actor,
 };
 pub use report_external_authentication_resolution_reducer::{
 	ReportExternalAuthenticationResolutionCallbackId, report_external_authentication_resolution,
@@ -125,20 +125,20 @@ pub enum Reducer {
 	},
 	ClientConnected,
 	ClientDisconnected,
-	ImportExternalActor {
-		reference: ExternalActorReference,
-		callsign:  Option<String>,
-		metadata:  Option<ActorProfileMetadata>,
-	},
 	ImportMessage {
-		author_reference: ExternalActorReference,
-		text:             String,
+		author_exref: ExternalActorReference,
+		text:         String,
 	},
 	InitiateExternalAuthentication {
 		exref: ExternalActorReference,
 	},
 	MirrorExternalProfile {
-		reference: ExternalActorReference,
+		exref: ExternalActorReference,
+	},
+	RegisterExternalActor {
+		exref:    ExternalActorReference,
+		callsign: Option<String>,
+		metadata: Option<ActorProfileMetadata>,
 	},
 	ReportExternalAuthenticationResolution {
 		request:     ExternalAuthenticationRequest,
@@ -161,12 +161,12 @@ pub enum Reducer {
 		exref: ExternalActorReference,
 	},
 	UpdateExternalActorCallsign {
-		reference: ExternalActorReference,
-		callsign:  Option<String>,
+		exref:    ExternalActorReference,
+		callsign: Option<String>,
 	},
 	UpdateExternalActorProfile {
-		reference: ExternalActorReference,
-		metadata:  Option<ActorProfileMetadata>,
+		exref:    ExternalActorReference,
+		metadata: Option<ActorProfileMetadata>,
 	},
 }
 
@@ -180,10 +180,10 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
-			| Reducer::ImportExternalActor { .. } => "import_external_actor",
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::InitiateExternalAuthentication { .. } => "initiate_external_authentication",
 			| Reducer::MirrorExternalProfile { .. } => "mirror_external_profile",
+			| Reducer::RegisterExternalActor { .. } => "register_external_actor",
 			| Reducer::ReportExternalAuthenticationResolution { .. } => {
 				"report_external_authentication_resolution"
 			},
@@ -209,10 +209,10 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
                         "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<admin_set_account_role_reducer::AdminSetAccountRoleArgs>("admin_set_account_role", &value.args)?.into()),
             "client_connected" => Ok(__sdk::parse_reducer_args::<client_connected_reducer::ClientConnectedArgs>("client_connected", &value.args)?.into()),
             "client_disconnected" => Ok(__sdk::parse_reducer_args::<client_disconnected_reducer::ClientDisconnectedArgs>("client_disconnected", &value.args)?.into()),
-            "import_external_actor" => Ok(__sdk::parse_reducer_args::<import_external_actor_reducer::ImportExternalActorArgs>("import_external_actor", &value.args)?.into()),
             "import_message" => Ok(__sdk::parse_reducer_args::<import_message_reducer::ImportMessageArgs>("import_message", &value.args)?.into()),
             "initiate_external_authentication" => Ok(__sdk::parse_reducer_args::<initiate_external_authentication_reducer::InitiateExternalAuthenticationArgs>("initiate_external_authentication", &value.args)?.into()),
             "mirror_external_profile" => Ok(__sdk::parse_reducer_args::<mirror_external_profile_reducer::MirrorExternalProfileArgs>("mirror_external_profile", &value.args)?.into()),
+            "register_external_actor" => Ok(__sdk::parse_reducer_args::<register_external_actor_reducer::RegisterExternalActorArgs>("register_external_actor", &value.args)?.into()),
             "report_external_authentication_resolution" => Ok(__sdk::parse_reducer_args::<report_external_authentication_resolution_reducer::ReportExternalAuthenticationResolutionArgs>("report_external_authentication_resolution", &value.args)?.into()),
             "resolve_external_authentication_request" => Ok(__sdk::parse_reducer_args::<resolve_external_authentication_request_reducer::ResolveExternalAuthenticationRequestArgs>("resolve_external_authentication_request", &value.args)?.into()),
             "scheduled_delete_external_authentication_request" => Ok(__sdk::parse_reducer_args::<scheduled_delete_external_authentication_request_reducer::ScheduledDeleteExternalAuthenticationRequestArgs>("scheduled_delete_external_authentication_request", &value.args)?.into()),

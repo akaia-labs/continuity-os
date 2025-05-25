@@ -1,7 +1,7 @@
 use std::{str::FromStr, sync::Arc};
 
 use corvidx_client::{
-	common::stdb::{ExternalAuthenticationRequest, EventContext, ExternalActorReference},
+	common::stdb::{EventContext, ExternalActorReference, ExternalAuthenticationRequest},
 	domain::entities::external_platform::SupportedExternalActorOrigin,
 };
 use spacetimedb_sdk::Timestamp;
@@ -34,12 +34,12 @@ impl TelegramActionRequestForwarder {
 }
 
 impl CorvidxEventHandler<ExternalAuthenticationRequest> for TelegramActionRequestForwarder {
-	fn handle(&self, ctx: &EventContext, alr: &ExternalAuthenticationRequest) {
-		let platform_tag = ExternalActorReference::from_str(&alr.subject_account_id)
-			.map_or(None, |tpar| Some(tpar.platform_tag.into_supported()));
+	fn handle(&self, ctx: &EventContext, ext_auth_req: &ExternalAuthenticationRequest) {
+		let ext_actor_origin = ExternalActorReference::from_str(&ext_auth_req.subject_account_id)
+			.map_or(None, |ext_ref| Some(ext_ref.origin.into_supported()));
 
-		if platform_tag.is_some_and(|tag| tag == SupportedExternalActorOrigin::Telegram) {
-			let dto_result = OutboundTelegramActionRequest::from_external_authentication_request(ctx, alr);
+		if ext_actor_origin.is_some_and(|tag| tag == SupportedExternalActorOrigin::Telegram) {
+			let dto_result = OutboundTelegramActionRequest::from_ext_auth_req(ctx, ext_auth_req);
 
 			if let Ok(dto) = dto_result {
 				let tx = self.tx.clone();

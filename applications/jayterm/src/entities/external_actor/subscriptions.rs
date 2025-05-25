@@ -1,6 +1,6 @@
 use crowdcomm_sdk::corvidx::stdb::{
 	ActorProfileMetadata, DbConnection, ExternalActorReference, ReducerEventContext,
-	import_external_actor, update_external_actor_profile,
+	register_external_actor, update_external_actor_profile,
 };
 use spacetimedb_sdk::Status;
 
@@ -28,7 +28,7 @@ fn on_external_actor_update(
 pub fn subscribe(corvidx: &DbConnection) {
 	corvidx
 		.reducers
-		.on_import_external_actor(on_external_actor_import);
+		.on_register_external_actor(on_external_actor_import);
 
 	corvidx
 		.reducers

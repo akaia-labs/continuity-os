@@ -9,14 +9,12 @@ use super::external_actor_reference_type::ExternalActorReference;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct MirrorExternalProfileArgs {
-	pub reference: ExternalActorReference,
+	pub exref: ExternalActorReference,
 }
 
 impl From<MirrorExternalProfileArgs> for super::Reducer {
 	fn from(args: MirrorExternalProfileArgs) -> Self {
-		Self::MirrorExternalProfile {
-			reference: args.reference,
-		}
+		Self::MirrorExternalProfile { exref: args.exref }
 	}
 }
 
@@ -38,7 +36,7 @@ pub trait mirror_external_profile {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_mirror_external_profile`] callbacks.
-	fn mirror_external_profile(&self, reference: ExternalActorReference) -> __sdk::Result<()>;
+	fn mirror_external_profile(&self, exref: ExternalActorReference) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `mirror_external_profile`.
 	///
@@ -58,10 +56,10 @@ pub trait mirror_external_profile {
 }
 
 impl mirror_external_profile for super::RemoteReducers {
-	fn mirror_external_profile(&self, reference: ExternalActorReference) -> __sdk::Result<()> {
+	fn mirror_external_profile(&self, exref: ExternalActorReference) -> __sdk::Result<()> {
 		self.imp
 			.call_reducer("mirror_external_profile", MirrorExternalProfileArgs {
-				reference,
+				exref,
 			})
 	}
 
@@ -75,7 +73,7 @@ impl mirror_external_profile for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::MirrorExternalProfile { reference },
+							reducer: super::Reducer::MirrorExternalProfile { exref },
 							..
 						},
 					..
@@ -83,7 +81,7 @@ impl mirror_external_profile for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, reference)
+				callback(ctx, exref)
 			}),
 		))
 	}

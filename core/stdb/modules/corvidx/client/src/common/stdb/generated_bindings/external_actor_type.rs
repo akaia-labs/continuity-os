@@ -9,7 +9,7 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 pub struct ExternalActor {
 	pub id:       String,
 	pub callsign: Option<String>,
-	pub owner_id: Option<__sdk::Identity>,
+	pub account:  Option<__sdk::Identity>,
 	pub profile:  Option<i128>,
 }
 

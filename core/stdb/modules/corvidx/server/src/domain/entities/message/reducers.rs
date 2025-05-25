@@ -8,9 +8,8 @@ use crate::{
 #[reducer]
 /// Facilitates the basic internal messaging functionality
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
-	let author_id: MessageAuthorId = if let Some(author_account) = ctx.sender.try_resolve(ctx).ok()
-	{
-		MessageAuthorId::AccountId(author_account.id)
+	let author_id: MessageAuthorId = if let Some(account) = ctx.sender.try_resolve(ctx).ok() {
+		MessageAuthorId::AccountId(account.id)
 	} else {
 		MessageAuthorId::Unknown
 	};
@@ -33,12 +32,12 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, author_reference: ExternalActorReference, text: String,
+	ctx: &ReducerContext, author_exref: ExternalActorReference, text: String,
 ) -> Result<(), String> {
-	let author_account = author_reference.try_resolve(ctx)?;
+	let actor = author_exref.try_resolve(ctx)?;
 
-	let sender = if let Some(owner_id) = author_account.owner_id {
-		owner_id
+	let sender = if let Some(identity) = actor.account {
+		identity
 	} else {
 		ctx.sender
 	};
@@ -49,7 +48,7 @@ pub fn import_message(
 		id: 0,
 		sender,
 		sent_at: ctx.timestamp,
-		author_id: MessageAuthorId::ExternalActorId(author_account.id),
+		author_id: MessageAuthorId::ExternalActorId(actor.id),
 		text,
 	});
 

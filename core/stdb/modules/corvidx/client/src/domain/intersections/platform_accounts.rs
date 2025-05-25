@@ -13,7 +13,7 @@ impl PlatformAssociation<ExternalActor> for Account {
 	// TODO: the search down to exactly one specific third-party account,
 	// TODO: instead of just taking the first found record.
 	fn platform_association(
-		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedExternalActorOrigin,
+		&self, ctx: &impl RemoteDbContext, origin: SupportedExternalActorOrigin,
 	) -> Option<ExternalActor> {
 		self.exac_associations
 			.iter()
@@ -22,9 +22,7 @@ impl PlatformAssociation<ExternalActor> for Account {
 				account
 					.id
 					.parse::<ExternalActorReference>()
-					.map_or(false, |far| {
-						far.platform_tag.into_supported() == platform_tag
-					})
+					.map_or(false, |ext_ref| ext_ref.origin.into_supported() == origin)
 			})
 	}
 }

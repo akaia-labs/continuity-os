@@ -51,14 +51,14 @@ fn on_resolve_external_authentication_request(
 fn on_unlink_external_actor(corvidx: &ReducerEventContext, reference: &ExternalActorReference) {
 	let ExternalActorReference {
 		id: external_identifier,
-		platform_tag,
+		origin,
 	} = reference;
 
 	match &corvidx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				r#"
-					{platform_tag} account {external_identifier}
+					{origin} account {external_identifier}
 					has been successfully unlinked from your account.
 				"#
 			)
@@ -70,7 +70,7 @@ fn on_unlink_external_actor(corvidx: &ReducerEventContext, reference: &ExternalA
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to unlink {external_identifier} {platform_tag} account:\n{err}")
+				format!("Unable to unlink {external_identifier} {origin} account:\n{err}")
 					.padded();
 
 			eprintln!("{message}")
@@ -83,7 +83,7 @@ fn on_unlink_external_actor(corvidx: &ReducerEventContext, reference: &ExternalA
 fn on_mirror_external_profile(corvidx: &ReducerEventContext, reference: &ExternalActorReference) {
 	let ExternalActorReference {
 		id: external_identifier,
-		platform_tag,
+		origin,
 	} = reference;
 
 	match &corvidx.event.status {
@@ -91,7 +91,7 @@ fn on_mirror_external_profile(corvidx: &ReducerEventContext, reference: &Externa
 			let message = format!(
 				r#"
 					Your profile has been updated to match the appearance of
-					{external_identifier} {platform_tag} account.
+					{external_identifier} {origin} account.
 				"#
 			)
 			.squash_whitespace()
@@ -102,7 +102,7 @@ fn on_mirror_external_profile(corvidx: &ReducerEventContext, reference: &Externa
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to mirror {external_identifier} {platform_tag} profile:\n{err}")
+				format!("Unable to mirror {external_identifier} {origin} profile:\n{err}")
 					.padded();
 
 			eprintln!("{message}")

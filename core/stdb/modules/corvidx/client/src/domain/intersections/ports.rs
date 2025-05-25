@@ -5,6 +5,6 @@ use crate::{
 
 pub trait PlatformAssociation<T> {
 	fn platform_association(
-		&self, ctx: &impl RemoteDbContext, platform_tag: SupportedExternalActorOrigin,
+		&self, ctx: &impl RemoteDbContext, origin: SupportedExternalActorOrigin,
 	) -> Option<T>;
 }

@@ -12,13 +12,13 @@ impl FromStr for ExternalActorReference {
 		let platform_name_str = parts.next().ok_or("missing platform name")?;
 		let id = parts.next().ok_or("missing id")?;
 
-		let platform_tag = platform_name_str
+		let origin = platform_name_str
 			.parse::<ExternalActorOrigin>()
 			.map_err(|_| "invalid or unsupported platform specifier")?;
 
 		Ok(ExternalActorReference {
 			id: id.to_owned(),
-			platform_tag,
+			origin,
 		})
 	}
 }

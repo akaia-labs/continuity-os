@@ -3,7 +3,7 @@ use std::{future::Future, pin::Pin, sync::Arc};
 use crowdcomm_sdk::{
 	corvidx::stdb::DbConnection,
 	integrations::{
-		commands::ExternalAuthenticationRequestAction,
+		commands::ExtAuthReqResolution,
 		dtos::{ActionCommand, ActionDescriptor, ActionKind},
 	},
 };
@@ -40,7 +40,7 @@ pub fn callback_query_handler(
 
 		match action_kind {
 			| ActionKind::ExternalAuthenticationRequest => {
-				let command: Result<ActionCommand<ExternalAuthenticationRequestAction>, String> =
+				let command: Result<ActionCommand<ExtAuthReqResolution>, String> =
 					ActionCommand::try_from_str(query_payload.as_str());
 
 				if let Ok(command) = command {

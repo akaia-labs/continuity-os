@@ -9,8 +9,8 @@ use super::external_actor_origin_type::ExternalActorOrigin;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct ExternalActorReference {
-	pub id:           String,
-	pub platform_tag: ExternalActorOrigin,
+	pub id:     String,
+	pub origin: ExternalActorOrigin,
 }
 
 impl __sdk::InModule for ExternalActorReference {

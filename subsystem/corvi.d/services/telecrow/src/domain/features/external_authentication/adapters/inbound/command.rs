@@ -3,7 +3,7 @@ use std::sync::Arc;
 use corvutils::{print_error, print_success};
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, resolve_external_authentication_request},
-	integrations::{commands::ExternalAuthenticationRequestAction, dtos::ActionCommand, ports::TelegramUser},
+	integrations::{commands::ExtAuthReqResolution, dtos::ActionCommand, ports::TelegramUser},
 };
 use teloxide::{prelude::Requester, types::MaybeInaccessibleMessage};
 
@@ -11,11 +11,13 @@ use crate::BotInstanceType;
 
 pub async fn handle_command(
 	ctx: Arc<DbConnection>, bot: BotInstanceType, prompt_msg: Option<MaybeInaccessibleMessage>,
-	command: ActionCommand<ExternalAuthenticationRequestAction>, caller: TelegramUser,
+	command: ActionCommand<ExtAuthReqResolution>, caller: TelegramUser,
 ) {
 	match command.payload {
-		| ExternalAuthenticationRequestAction::Accept(id) => {
-			let result = ctx.reducers.resolve_external_authentication_request(id, true);
+		| ExtAuthReqResolution::Accept(id) => {
+			let result = ctx
+				.reducers
+				.resolve_external_authentication_request(id, true);
 
 			if result.is_ok() {
 				let success_msg = format!("Account link request {id} has been accepted.");
@@ -29,8 +31,10 @@ pub async fn handle_command(
 			}
 		},
 
-		| ExternalAuthenticationRequestAction::Reject(id) => {
-			let result = ctx.reducers.resolve_external_authentication_request(id, false);
+		| ExtAuthReqResolution::Reject(id) => {
+			let result = ctx
+				.reducers
+				.resolve_external_authentication_request(id, false);
 
 			if result.is_ok() {
 				let success_msg_text = format!("Account link request {id} has been rejected.");

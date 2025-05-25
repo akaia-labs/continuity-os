@@ -33,7 +33,7 @@ impl FromStr for ExternalActorOrigin {
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		Ok(ExternalActorOrigin::from(
 			match s.parse::<SupportedExternalActorOrigin>() {
-				| Ok(platform_tag) => platform_tag,
+				| Ok(origin) => origin,
 				| Err(_) => SupportedExternalActorOrigin::Unknown,
 			},
 		))

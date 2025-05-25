@@ -28,7 +28,7 @@ pub struct ExternalActor {
 	pub callsign: Option<String>,
 
 	#[index(btree)]
-	pub owner_id: Option<AccountId>,
+	pub account: Option<AccountId>,
 
 	#[unique]
 	#[index(btree)]
@@ -39,14 +39,14 @@ impl RecordResolution<ExternalActor> for ExternalActorId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ExternalActor, String> {
 		let ExternalActorReference {
 			id: external_author_id,
-			platform_tag,
+			origin,
 		} = self
 			.parse()
 			.map_err(|e: ExternalActorReferenceParseErr| e.to_string())?;
 
 		ctx.db().external_actor().id().find(self).ok_or(format!(
 			"{platform_name} account {external_author_id} is not registered in the system.",
-			platform_name = platform_tag.to_string().capitalize(),
+			platform_name = origin.to_string().capitalize(),
 		))
 	}
 }
@@ -54,7 +54,7 @@ impl RecordResolution<ExternalActor> for ExternalActorId {
 #[derive(SpacetimeType, Clone)]
 pub struct ExternalActorReference {
 	pub id:           String,
-	pub platform_tag: ExternalActorOrigin,
+	pub origin: ExternalActorOrigin,
 }
 
 #[derive(SpacetimeType, Debug, Clone, PartialEq, Display, EnumString)]
@@ -81,7 +81,7 @@ impl Display for ExternalActorReference {
 			"{}{}{}",
 			self.id,
 			Self::DELIMITER,
-			self.platform_tag // uses Display from strum
+			self.origin // uses Display from strum
 		)
 	}
 }
@@ -96,13 +96,13 @@ impl FromStr for ExternalActorReference {
 		let platform_name_str = parts.next().ok_or("missing platform name")?;
 		let id = parts.next().ok_or("missing id")?;
 
-		let platform_tag = platform_name_str
+		let origin = platform_name_str
 			.parse::<ExternalActorOrigin>()
 			.map_err(|_| "invalid or unsupported platform specifier")?;
 
 		Ok(ExternalActorReference {
 			id: id.to_owned(),
-			platform_tag,
+			origin,
 		})
 	}
 }

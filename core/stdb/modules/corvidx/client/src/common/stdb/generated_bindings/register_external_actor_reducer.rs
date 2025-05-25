@@ -11,53 +11,53 @@ use super::{
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub(super) struct ImportExternalActorArgs {
-	pub reference: ExternalActorReference,
-	pub callsign:  Option<String>,
-	pub metadata:  Option<ActorProfileMetadata>,
+pub(super) struct RegisterExternalActorArgs {
+	pub exref:    ExternalActorReference,
+	pub callsign: Option<String>,
+	pub metadata: Option<ActorProfileMetadata>,
 }
 
-impl From<ImportExternalActorArgs> for super::Reducer {
-	fn from(args: ImportExternalActorArgs) -> Self {
-		Self::ImportExternalActor {
-			reference: args.reference,
-			callsign:  args.callsign,
-			metadata:  args.metadata,
+impl From<RegisterExternalActorArgs> for super::Reducer {
+	fn from(args: RegisterExternalActorArgs) -> Self {
+		Self::RegisterExternalActor {
+			exref:    args.exref,
+			callsign: args.callsign,
+			metadata: args.metadata,
 		}
 	}
 }
 
-impl __sdk::InModule for ImportExternalActorArgs {
+impl __sdk::InModule for RegisterExternalActorArgs {
 	type Module = super::RemoteModule;
 }
 
-pub struct ImportExternalActorCallbackId(__sdk::CallbackId);
+pub struct RegisterExternalActorCallbackId(__sdk::CallbackId);
 
 #[allow(non_camel_case_types)]
-/// Extension trait for access to the reducer `import_external_actor`.
+/// Extension trait for access to the reducer `register_external_actor`.
 ///
 /// Implemented for [`super::RemoteReducers`].
-pub trait import_external_actor {
+pub trait register_external_actor {
 	/// Request that the remote module invoke the reducer
-	/// `import_external_actor` to run as soon as possible.
+	/// `register_external_actor` to run as soon as possible.
 	///
 	/// This method returns immediately, and errors only if we are unable to
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
-	/// [`Self::on_import_external_actor`] callbacks.
-	fn import_external_actor(
-		&self, reference: ExternalActorReference, callsign: Option<String>,
+	/// [`Self::on_register_external_actor`] callbacks.
+	fn register_external_actor(
+		&self, exref: ExternalActorReference, callsign: Option<String>,
 		metadata: Option<ActorProfileMetadata>,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
-	/// the reducer `import_external_actor`.
+	/// the reducer `register_external_actor`.
 	///
 	/// Callbacks should inspect the [`__sdk::ReducerEvent`] contained in the
 	/// [`super::ReducerEventContext`] to determine the reducer's status.
 	///
-	/// The returned [`ImportExternalActorCallbackId`] can be passed to
-	/// [`Self::remove_on_import_external_actor`] to cancel the callback.
-	fn on_import_external_actor(
+	/// The returned [`RegisterExternalActorCallbackId`] can be passed to
+	/// [`Self::remove_on_register_external_actor`] to cancel the callback.
+	fn on_register_external_actor(
 		&self,
 		callback: impl FnMut(
 			&super::ReducerEventContext,
@@ -66,27 +66,27 @@ pub trait import_external_actor {
 			&Option<ActorProfileMetadata>,
 		) + Send
 		+ 'static,
-	) -> ImportExternalActorCallbackId;
+	) -> RegisterExternalActorCallbackId;
 	/// Cancel a callback previously registered by
-	/// [`Self::on_import_external_actor`], causing it not to run in the
+	/// [`Self::on_register_external_actor`], causing it not to run in the
 	/// future.
-	fn remove_on_import_external_actor(&self, callback: ImportExternalActorCallbackId);
+	fn remove_on_register_external_actor(&self, callback: RegisterExternalActorCallbackId);
 }
 
-impl import_external_actor for super::RemoteReducers {
-	fn import_external_actor(
-		&self, reference: ExternalActorReference, callsign: Option<String>,
+impl register_external_actor for super::RemoteReducers {
+	fn register_external_actor(
+		&self, exref: ExternalActorReference, callsign: Option<String>,
 		metadata: Option<ActorProfileMetadata>,
 	) -> __sdk::Result<()> {
 		self.imp
-			.call_reducer("import_external_actor", ImportExternalActorArgs {
-				reference,
+			.call_reducer("register_external_actor", RegisterExternalActorArgs {
+				exref,
 				callsign,
 				metadata,
 			})
 	}
 
-	fn on_import_external_actor(
+	fn on_register_external_actor(
 		&self,
 		mut callback: impl FnMut(
 			&super::ReducerEventContext,
@@ -95,16 +95,16 @@ impl import_external_actor for super::RemoteReducers {
 			&Option<ActorProfileMetadata>,
 		) + Send
 		+ 'static,
-	) -> ImportExternalActorCallbackId {
-		ImportExternalActorCallbackId(self.imp.on_reducer(
-			"import_external_actor",
+	) -> RegisterExternalActorCallbackId {
+		RegisterExternalActorCallbackId(self.imp.on_reducer(
+			"register_external_actor",
 			Box::new(move |ctx: &super::ReducerEventContext| {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
 							reducer:
-								super::Reducer::ImportExternalActor {
-									reference,
+								super::Reducer::RegisterExternalActor {
+									exref,
 									callsign,
 									metadata,
 								},
@@ -115,38 +115,38 @@ impl import_external_actor for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, reference, callsign, metadata)
+				callback(ctx, exref, callsign, metadata)
 			}),
 		))
 	}
 
-	fn remove_on_import_external_actor(&self, callback: ImportExternalActorCallbackId) {
+	fn remove_on_register_external_actor(&self, callback: RegisterExternalActorCallbackId) {
 		self.imp
-			.remove_on_reducer("import_external_actor", callback.0)
+			.remove_on_reducer("register_external_actor", callback.0)
 	}
 }
 
 #[allow(non_camel_case_types)]
 #[doc(hidden)]
 /// Extension trait for setting the call-flags for the reducer
-/// `import_external_actor`.
+/// `register_external_actor`.
 ///
 /// Implemented for [`super::SetReducerFlags`].
 ///
 /// This type is currently unstable and may be removed without a major version
 /// bump.
-pub trait set_flags_for_import_external_actor {
-	/// Set the call-reducer flags for the reducer `import_external_actor` to
+pub trait set_flags_for_register_external_actor {
+	/// Set the call-reducer flags for the reducer `register_external_actor` to
 	/// `flags`.
 	///
 	/// This type is currently unstable and may be removed without a major
 	/// version bump.
-	fn import_external_actor(&self, flags: __ws::CallReducerFlags);
+	fn register_external_actor(&self, flags: __ws::CallReducerFlags);
 }
 
-impl set_flags_for_import_external_actor for super::SetReducerFlags {
-	fn import_external_actor(&self, flags: __ws::CallReducerFlags) {
+impl set_flags_for_register_external_actor for super::SetReducerFlags {
+	fn register_external_actor(&self, flags: __ws::CallReducerFlags) {
 		self.imp
-			.set_call_reducer_flags("import_external_actor", flags);
+			.set_call_reducer_flags("register_external_actor", flags);
 	}
 }

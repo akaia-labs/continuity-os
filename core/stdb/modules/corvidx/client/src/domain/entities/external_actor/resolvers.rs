@@ -21,7 +21,7 @@ impl ProfileResolution for ExternalActor {
 	/// (if present) to retrieve the first available account profile
 	fn root_profile(&self, ctx: &impl RemoteDbContext) -> Option<ActorProfile> {
 		if let Some(owner) = self
-			.owner_id
+			.account
 			.and_then(|id| ctx.db().account().id().find(&id))
 		{
 			owner.root_profile(ctx)

@@ -3,47 +3,46 @@ use corvidx_client::{
 	common::{
 		ports::RecordResolution,
 		presentation::DisplayName,
-		stdb::{ExternalAuthenticationRequest, EventContext, ExternalActorReference},
+		stdb::{EventContext, ExternalActorReference, ExternalAuthenticationRequest},
 	},
-	domain::entities::{message::MessageType, external_platform::SupportedExternalActorOrigin},
+	domain::entities::{external_platform::SupportedExternalActorOrigin, message::MessageType},
 };
 use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
 use crate::integrations::{
-	commands::ExternalAuthenticationRequestAction,
-	dtos::{ActionKind, ActionCommand},
+	commands::ExtAuthReqResolution,
+	dtos::{ActionCommand, ActionKind},
 	telegram::shared::constants::TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT,
 };
 
 impl OutboundTelegramActionRequest {
-	pub fn from_external_authentication_request(
-		ctx: &EventContext, alr: &ExternalAuthenticationRequest,
+	pub fn from_ext_auth_req(
+		ctx: &EventContext, ext_auth_req: &ExternalAuthenticationRequest,
 	) -> Result<Self, String> {
-		let issuer_account = alr
+		let issuer_account = ext_auth_req
 			.issuer
 			.resolve(ctx)
 			.ok_or("Unable to resolve issuer account.")?;
 
-		let requester_account = alr
+		let requester_account = ext_auth_req
 			.requester_account_id
 			.resolve(ctx)
 			.ok_or("Unable to resolve requester account.")?;
 
 		let ExternalActorReference {
 			id: raw_user_id,
-			platform_tag,
-		} = alr.subject_account_id
+			origin,
+		} = ext_auth_req
+			.subject_account_id
 			.parse()
 			.map_err(|_| "Unable to parse subject account reference.")?;
 
 		//* Double checking the platform tag
 		//* In case of the forwarder letting it through unverified
-		if platform_tag.into_supported() != SupportedExternalActorOrigin::Telegram {
-			return Err(format!(
-				"Platform tag {platform_tag} does not match Telegram."
-			));
+		if origin.into_supported() != SupportedExternalActorOrigin::Telegram {
+			return Err(format!("Origin {origin} does not match Telegram."));
 		}
 
 		let subject_user_id: ChatId = raw_user_id
@@ -55,8 +54,8 @@ impl OutboundTelegramActionRequest {
 		let requester_name = requester_account.display_name(ctx);
 
 		// TODO: Abstract the choice mapping away, along with error handling
-		let accept_choice = ExternalAuthenticationRequestAction::Accept(alr.id);
-		let reject_choice = ExternalAuthenticationRequestAction::Reject(alr.id);
+		let accept_choice = ExtAuthReqResolution::Accept(ext_auth_req.id);
+		let reject_choice = ExtAuthReqResolution::Reject(ext_auth_req.id);
 
 		let accept_callback_payload = ActionCommand {
 			kind:    ActionKind::ExternalAuthenticationRequest,
@@ -110,7 +109,9 @@ impl OutboundTelegramActionRequest {
 						{requester_name} has requested to link this {platform_name} account.
 						If you are the not {requester_name}, please reject this request.
 					"#,
-					platform_name = SupportedExternalActorOrigin::Telegram.to_string().capitalize()
+					platform_name = SupportedExternalActorOrigin::Telegram
+						.to_string()
+						.capitalize()
 				)
 				.squash_whitespace(),
 			),

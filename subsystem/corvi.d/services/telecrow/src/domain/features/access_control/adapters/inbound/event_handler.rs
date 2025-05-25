@@ -3,7 +3,7 @@ use std::sync::Arc;
 use corvutils::StringExtensions;
 use crowdcomm_sdk::{
 	corvidx::stdb::{DbConnection, send_message},
-	integrations::ports::ExternalActorImport,
+	integrations::ports::ExternalActorIdentification,
 	presentation::Summary,
 };
 use teloxide::types::Update;
@@ -13,7 +13,7 @@ use crate::common::constants::SERVICE_CANONICAL_NAME;
 pub fn handle_unauthorized_use_attempt(corvidx: Arc<DbConnection>, event: Update) {
 	let initiator_specifier = event
 		.from()
-		.map(|user| user.into_account_reference().to_string())
+		.map(|user| user.into_exref().to_string())
 		.unwrap_or("an unknown user".into());
 
 	let log_header =

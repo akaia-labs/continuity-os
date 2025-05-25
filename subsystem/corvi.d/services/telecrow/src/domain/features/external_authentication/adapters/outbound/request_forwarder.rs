@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crowdcomm_sdk::{
-	corvidx::stdb::{ExternalAuthenticationRequestTableAccess, DbConnection},
+	corvidx::stdb::{DbConnection, ExternalAuthenticationRequestTableAccess},
 	integrations::{
 		ports::CorvidxEventHandler,
 		telegram::{OutboundTelegramActionRequest, TelegramActionRequestForwarder},
@@ -38,5 +38,5 @@ pub fn forward_to_telegram(
 	// Registering the message handler
 	ctx.db
 		.external_authentication_request()
-		.on_insert(move |ctx, alr| forwarder.handle(ctx, alr));
+		.on_insert(move |ctx, ext_auth_req| forwarder.handle(ctx, ext_auth_req));
 }
