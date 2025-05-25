@@ -4,12 +4,12 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::tp_account_reference_type::TpAccountReference;
+use super::external_account_reference_type::ExternalAccountReference;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct ImportMessageArgs {
-	pub author_reference: TpAccountReference,
+	pub author_reference: ExternalAccountReference,
 	pub text:             String,
 }
 
@@ -41,7 +41,7 @@ pub trait import_message {
 	///  and its status can be observed by listening for
 	/// [`Self::on_import_message`] callbacks.
 	fn import_message(
-		&self, author_reference: TpAccountReference, text: String,
+		&self, author_reference: ExternalAccountReference, text: String,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `import_message`.
@@ -53,7 +53,9 @@ pub trait import_message {
 	/// [`Self::remove_on_import_message`] to cancel the callback.
 	fn on_import_message(
 		&self,
-		callback: impl FnMut(&super::ReducerEventContext, &TpAccountReference, &String) + Send + 'static,
+		callback: impl FnMut(&super::ReducerEventContext, &ExternalAccountReference, &String)
+		+ Send
+		+ 'static,
 	) -> ImportMessageCallbackId;
 	/// Cancel a callback previously registered by [`Self::on_import_message`],
 	/// causing it not to run in the future.
@@ -62,7 +64,7 @@ pub trait import_message {
 
 impl import_message for super::RemoteReducers {
 	fn import_message(
-		&self, author_reference: TpAccountReference, text: String,
+		&self, author_reference: ExternalAccountReference, text: String,
 	) -> __sdk::Result<()> {
 		self.imp.call_reducer("import_message", ImportMessageArgs {
 			author_reference,
@@ -72,7 +74,7 @@ impl import_message for super::RemoteReducers {
 
 	fn on_import_message(
 		&self,
-		mut callback: impl FnMut(&super::ReducerEventContext, &TpAccountReference, &String)
+		mut callback: impl FnMut(&super::ReducerEventContext, &ExternalAccountReference, &String)
 		+ Send
 		+ 'static,
 	) -> ImportMessageCallbackId {

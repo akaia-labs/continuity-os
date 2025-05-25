@@ -1,14 +1,16 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{model::*, validation::*};
-use crate::{common::ports::RecordResolution, domain::entities::tp_account::TpAccountReference};
+use crate::{
+	common::ports::RecordResolution, domain::entities::external_actor::ExternalActorReference,
+};
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 	let author_id: MessageAuthorId = if let Some(author_account) = ctx.sender.try_resolve(ctx).ok()
 	{
-		MessageAuthorId::NativeAccountId(author_account.id)
+		MessageAuthorId::AccountId(author_account.id)
 	} else {
 		MessageAuthorId::Unknown
 	};
@@ -31,7 +33,7 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, author_reference: TpAccountReference, text: String,
+	ctx: &ReducerContext, author_reference: ExternalActorReference, text: String,
 ) -> Result<(), String> {
 	let author_account = author_reference.try_resolve(ctx)?;
 
@@ -47,7 +49,7 @@ pub fn import_message(
 		id: 0,
 		sender,
 		sent_at: ctx.timestamp,
-		author_id: MessageAuthorId::TpAccountId(author_account.id),
+		author_id: MessageAuthorId::ExternalActorId(author_account.id),
 		text,
 	});
 

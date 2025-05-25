@@ -1,27 +1,27 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use crate::domain::entities::{
-	account_profile::{AccountProfile, AccountProfileMetadata, account_profile},
-	native_account::{NativeAccount, NativeAccountLocalRole, native_account},
+	account::{Account, AccountRole, account},
+	actor_profile::{ActorProfile, ActorProfileMetadata, account_profile},
 };
 
 #[reducer(client_connected)]
 pub fn client_connected(ctx: &ReducerContext) {
-	if let Some(account) = ctx.db.native_account().id().find(ctx.sender) {
-		ctx.db.native_account().id().update(NativeAccount {
+	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
+		ctx.db.account().id().update(Account {
 			is_online: true,
 			last_seen_at: ctx.timestamp,
 			..account
 		});
 	} else {
-		let initial_profile = ctx.db.account_profile().insert(AccountProfile {
+		let initial_profile = ctx.db.account_profile().insert(ActorProfile {
 			id:       0,
-			metadata: AccountProfileMetadata::default(),
+			metadata: ActorProfileMetadata::default(),
 		});
 
-		let account_profile = ctx.db.account_profile().id().update(AccountProfile {
+		let account_profile = ctx.db.account_profile().id().update(ActorProfile {
 			//*  Ensuring the profile name is unique upon profile creation.
-			metadata: AccountProfileMetadata::default_with_name(format!(
+			metadata: ActorProfileMetadata::default_with_name(format!(
 				"{}-{}",
 				initial_profile.metadata.name.short_name, initial_profile.id
 			)),
@@ -29,24 +29,24 @@ pub fn client_connected(ctx: &ReducerContext) {
 			..initial_profile
 		});
 
-		ctx.db.native_account().insert(NativeAccount {
-			id:                        ctx.sender,
-			callsign:                  format!("0x{}", ctx.sender.to_hex().to_string()),
-			role:                      NativeAccountLocalRole::Interactor,
-			is_online:                 true,
-			created_at:                ctx.timestamp,
-			updated_at:                ctx.timestamp,
-			last_seen_at:              ctx.timestamp,
-			profile_id:                account_profile.id,
-			tp_account_ownership: vec![],
+		ctx.db.account().insert(Account {
+			id:                       ctx.sender,
+			callsign:                 format!("0x{}", ctx.sender.to_hex().to_string()),
+			role:                     AccountRole::Interactor,
+			is_online:                true,
+			created_at:               ctx.timestamp,
+			updated_at:               ctx.timestamp,
+			last_seen_at:             ctx.timestamp,
+			profile_id:               account_profile.id,
+			exac_associations: vec![],
 		});
 	}
 }
 
 #[reducer(client_disconnected)]
 pub fn client_disconnected(ctx: &ReducerContext) {
-	if let Some(account) = ctx.db.native_account().id().find(ctx.sender) {
-		ctx.db.native_account().id().update(NativeAccount {
+	if let Some(account) = ctx.db.account().id().find(ctx.sender) {
+		ctx.db.account().id().update(Account {
 			is_online: false,
 			last_seen_at: ctx.timestamp,
 			..account

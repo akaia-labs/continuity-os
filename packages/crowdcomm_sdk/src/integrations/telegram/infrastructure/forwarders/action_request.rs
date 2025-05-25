@@ -1,8 +1,8 @@
 use std::{str::FromStr, sync::Arc};
 
 use corvidx_client::{
-	common::stdb::{AccountLinkRequest, EventContext, TpAccountReference},
-	domain::entities::tp_platform::SupportedTpPlatformTag,
+	common::stdb::{AccountLinkRequest, EventContext, ExternalActorReference},
+	domain::entities::external_platform::SupportedExternalPlatformTag,
 };
 use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
@@ -35,10 +35,10 @@ impl TelegramActionRequestForwarder {
 
 impl CorvidxEventHandler<AccountLinkRequest> for TelegramActionRequestForwarder {
 	fn handle(&self, ctx: &EventContext, alr: &AccountLinkRequest) {
-		let platform_tag = TpAccountReference::from_str(&alr.subject_account_id)
+		let platform_tag = ExternalActorReference::from_str(&alr.subject_account_id)
 			.map_or(None, |tpar| Some(tpar.platform_tag.into_supported()));
 
-		if platform_tag.is_some_and(|tag| tag == SupportedTpPlatformTag::Telegram) {
+		if platform_tag.is_some_and(|tag| tag == SupportedExternalPlatformTag::Telegram) {
 			let dto_result = OutboundTelegramActionRequest::from_account_link_request(ctx, alr);
 
 			if let Ok(dto) = dto_result {

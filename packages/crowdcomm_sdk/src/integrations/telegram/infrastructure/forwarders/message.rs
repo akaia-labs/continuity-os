@@ -1,8 +1,8 @@
 use std::{str::FromStr, sync::Arc};
 
 use corvidx_client::{
-	common::stdb::{EventContext, Message, MessageAuthorId, TpAccountReference},
-	domain::entities::tp_platform::SupportedTpPlatformTag,
+	common::stdb::{EventContext, Message, MessageAuthorId, ExternalActorReference},
+	domain::entities::external_platform::SupportedExternalPlatformTag,
 };
 use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
@@ -34,16 +34,16 @@ impl TelegramMessageForwarder {
 
 impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
 	fn handle(&self, ctx: &EventContext, msg: &Message) {
-		let tp_platform_tag = match &msg.author_id {
-			| MessageAuthorId::TpAccountId(account_id) => TpAccountReference::from_str(&account_id)
+		let external_platform_tag = match &msg.author_id {
+			| MessageAuthorId::ExternalActorId(account_id) => ExternalActorReference::from_str(&account_id)
 				.map_or(None, |far| Some(far.platform_tag.into_supported())),
 
-			| MessageAuthorId::NativeAccountId(_) | MessageAuthorId::Unknown => None,
+			| MessageAuthorId::AccountId(_) | MessageAuthorId::Unknown => None,
 		};
 
 		// Ignore messages originated from Telegram
-		if tp_platform_tag.is_none()
-			|| tp_platform_tag.is_some_and(|tag| tag != SupportedTpPlatformTag::Telegram)
+		if external_platform_tag.is_none()
+			|| external_platform_tag.is_some_and(|tag| tag != SupportedExternalPlatformTag::Telegram)
 		{
 			// Only forward messages sent after forwarder initialization
 			if self.initialized_at.le(&msg.sent_at) {

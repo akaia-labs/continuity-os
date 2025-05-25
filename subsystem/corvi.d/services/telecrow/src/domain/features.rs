@@ -1,2 +1,2 @@
 pub mod access_control;
-pub mod account_linking;
+pub mod external_authentication;

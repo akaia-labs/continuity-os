@@ -3,16 +3,16 @@ pub use teloxide_core::types::{
 };
 
 pub use crate::corvidx::stdb::Message as CorvidxMessage;
-use crate::corvidx::stdb::{AccountProfileMetadata, EventContext, TpAccountReference};
+use crate::corvidx::stdb::{ActorProfileMetadata, EventContext, ExternalActorReference};
 
-pub trait TpAccountImport {
+pub trait ExternalActorImport {
 	/// Puts third-party account data into locally recognized format
-	fn into_account_reference(&self) -> TpAccountReference;
+	fn into_account_reference(&self) -> ExternalActorReference;
 }
 
 pub trait ProfileImport {
 	/// Puts third-party profile into locally recognized format
-	fn into_profile_metadata(&self) -> AccountProfileMetadata;
+	fn into_profile_metadata(&self) -> ActorProfileMetadata;
 }
 
 pub trait CorvidxEventHandler<EventType> {

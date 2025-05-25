@@ -9,15 +9,15 @@ use super::native_account_local_role_type::NativeAccountLocalRole;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct NativeAccount {
-	pub id:                   __sdk::Identity,
-	pub callsign:             String,
-	pub role:                 NativeAccountLocalRole,
-	pub is_online:            bool,
-	pub created_at:           __sdk::Timestamp,
-	pub updated_at:           __sdk::Timestamp,
-	pub last_seen_at:         __sdk::Timestamp,
-	pub profile_id:           i128,
-	pub tp_account_ownership: Vec<String>,
+	pub id:                         __sdk::Identity,
+	pub callsign:                   String,
+	pub role:                       NativeAccountLocalRole,
+	pub is_online:                  bool,
+	pub created_at:                 __sdk::Timestamp,
+	pub updated_at:                 __sdk::Timestamp,
+	pub last_seen_at:               __sdk::Timestamp,
+	pub profile_id:                 i128,
+	pub external_account_ownership: Vec<String>,
 }
 
 impl __sdk::InModule for NativeAccount {

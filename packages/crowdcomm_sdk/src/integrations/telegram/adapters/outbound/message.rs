@@ -5,7 +5,7 @@ use corvidx_client::{
 		stdb::{EventContext, MessageAuthorId},
 	},
 	domain::{
-		entities::{message::MessageType, tp_platform::SupportedTpPlatformTag},
+		entities::{message::MessageType, external_platform::SupportedExternalPlatformTag},
 		intersections::PlatformAssociation,
 	},
 };
@@ -16,18 +16,18 @@ use crate::integrations::{ports::CorvidxMessage, telegram::OutboundTelegramMessa
 impl OutboundTelegramMessage {
 	pub fn from_native(ctx: &EventContext, msg: &CorvidxMessage) -> Self {
 		let (author_role, author_profile) = match &msg.author_id {
-			| MessageAuthorId::TpAccountId(account_id) => account_id
+			| MessageAuthorId::ExternalActorId(account_id) => account_id
 				.resolve(ctx)
 				.map_or((None, None), |account| (None, account.profile(ctx))),
 
-			| MessageAuthorId::NativeAccountId(account_id) => account_id
+			| MessageAuthorId::AccountId(account_id) => account_id
 				.resolve(ctx)
-				.map(|native_account| {
-					native_account
-						.platform_association(ctx, SupportedTpPlatformTag::Telegram)
+				.map(|account| {
+					account
+						.platform_association(ctx, SupportedExternalPlatformTag::Telegram)
 						.map_or(
-							(Some(native_account.role), native_account.profile(ctx)),
-							|tp_account| (None, tp_account.profile(ctx)),
+							(Some(account.role), account.profile(ctx)),
+							|external_actor| (None, external_actor.profile(ctx)),
 						)
 				})
 				.unwrap_or((None, None)),

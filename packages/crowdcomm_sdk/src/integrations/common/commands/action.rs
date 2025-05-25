@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use strum::Display;
 
-use crate::corvidx::account_linking::AccountLinkRequestId;
+use crate::corvidx::external_authentication::AccountLinkRequestId;
 
 #[derive(Display, Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(tag = "choice", content = "id")]

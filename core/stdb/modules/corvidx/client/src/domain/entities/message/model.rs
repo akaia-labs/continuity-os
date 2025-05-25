@@ -1,4 +1,4 @@
-use crate::common::stdb::NativeAccountLocalRole;
+use crate::common::stdb::AccountRole;
 
 pub enum MessageType {
 	System,
@@ -15,21 +15,21 @@ impl MessageType {
 		}
 	}
 
-	pub fn by_account_role(role: Option<NativeAccountLocalRole>) -> Self {
+	pub fn by_account_role(role: Option<AccountRole>) -> Self {
 		match role {
 			| Some(known_role) => match known_role {
-				| NativeAccountLocalRole::Admin | NativeAccountLocalRole::Interactor => {
+				| AccountRole::Admin | AccountRole::Interactor => {
 					Self::Content
 				},
 
-				| NativeAccountLocalRole::Service => Self::System,
+				| AccountRole::Service => Self::System,
 			},
 
 			| _ => Self::Content,
 		}
 	}
 
-	pub fn symbol_by_account_role(role: Option<NativeAccountLocalRole>) -> &'static str {
+	pub fn symbol_by_account_role(role: Option<AccountRole>) -> &'static str {
 		Self::by_account_role(role).symbol()
 	}
 }

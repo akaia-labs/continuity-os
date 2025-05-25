@@ -6,8 +6,8 @@ use crowdcomm_sdk::{
 		ports::{ProfileResolution, RecordResolution},
 		presentation::{DisplayName, Displayable},
 		stdb::{
-			AccountProfileTableAccess, DbConnection, ErrorContext, Message, MessageAuthorId,
-			MessageTableAccess, RemoteDbContext, SubscriptionEventContext, TpAccountTableAccess,
+			ActorProfileTableAccess, DbConnection, ErrorContext, Message, MessageAuthorId,
+			MessageTableAccess, RemoteDbContext, SubscriptionEventContext, ExternalActorTableAccess,
 		},
 	},
 };
@@ -15,12 +15,12 @@ use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};
 
 pub fn print_message(corvidx: &impl RemoteDbContext, message: &Message) {
 	let sender = match &message.author_id {
-		| MessageAuthorId::NativeAccountId(author_id) => author_id
+		| MessageAuthorId::AccountId(author_id) => author_id
 			.resolve(corvidx)
 			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
 
-		| MessageAuthorId::TpAccountId(author_id) => author_id
+		| MessageAuthorId::ExternalActorId(author_id) => author_id
 			.resolve(corvidx)
 			.map(|account| {
 				account
@@ -98,9 +98,9 @@ fn on_sub_applied(corvidx: &SubscriptionEventContext) {
 	println!("\nFully connected and all subscriptions applied.");
 	println!("Use /callsign to set your callsign, or type a message!\n");
 
-	let tp_accounts = corvidx.db.tp_account().iter().collect::<Vec<_>>();
+	let external_actors = corvidx.db.external_actor().iter().collect::<Vec<_>>();
 
-	for account in tp_accounts {
+	for account in external_actors {
 		println!("\n{:?}", account)
 	}
 
@@ -125,9 +125,9 @@ pub fn subscribe_to_tables(corvidx: &DbConnection) {
 		.subscribe([
 			"SELECT * FROM account_link_request",
 			"SELECT * FROM account_profile",
-			"SELECT * FROM tp_account",
+			"SELECT * FROM external_actor",
 			"SELECT * FROM message",
 			// "SELECT * FROM message_channel",
-			"SELECT * FROM native_account",
+			"SELECT * FROM account",
 		]);
 }

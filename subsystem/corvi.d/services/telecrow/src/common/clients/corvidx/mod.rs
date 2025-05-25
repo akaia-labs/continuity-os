@@ -42,9 +42,9 @@ pub fn subscribe_to_tables(corvidx: &DbConnection) {
 		.subscribe([
 			"SELECT * FROM account_link_request",
 			"SELECT * FROM account_profile",
-			"SELECT * FROM tp_account",
+			"SELECT * FROM external_actor",
 			"SELECT * FROM message",
 			// "SELECT * FROM message_channel",
-			"SELECT * FROM native_account",
+			"SELECT * FROM account",
 		]);
 }

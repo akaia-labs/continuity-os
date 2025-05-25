@@ -5,11 +5,11 @@ use crowdcomm_sdk::{
 	corvidx::{
 		ports::ProfileResolution,
 		stdb::{
-			DbConnection, TpAccountReference, TpAccountTableAccess, import_tp_account,
-			update_tp_account_callsign, update_tp_account_profile,
+			DbConnection, ExternalActorReference, ExternalActorTableAccess, import_external_actor,
+			update_external_actor_callsign, update_external_actor_profile,
 		},
 	},
-	integrations::ports::{ProfileImport, TpAccountImport},
+	integrations::ports::{ExternalActorImport, ProfileImport},
 };
 use teloxide::types::User;
 
@@ -25,33 +25,33 @@ pub fn handle_telegram_user_update(
 	let tg_account_reference = user_data.into_account_reference();
 	let tg_profile_metadata = user_data.into_profile_metadata();
 
-	let TpAccountReference {
-		id: tp_account_external_id,
+	let ExternalActorReference {
+		id: external_actor_external_id,
 		platform_tag,
 	} = &tg_account_reference;
 
 	let platform_name = platform_tag.to_string().capitalize();
 
-	let tp_account = corvidx
+	let external_actor = corvidx
 		.db
-		.tp_account()
+		.external_actor()
 		.id()
 		.find(&tg_account_reference.to_string());
 
-	if let Some(account) = tp_account {
+	if let Some(account) = external_actor {
 		let profile = account.profile(&*corvidx);
 
 		if account.callsign != tg_username {
 			let result = corvidx
 				.reducers
-				.update_tp_account_callsign(tg_account_reference.clone(), tg_username);
+				.update_external_actor_callsign(tg_account_reference.clone(), tg_username);
 
 			match result {
 				| Ok(_) => {
 					on_success(format!(
 						r#"
 							Username change for {platform_name} account
-							{tp_account_external_id} has been
+							{external_actor_external_id} has been
 							successfully reflected on its callsign.
 						"#
 					));
@@ -61,7 +61,7 @@ pub fn handle_telegram_user_update(
 					on_error(format!(
 						r#"
 							Unable to register username change for {platform_name}
-							account {tp_account_external_id}: {err}
+							account {external_actor_external_id}: {err}
 						"#
 					));
 				},
@@ -73,14 +73,14 @@ pub fn handle_telegram_user_update(
 		{
 			let result = corvidx
 				.reducers
-				.update_tp_account_profile(tg_account_reference.clone(), Some(tg_profile_metadata));
+				.update_external_actor_profile(tg_account_reference.clone(), Some(tg_profile_metadata));
 
 			match result {
 				| Ok(_) => {
 					on_success(format!(
 						r#"
 							{platform_name} profile record for account
-							{tp_account_external_id} has been successfully updated.
+							{external_actor_external_id} has been successfully updated.
 						"#
 					));
 				},
@@ -89,7 +89,7 @@ pub fn handle_telegram_user_update(
 					on_error(format!(
 						r#"
 							Unable to register profile change for {platform_name}
-							account {tp_account_external_id}: {err}
+							account {external_actor_external_id}: {err}
 						"#
 					));
 				},
@@ -98,7 +98,7 @@ pub fn handle_telegram_user_update(
 	} else {
 		let result = corvidx
 			.reducers
-			.import_tp_account(
+			.import_external_actor(
 				tg_account_reference.clone(),
 				tg_username,
 				Some(tg_profile_metadata),
@@ -109,7 +109,7 @@ pub fn handle_telegram_user_update(
 			| Ok(_) => {
 				on_success(format!(
 					r#"
-						{platform_name} account {tp_account_external_id}
+						{platform_name} account {external_actor_external_id}
 						has been successfully imported.
 					"#
 				));
@@ -119,7 +119,7 @@ pub fn handle_telegram_user_update(
 				on_error(format!(
 					r#"
 						Unable to import {platform_name} account
-						{tp_account_external_id}: {err}
+						{external_actor_external_id}: {err}
 					"#
 				));
 			},

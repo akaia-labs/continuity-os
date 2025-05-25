@@ -3,9 +3,9 @@ use corvidx_client::{
 	common::{
 		ports::RecordResolution,
 		presentation::DisplayName,
-		stdb::{AccountLinkRequest, EventContext, TpAccountReference},
+		stdb::{AccountLinkRequest, EventContext, ExternalActorReference},
 	},
-	domain::entities::{message::MessageType, tp_platform::SupportedTpPlatformTag},
+	domain::entities::{message::MessageType, external_platform::SupportedExternalPlatformTag},
 };
 use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
@@ -31,7 +31,7 @@ impl OutboundTelegramActionRequest {
 			.resolve(ctx)
 			.ok_or("Unable to resolve requester account.")?;
 
-		let TpAccountReference {
+		let ExternalActorReference {
 			id: raw_user_id,
 			platform_tag,
 		} = alr.subject_account_id
@@ -40,7 +40,7 @@ impl OutboundTelegramActionRequest {
 
 		//* Double checking the platform tag
 		//* In case of the forwarder letting it through unverified
-		if platform_tag.into_supported() != SupportedTpPlatformTag::Telegram {
+		if platform_tag.into_supported() != SupportedExternalPlatformTag::Telegram {
 			return Err(format!(
 				"Platform tag {platform_tag} does not match Telegram."
 			));
@@ -110,7 +110,7 @@ impl OutboundTelegramActionRequest {
 						{requester_name} has requested to link this {platform_name} account.
 						If you are the not {requester_name}, please reject this request.
 					"#,
-					platform_name = SupportedTpPlatformTag::Telegram.to_string().capitalize()
+					platform_name = SupportedExternalPlatformTag::Telegram.to_string().capitalize()
 				)
 				.squash_whitespace(),
 			),

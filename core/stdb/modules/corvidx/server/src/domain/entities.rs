@@ -1,7 +1,6 @@
-pub mod account_profile;
+pub mod account;
+pub mod actor_profile;
+pub mod channel;
+pub mod external_actor;
+pub mod external_platform;
 pub mod message;
-pub mod message_channel;
-pub mod native_account;
-pub mod tp_account;
-pub mod tp_channel;
-pub mod tp_platform;

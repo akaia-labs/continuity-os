@@ -9,7 +9,7 @@ use crowdcomm_sdk::{
 };
 use teloxide::{RequestError, prelude::Requester, respond, types::CallbackQuery};
 
-use crate::{BotInstanceType, domain::features::account_linking};
+use crate::{BotInstanceType, domain::features::external_authentication};
 
 pub fn callback_query_handler(
 	ctx: Arc<DbConnection>,
@@ -47,7 +47,7 @@ pub fn callback_query_handler(
 					return Box::pin(async move {
 						bot.answer_callback_query(&callback_query.id).await?;
 
-						account_linking::handle_command(
+						external_authentication::handle_command(
 							ctx,
 							bot.clone(),
 							prompt_msg,

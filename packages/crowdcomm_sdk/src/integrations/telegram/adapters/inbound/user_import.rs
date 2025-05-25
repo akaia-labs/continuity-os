@@ -1,29 +1,29 @@
 use corvidx_client::common::stdb::{
-	AccountProfileMetadata, AccountProfileName, TpAccountReference, TpPlatformTag,
+	ActorProfileMetadata, ActorProfileName, ExternalActorReference, ExternalPlatformTag,
 };
 use teloxide_core::types::User;
 
-use crate::integrations::ports::{ProfileImport, TpAccountImport};
+use crate::integrations::ports::{ExternalActorImport, ProfileImport};
 
-impl TpAccountImport for User {
-	fn into_account_reference(&self) -> TpAccountReference {
-		TpAccountReference {
+impl ExternalActorImport for User {
+	fn into_account_reference(&self) -> ExternalActorReference {
+		ExternalActorReference {
 			id:           self.id.to_string(),
-			platform_tag: TpPlatformTag::Telegram,
+			platform_tag: ExternalPlatformTag::Telegram,
 		}
 	}
 }
 
 impl ProfileImport for User {
-	fn into_profile_metadata(&self) -> AccountProfileMetadata {
-		AccountProfileMetadata {
-			name: AccountProfileName {
+	fn into_profile_metadata(&self) -> ActorProfileMetadata {
+		ActorProfileMetadata {
+			name: ActorProfileName {
 				short_name:     self.first_name.clone(),
 				name_extension: self.last_name.clone(),
 			},
 
 			// TODO: Implement bio retrieval
-			bio: "".to_string(),
+			description: "".to_string(),
 		}
 	}
 }

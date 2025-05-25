@@ -1,9 +1,9 @@
 use corvutils::StringExtensions;
 use crowdcomm_sdk::corvidx::{
-	account_linking::AccountLinkRequestId,
+	external_authentication::AccountLinkRequestId,
 	stdb::{
-		DbConnection, TpAccountReference, ReducerEventContext, mirror_tp_profile,
-		resolve_account_link_request, unlink_tp_account,
+		DbConnection, ExternalActorReference, ReducerEventContext, mirror_external_profile,
+		resolve_account_link_request, unlink_external_actor,
 	},
 };
 use spacetimedb_sdk::Status;
@@ -15,11 +15,11 @@ pub fn subscribe(corvidx: &DbConnection) {
 
 	corvidx
 		.reducers
-		.on_unlink_tp_account(on_unlink_tp_account);
+		.on_unlink_external_actor(on_unlink_external_actor);
 
 	corvidx
 		.reducers
-		.on_mirror_tp_profile(on_mirror_tp_profile);
+		.on_mirror_external_profile(on_mirror_external_profile);
 }
 
 // TODO: Send service DM to the particular requester instead
@@ -48,8 +48,8 @@ fn on_resolve_account_link_request(
 	}
 }
 
-fn on_unlink_tp_account(corvidx: &ReducerEventContext, reference: &TpAccountReference) {
-	let TpAccountReference {
+fn on_unlink_external_actor(corvidx: &ReducerEventContext, reference: &ExternalActorReference) {
+	let ExternalActorReference {
 		id: external_identifier,
 		platform_tag,
 	} = reference;
@@ -80,8 +80,8 @@ fn on_unlink_tp_account(corvidx: &ReducerEventContext, reference: &TpAccountRefe
 	}
 }
 
-fn on_mirror_tp_profile(corvidx: &ReducerEventContext, reference: &TpAccountReference) {
-	let TpAccountReference {
+fn on_mirror_external_profile(corvidx: &ReducerEventContext, reference: &ExternalActorReference) {
+	let ExternalActorReference {
 		id: external_identifier,
 		platform_tag,
 	} = reference;

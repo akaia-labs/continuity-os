@@ -1,9 +1,7 @@
 use spacetimedb::{ReducerContext, reducer};
 
 use crate::domain::{
-	entities::native_account::{
-		NativeAccount, NativeAccountId, NativeAccountLocalRole, native_account,
-	},
+	entities::account::{Account, AccountId, AccountRole, account},
 	features::internal::assert_admin,
 };
 
@@ -13,14 +11,14 @@ use crate::domain::{
 #[reducer]
 /// Sets role for the specified account.
 pub fn admin_set_account_role(
-	ctx: &ReducerContext, account_id: NativeAccountId, role: NativeAccountLocalRole,
+	ctx: &ReducerContext, account_id: AccountId, role: AccountRole,
 ) -> Result<(), String> {
 	// TODO: Return an error instead of panicking and consider converting
-	// TODO: this into `is_admin` on `NativeAccount` via permission control trait
+	// TODO: this into `is_admin` on `Account` via permission control trait
 	assert_admin(ctx);
 
-	if let Some(account) = ctx.db.native_account().id().find(account_id) {
-		ctx.db.native_account().id().update(NativeAccount {
+	if let Some(account) = ctx.db.account().id().find(account_id) {
+		ctx.db.account().id().update(Account {
 			role,
 			updated_at: ctx.timestamp,
 			..account
