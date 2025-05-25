@@ -58,13 +58,13 @@ impl OutboundTelegramActionRequest {
 		let reject_choice = ExtAuthReqResolution::Reject(ext_auth_req.id);
 
 		let accept_callback_payload = ActionCommand {
-			kind:    ActionKind::ExternalAuthenticationRequest,
+			kind:    ActionKind::ExtAuthReqResolution,
 			payload: accept_choice,
 		}
 		.try_to_string()?;
 
 		let reject_callback_payload = ActionCommand {
-			kind:    ActionKind::ExternalAuthenticationRequest,
+			kind:    ActionKind::ExtAuthReqResolution,
 			payload: reject_choice,
 		}
 		.try_to_string()?;

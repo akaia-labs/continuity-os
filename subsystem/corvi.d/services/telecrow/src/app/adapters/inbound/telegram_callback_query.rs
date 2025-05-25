@@ -39,7 +39,7 @@ pub fn callback_query_handler(
 		let query_payload = callback_query.data.unwrap();
 
 		match action_kind {
-			| ActionKind::ExternalAuthenticationRequest => {
+			| ActionKind::ExtAuthReqResolution => {
 				let command: Result<ActionCommand<ExtAuthReqResolution>, String> =
 					ActionCommand::try_from_str(query_payload.as_str());
 
