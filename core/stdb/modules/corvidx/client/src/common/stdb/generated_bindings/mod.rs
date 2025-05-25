@@ -126,19 +126,19 @@ pub enum Reducer {
 	ClientConnected,
 	ClientDisconnected,
 	ImportMessage {
-		author_exref: ExternalActorReference,
-		text:         String,
+		ext_author_ref: ExternalActorReference,
+		text:           String,
 	},
 	InitiateExternalAuthentication {
-		exref: ExternalActorReference,
+		ext_actor_ref: ExternalActorReference,
 	},
 	MirrorExternalProfile {
-		exref: ExternalActorReference,
+		ext_actor_ref: ExternalActorReference,
 	},
 	RegisterExternalActor {
-		exref:    ExternalActorReference,
-		callsign: Option<String>,
-		metadata: Option<ActorProfileMetadata>,
+		ext_actor_ref: ExternalActorReference,
+		callsign:      Option<String>,
+		metadata:      Option<ActorProfileMetadata>,
 	},
 	ReportExternalAuthenticationResolution {
 		request:     ExternalAuthenticationRequest,
@@ -158,15 +158,15 @@ pub enum Reducer {
 		callsign: String,
 	},
 	UnlinkExternalActor {
-		exref: ExternalActorReference,
+		ext_actor_ref: ExternalActorReference,
 	},
 	UpdateExternalActorCallsign {
-		exref:    ExternalActorReference,
-		callsign: Option<String>,
+		ext_actor_ref: ExternalActorReference,
+		callsign:      Option<String>,
 	},
 	UpdateExternalActorProfile {
-		exref:    ExternalActorReference,
-		metadata: Option<ActorProfileMetadata>,
+		ext_actor_ref: ExternalActorReference,
+		metadata:      Option<ActorProfileMetadata>,
 	},
 }
 

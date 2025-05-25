@@ -12,17 +12,17 @@ use super::{
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct RegisterExternalActorArgs {
-	pub exref:    ExternalActorReference,
-	pub callsign: Option<String>,
-	pub metadata: Option<ActorProfileMetadata>,
+	pub ext_actor_ref: ExternalActorReference,
+	pub callsign:      Option<String>,
+	pub metadata:      Option<ActorProfileMetadata>,
 }
 
 impl From<RegisterExternalActorArgs> for super::Reducer {
 	fn from(args: RegisterExternalActorArgs) -> Self {
 		Self::RegisterExternalActor {
-			exref:    args.exref,
-			callsign: args.callsign,
-			metadata: args.metadata,
+			ext_actor_ref: args.ext_actor_ref,
+			callsign:      args.callsign,
+			metadata:      args.metadata,
 		}
 	}
 }
@@ -46,7 +46,7 @@ pub trait register_external_actor {
 	///  and its status can be observed by listening for
 	/// [`Self::on_register_external_actor`] callbacks.
 	fn register_external_actor(
-		&self, exref: ExternalActorReference, callsign: Option<String>,
+		&self, ext_actor_ref: ExternalActorReference, callsign: Option<String>,
 		metadata: Option<ActorProfileMetadata>,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
@@ -75,12 +75,12 @@ pub trait register_external_actor {
 
 impl register_external_actor for super::RemoteReducers {
 	fn register_external_actor(
-		&self, exref: ExternalActorReference, callsign: Option<String>,
+		&self, ext_actor_ref: ExternalActorReference, callsign: Option<String>,
 		metadata: Option<ActorProfileMetadata>,
 	) -> __sdk::Result<()> {
 		self.imp
 			.call_reducer("register_external_actor", RegisterExternalActorArgs {
-				exref,
+				ext_actor_ref,
 				callsign,
 				metadata,
 			})
@@ -104,7 +104,7 @@ impl register_external_actor for super::RemoteReducers {
 						__sdk::ReducerEvent {
 							reducer:
 								super::Reducer::RegisterExternalActor {
-									exref,
+									ext_actor_ref,
 									callsign,
 									metadata,
 								},
@@ -115,7 +115,7 @@ impl register_external_actor for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, exref, callsign, metadata)
+				callback(ctx, ext_actor_ref, callsign, metadata)
 			}),
 		))
 	}

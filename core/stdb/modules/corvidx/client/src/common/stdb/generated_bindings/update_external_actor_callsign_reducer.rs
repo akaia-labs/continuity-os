@@ -9,15 +9,15 @@ use super::external_actor_reference_type::ExternalActorReference;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct UpdateExternalActorCallsignArgs {
-	pub exref:    ExternalActorReference,
-	pub callsign: Option<String>,
+	pub ext_actor_ref: ExternalActorReference,
+	pub callsign:      Option<String>,
 }
 
 impl From<UpdateExternalActorCallsignArgs> for super::Reducer {
 	fn from(args: UpdateExternalActorCallsignArgs) -> Self {
 		Self::UpdateExternalActorCallsign {
-			exref:    args.exref,
-			callsign: args.callsign,
+			ext_actor_ref: args.ext_actor_ref,
+			callsign:      args.callsign,
 		}
 	}
 }
@@ -41,7 +41,7 @@ pub trait update_external_actor_callsign {
 	///  and its status can be observed by listening for
 	/// [`Self::on_update_external_actor_callsign`] callbacks.
 	fn update_external_actor_callsign(
-		&self, exref: ExternalActorReference, callsign: Option<String>,
+		&self, ext_actor_ref: ExternalActorReference, callsign: Option<String>,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `update_external_actor_callsign`.
@@ -68,11 +68,14 @@ pub trait update_external_actor_callsign {
 
 impl update_external_actor_callsign for super::RemoteReducers {
 	fn update_external_actor_callsign(
-		&self, exref: ExternalActorReference, callsign: Option<String>,
+		&self, ext_actor_ref: ExternalActorReference, callsign: Option<String>,
 	) -> __sdk::Result<()> {
 		self.imp.call_reducer(
 			"update_external_actor_callsign",
-			UpdateExternalActorCallsignArgs { exref, callsign },
+			UpdateExternalActorCallsignArgs {
+				ext_actor_ref,
+				callsign,
+			},
 		)
 	}
 
@@ -88,7 +91,11 @@ impl update_external_actor_callsign for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::UpdateExternalActorCallsign { exref, callsign },
+							reducer:
+								super::Reducer::UpdateExternalActorCallsign {
+									ext_actor_ref,
+									callsign,
+								},
 							..
 						},
 					..
@@ -96,7 +103,7 @@ impl update_external_actor_callsign for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, exref, callsign)
+				callback(ctx, ext_actor_ref, callsign)
 			}),
 		))
 	}

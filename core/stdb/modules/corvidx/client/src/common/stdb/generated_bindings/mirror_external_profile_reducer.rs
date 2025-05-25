@@ -9,12 +9,14 @@ use super::external_actor_reference_type::ExternalActorReference;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct MirrorExternalProfileArgs {
-	pub exref: ExternalActorReference,
+	pub ext_actor_ref: ExternalActorReference,
 }
 
 impl From<MirrorExternalProfileArgs> for super::Reducer {
 	fn from(args: MirrorExternalProfileArgs) -> Self {
-		Self::MirrorExternalProfile { exref: args.exref }
+		Self::MirrorExternalProfile {
+			ext_actor_ref: args.ext_actor_ref,
+		}
 	}
 }
 
@@ -36,7 +38,7 @@ pub trait mirror_external_profile {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_mirror_external_profile`] callbacks.
-	fn mirror_external_profile(&self, exref: ExternalActorReference) -> __sdk::Result<()>;
+	fn mirror_external_profile(&self, ext_actor_ref: ExternalActorReference) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `mirror_external_profile`.
 	///
@@ -56,10 +58,10 @@ pub trait mirror_external_profile {
 }
 
 impl mirror_external_profile for super::RemoteReducers {
-	fn mirror_external_profile(&self, exref: ExternalActorReference) -> __sdk::Result<()> {
+	fn mirror_external_profile(&self, ext_actor_ref: ExternalActorReference) -> __sdk::Result<()> {
 		self.imp
 			.call_reducer("mirror_external_profile", MirrorExternalProfileArgs {
-				exref,
+				ext_actor_ref,
 			})
 	}
 
@@ -73,7 +75,7 @@ impl mirror_external_profile for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::MirrorExternalProfile { exref },
+							reducer: super::Reducer::MirrorExternalProfile { ext_actor_ref },
 							..
 						},
 					..
@@ -81,7 +83,7 @@ impl mirror_external_profile for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, exref)
+				callback(ctx, ext_actor_ref)
 			}),
 		))
 	}

@@ -26,13 +26,13 @@ const LINK_REQUEST_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 #[reducer]
 /// Creates an external authentication request.
 pub fn initiate_external_authentication(
-	ctx: &ReducerContext, exref: ExternalActorReference,
+	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference,
 ) -> Result<(), String> {
-	let external_actor = exref.try_resolve(ctx)?;
+	let external_actor = ext_actor_ref.try_resolve(ctx)?;
 
 	if external_actor.account.is_some() {
 		return Err(format!(
-			"External actor {exref} is already linked to another account.",
+			"External actor {ext_actor_ref} is already linked to another account.",
 		));
 	}
 
@@ -52,7 +52,7 @@ pub fn initiate_external_authentication(
 				.timestamp
 				.checked_add(LINK_REQUEST_TIMEOUT.into())
 				.ok_or(format!(
-					"Unable to calculate account link request expiration date for {exref}."
+					"Unable to calculate account link request expiration date for {ext_actor_ref}."
 				))?,
 		});
 
@@ -65,7 +65,7 @@ pub fn initiate_external_authentication(
 	);
 
 	log::info!(
-		"{requester} created an account link request {id} for third-party account {exref}.",
+		"{requester} created an account link request {id} for third-party account {ext_actor_ref}.",
 		requester = account.id,
 		id = request.id,
 	);
@@ -115,14 +115,14 @@ pub fn resolve_external_authentication_request(
 #[reducer]
 /// Unbinds a third-party account from a internal account.
 pub fn unlink_external_actor(
-	ctx: &ReducerContext, exref: ExternalActorReference,
+	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference,
 ) -> Result<(), String> {
 	let mut account = ctx.sender.try_resolve(ctx)?;
-	let external_actor = exref.try_resolve(ctx)?;
+	let external_actor = ext_actor_ref.try_resolve(ctx)?;
 
 	if external_actor.account != Some(account.id) {
 		return Err(format!(
-			"Account {id} is not linked to the third-party account {exref}.",
+			"Account {id} is not linked to the third-party account {ext_actor_ref}.",
 			id = ctx.sender,
 		));
 	}
@@ -134,7 +134,7 @@ pub fn unlink_external_actor(
 
 	account
 		.exac_associations
-		.retain(|id| id != &exref.to_string());
+		.retain(|id| id != &ext_actor_ref.to_string());
 
 	ctx.db.account().id().update(account);
 
@@ -152,7 +152,7 @@ pub fn report_external_authentication_resolution(
 		..
 	} = request;
 
-	let display_exref = subject_account_id.parse::<ExternalActorReference>().map_or(
+	let display_ext_ref = subject_account_id.parse::<ExternalActorReference>().map_or(
 		subject_account_id,
 		|ext_ref| {
 			format!(
@@ -171,9 +171,9 @@ pub fn report_external_authentication_resolution(
 		author_id: MessageAuthorId::AccountId(ctx.identity()),
 
 		text: if is_approved {
-			format!("{display_exref} has been linked to your account.")
+			format!("{display_ext_ref} has been linked to your account.")
 		} else {
-			format!("Account link request for {display_exref} has been rejected.")
+			format!("Account link request for {display_ext_ref} has been rejected.")
 		},
 	});
 

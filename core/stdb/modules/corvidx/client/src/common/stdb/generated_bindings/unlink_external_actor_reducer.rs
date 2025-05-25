@@ -9,12 +9,14 @@ use super::external_actor_reference_type::ExternalActorReference;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct UnlinkExternalActorArgs {
-	pub exref: ExternalActorReference,
+	pub ext_actor_ref: ExternalActorReference,
 }
 
 impl From<UnlinkExternalActorArgs> for super::Reducer {
 	fn from(args: UnlinkExternalActorArgs) -> Self {
-		Self::UnlinkExternalActor { exref: args.exref }
+		Self::UnlinkExternalActor {
+			ext_actor_ref: args.ext_actor_ref,
+		}
 	}
 }
 
@@ -36,7 +38,7 @@ pub trait unlink_external_actor {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_unlink_external_actor`] callbacks.
-	fn unlink_external_actor(&self, exref: ExternalActorReference) -> __sdk::Result<()>;
+	fn unlink_external_actor(&self, ext_actor_ref: ExternalActorReference) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `unlink_external_actor`.
 	///
@@ -56,9 +58,11 @@ pub trait unlink_external_actor {
 }
 
 impl unlink_external_actor for super::RemoteReducers {
-	fn unlink_external_actor(&self, exref: ExternalActorReference) -> __sdk::Result<()> {
+	fn unlink_external_actor(&self, ext_actor_ref: ExternalActorReference) -> __sdk::Result<()> {
 		self.imp
-			.call_reducer("unlink_external_actor", UnlinkExternalActorArgs { exref })
+			.call_reducer("unlink_external_actor", UnlinkExternalActorArgs {
+				ext_actor_ref,
+			})
 	}
 
 	fn on_unlink_external_actor(
@@ -71,7 +75,7 @@ impl unlink_external_actor for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::UnlinkExternalActor { exref },
+							reducer: super::Reducer::UnlinkExternalActor { ext_actor_ref },
 							..
 						},
 					..
@@ -79,7 +83,7 @@ impl unlink_external_actor for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, exref)
+				callback(ctx, ext_actor_ref)
 			}),
 		))
 	}

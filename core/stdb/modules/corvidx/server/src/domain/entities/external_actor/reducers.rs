@@ -6,23 +6,23 @@ use crate::domain::entities::actor_profile::{ActorProfile, ActorProfileMetadata,
 #[reducer]
 /// Registers a local representation of the given 3rd party platform actor.
 pub fn register_external_actor(
-	ctx: &ReducerContext, exref: ExternalActorReference, callsign: Option<String>,
+	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference, callsign: Option<String>,
 	metadata: Option<ActorProfileMetadata>,
 ) -> Result<(), String> {
 	if ctx
 		.db
 		.external_actor()
 		.id()
-		.find(exref.to_string())
+		.find(ext_actor_ref.to_string())
 		.is_some()
 	{
 		return Err(format!(
-			"External actor {exref} is already registered in the system.",
+			"External actor {ext_actor_ref} is already registered in the system.",
 		));
 	}
 
 	ctx.db.external_actor().insert(ExternalActor {
-		id: exref.to_string(),
+		id: ext_actor_ref.to_string(),
 		callsign,
 		account: None,
 
@@ -44,15 +44,15 @@ pub fn register_external_actor(
 /// Updates the local representation
 /// of a 3rd party platform account handle / username.
 pub fn update_external_actor_callsign(
-	ctx: &ReducerContext, exref: ExternalActorReference, callsign: Option<String>,
+	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference, callsign: Option<String>,
 ) -> Result<(), String> {
 	let account = ctx
 		.db
 		.external_actor()
 		.id()
-		.find(exref.to_string())
+		.find(ext_actor_ref.to_string())
 		.ok_or(format!(
-			"External actor {exref} is not registered in the system."
+			"External actor {ext_actor_ref} is not registered in the system."
 		))?;
 
 	ctx.db.external_actor().id().update(ExternalActor {
@@ -66,15 +66,15 @@ pub fn update_external_actor_callsign(
 #[reducer]
 /// Updates the local representation of a 3rd party platform actor profile.
 pub fn update_external_actor_profile(
-	ctx: &ReducerContext, exref: ExternalActorReference, metadata: Option<ActorProfileMetadata>,
+	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference, metadata: Option<ActorProfileMetadata>,
 ) -> Result<(), String> {
 	let account = ctx
 		.db
 		.external_actor()
 		.id()
-		.find(exref.to_string())
+		.find(ext_actor_ref.to_string())
 		.ok_or(format!(
-			"External actor {exref} is not registered in the system."
+			"External actor {ext_actor_ref} is not registered in the system."
 		))?;
 
 	let profile = if let Some(profile_id) = account.profile {

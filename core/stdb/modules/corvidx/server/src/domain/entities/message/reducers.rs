@@ -32,9 +32,9 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, author_exref: ExternalActorReference, text: String,
+	ctx: &ReducerContext, ext_author_ref: ExternalActorReference, text: String,
 ) -> Result<(), String> {
-	let actor = author_exref.try_resolve(ctx)?;
+	let actor = ext_author_ref.try_resolve(ctx)?;
 
 	let sender = if let Some(identity) = actor.account {
 		identity

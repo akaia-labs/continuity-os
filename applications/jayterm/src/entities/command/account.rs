@@ -25,32 +25,32 @@ pub fn on_account_command(
 			.map_err(|e| e.to_string()),
 
 		| (AccountCommand::LinkAccount, 1) => {
-			let exref = ExternalActorReference::from_str(&args[0])
+			let ext_actor_ref = ExternalActorReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse third-party account id: {e}"))?;
 
 			corvidx
 				.reducers
-				.initiate_external_authentication(exref)
+				.initiate_external_authentication(ext_actor_ref)
 				.map_err(|e| e.to_string())
 		},
 
 		| (AccountCommand::UnlinkAccount, 1) => {
-			let exref = ExternalActorReference::from_str(&args[0])
+			let ext_actor_ref = ExternalActorReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse third-party account id: {e}"))?;
 
 			corvidx
 				.reducers
-				.unlink_external_actor(exref)
+				.unlink_external_actor(ext_actor_ref)
 				.map_err(|e| e.to_string())
 		},
 
 		| (AccountCommand::MirrorExternalProfile, 1) => {
-			let exref = ExternalActorReference::from_str(&args[0])
+			let ext_actor_ref = ExternalActorReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse third-party account id: {e}"))?;
 
 			corvidx
 				.reducers
-				.mirror_external_profile(exref)
+				.mirror_external_profile(ext_actor_ref)
 				.map_err(|e| e.to_string())
 		},
 

@@ -12,15 +12,15 @@ use super::{
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct UpdateExternalActorProfileArgs {
-	pub exref:    ExternalActorReference,
-	pub metadata: Option<ActorProfileMetadata>,
+	pub ext_actor_ref: ExternalActorReference,
+	pub metadata:      Option<ActorProfileMetadata>,
 }
 
 impl From<UpdateExternalActorProfileArgs> for super::Reducer {
 	fn from(args: UpdateExternalActorProfileArgs) -> Self {
 		Self::UpdateExternalActorProfile {
-			exref:    args.exref,
-			metadata: args.metadata,
+			ext_actor_ref: args.ext_actor_ref,
+			metadata:      args.metadata,
 		}
 	}
 }
@@ -44,7 +44,7 @@ pub trait update_external_actor_profile {
 	///  and its status can be observed by listening for
 	/// [`Self::on_update_external_actor_profile`] callbacks.
 	fn update_external_actor_profile(
-		&self, exref: ExternalActorReference, metadata: Option<ActorProfileMetadata>,
+		&self, ext_actor_ref: ExternalActorReference, metadata: Option<ActorProfileMetadata>,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `update_external_actor_profile`.
@@ -74,11 +74,14 @@ pub trait update_external_actor_profile {
 
 impl update_external_actor_profile for super::RemoteReducers {
 	fn update_external_actor_profile(
-		&self, exref: ExternalActorReference, metadata: Option<ActorProfileMetadata>,
+		&self, ext_actor_ref: ExternalActorReference, metadata: Option<ActorProfileMetadata>,
 	) -> __sdk::Result<()> {
 		self.imp.call_reducer(
 			"update_external_actor_profile",
-			UpdateExternalActorProfileArgs { exref, metadata },
+			UpdateExternalActorProfileArgs {
+				ext_actor_ref,
+				metadata,
+			},
 		)
 	}
 
@@ -97,7 +100,11 @@ impl update_external_actor_profile for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::UpdateExternalActorProfile { exref, metadata },
+							reducer:
+								super::Reducer::UpdateExternalActorProfile {
+									ext_actor_ref,
+									metadata,
+								},
 							..
 						},
 					..
@@ -105,7 +112,7 @@ impl update_external_actor_profile for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, exref, metadata)
+				callback(ctx, ext_actor_ref, metadata)
 			}),
 		))
 	}

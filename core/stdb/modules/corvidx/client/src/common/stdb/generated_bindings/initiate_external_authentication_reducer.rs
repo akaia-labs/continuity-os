@@ -9,12 +9,14 @@ use super::external_actor_reference_type::ExternalActorReference;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct InitiateExternalAuthenticationArgs {
-	pub exref: ExternalActorReference,
+	pub ext_actor_ref: ExternalActorReference,
 }
 
 impl From<InitiateExternalAuthenticationArgs> for super::Reducer {
 	fn from(args: InitiateExternalAuthenticationArgs) -> Self {
-		Self::InitiateExternalAuthentication { exref: args.exref }
+		Self::InitiateExternalAuthentication {
+			ext_actor_ref: args.ext_actor_ref,
+		}
 	}
 }
 
@@ -37,7 +39,9 @@ pub trait initiate_external_authentication {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_initiate_external_authentication`] callbacks.
-	fn initiate_external_authentication(&self, exref: ExternalActorReference) -> __sdk::Result<()>;
+	fn initiate_external_authentication(
+		&self, ext_actor_ref: ExternalActorReference,
+	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `initiate_external_authentication`.
 	///
@@ -60,10 +64,12 @@ pub trait initiate_external_authentication {
 }
 
 impl initiate_external_authentication for super::RemoteReducers {
-	fn initiate_external_authentication(&self, exref: ExternalActorReference) -> __sdk::Result<()> {
+	fn initiate_external_authentication(
+		&self, ext_actor_ref: ExternalActorReference,
+	) -> __sdk::Result<()> {
 		self.imp.call_reducer(
 			"initiate_external_authentication",
-			InitiateExternalAuthenticationArgs { exref },
+			InitiateExternalAuthenticationArgs { ext_actor_ref },
 		)
 	}
 
@@ -77,7 +83,8 @@ impl initiate_external_authentication for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::InitiateExternalAuthentication { exref },
+							reducer:
+								super::Reducer::InitiateExternalAuthentication { ext_actor_ref },
 							..
 						},
 					..
@@ -85,7 +92,7 @@ impl initiate_external_authentication for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, exref)
+				callback(ctx, ext_actor_ref)
 			}),
 		))
 	}
