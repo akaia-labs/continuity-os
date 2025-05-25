@@ -13,7 +13,7 @@ use crate::common::constants::SERVICE_CANONICAL_NAME;
 pub fn handle_unauthorized_use_attempt(corvidx: Arc<DbConnection>, event: Update) {
 	let initiator_specifier = event
 		.from()
-		.map(|user| user.into_exref().to_string())
+		.map(|user| user.into_actor_ref().to_string())
 		.unwrap_or("an unknown user".into());
 
 	let log_header =

@@ -22,7 +22,7 @@ pub fn handle_telegram_user_update(
 		..
 	} = user_data.clone();
 
-	let tg_exref = user_data.into_exref();
+	let tg_exref = user_data.into_actor_ref();
 	let tg_profile_metadata = user_data.into_actor_profile_metadata();
 
 	let ExternalActorReference {

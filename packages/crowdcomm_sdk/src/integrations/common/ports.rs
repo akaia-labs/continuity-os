@@ -7,7 +7,7 @@ use crate::corvidx::stdb::{ActorProfileMetadata, EventContext, ExternalActorRefe
 
 pub trait ExternalActorIdentification {
 	/// Derives locally recognized reference from third-party actor's properties
-	fn into_exref(&self) -> ExternalActorReference;
+	fn into_actor_ref(&self) -> ExternalActorReference;
 }
 
 pub trait ProfileImport {

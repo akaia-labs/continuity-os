@@ -52,7 +52,7 @@ pub fn private_handler(
 					.db
 					.external_actor()
 					.id()
-					.find(&user.into_exref().to_string());
+					.find(&user.into_actor_ref().to_string());
 
 				match cmd {
 					| PrivateCommand::MyAccountId => {

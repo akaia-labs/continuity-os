@@ -6,7 +6,7 @@ use crate::{
 };
 
 impl ExternalActorIdentification for TelegramUser {
-	fn into_exref(&self) -> ExternalActorReference {
+	fn into_actor_ref(&self) -> ExternalActorReference {
 		ExternalActorReference {
 			id:     self.id.to_string(),
 			origin: ExternalActorOrigin::Telegram,
