@@ -1,13 +1,13 @@
 use crowdcomm_sdk::corvidx::stdb::{
-	DbConnection, EventContext, Account, AccountTableAccess, ReducerEventContext,
+	Account, AccountTableAccess, DbConnection, EventContext, ReducerEventContext,
 	set_account_callsign,
 };
 use spacetimedb_sdk::{Status, Table, TableWithPrimaryKey};
 
-pub fn subscribe(corvidx: &DbConnection) {
-	corvidx.db.account().on_insert(on_insert);
-	corvidx.db.account().on_update(on_update);
-	corvidx.reducers.on_set_account_callsign(on_callsign_set);
+pub fn subscribe(ctx: &DbConnection) {
+	ctx.db.account().on_insert(on_insert);
+	ctx.db.account().on_update(on_update);
+	ctx.reducers.on_set_account_callsign(on_callsign_set);
 }
 
 /// If the account is online, prints a notification.
@@ -36,8 +36,8 @@ fn on_update(_corvidx: &EventContext, old: &Account, new: &Account) {
 }
 
 /// Prints a warning if the reducer failed.
-fn on_callsign_set(corvidx: &ReducerEventContext, callsign: &String) {
-	if let Status::Failed(err) = &corvidx.event.status {
+fn on_callsign_set(ctx: &ReducerEventContext, callsign: &String) {
+	if let Status::Failed(err) = &ctx.event.status {
 		eprintln!("Failed to change callsign to {:?}: {}", callsign, err);
 	}
 }
