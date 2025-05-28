@@ -1,6 +1,6 @@
 use crate::{
 	corvidx::stdb::{
-		ActorProfileMetadata, ActorProfileName, ExternalActorOrigin, ExternalActorReference,
+		ActorProfileMetadata, ActorName, ExternalActorOrigin, ExternalActorReference,
 	},
 	integrations::ports::{ExternalActorIdentification, ProfileImport, TelegramUser},
 };
@@ -17,7 +17,7 @@ impl ExternalActorIdentification for TelegramUser {
 impl ProfileImport for TelegramUser {
 	fn into_actor_profile_metadata(&self) -> ActorProfileMetadata {
 		ActorProfileMetadata {
-			name: ActorProfileName {
+			name: ActorName {
 				short_name:     self.first_name.clone(),
 				name_extension: self.last_name.clone(),
 			},

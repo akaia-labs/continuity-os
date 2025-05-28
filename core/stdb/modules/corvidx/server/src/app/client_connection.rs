@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use crate::domain::entities::{
 	account::{Account, AccountRole, account},
-	actor_profile::{ActorProfile, ActorProfileMetadata, actor_profile},
+	shared::actor::{ActorProfile, ActorProfileMetadata, actor_profile},
 };
 
 #[reducer(client_connected)]
@@ -30,15 +30,15 @@ pub fn client_connected(ctx: &ReducerContext) {
 		});
 
 		ctx.db.account().insert(Account {
-			id:                ctx.sender,
-			callsign:          format!("0x{}", ctx.sender.to_hex().to_string()),
-			role:              AccountRole::Interactor,
-			is_online:         true,
-			created_at:        ctx.timestamp,
-			updated_at:        ctx.timestamp,
-			last_seen_at:      ctx.timestamp,
-			profile:           actor_profile.id,
-			exac_associations: vec![],
+			id:              ctx.sender,
+			callsign:        format!("0x{}", ctx.sender.to_hex().to_string()),
+			role:            AccountRole::Interactor,
+			is_online:       true,
+			created_at:      ctx.timestamp,
+			updated_at:      ctx.timestamp,
+			last_seen_at:    ctx.timestamp,
+			profile:         actor_profile.id,
+			external_actors: vec![],
 		});
 	}
 }

@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, reducer};
 
 use crate::domain::{
 	entities::account::{Account, AccountId, AccountRole, account},
-	features::internal::assert_admin,
+	features::shared::assert_admin,
 };
 
 // ! HEADS UP! Don't forget to call `assert_admin(ctx);`

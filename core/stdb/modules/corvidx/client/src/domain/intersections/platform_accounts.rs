@@ -15,7 +15,7 @@ impl PlatformAssociation<ExternalActor> for Account {
 	fn platform_association(
 		&self, ctx: &impl RemoteDbContext, origin: SupportedExternalActorOrigin,
 	) -> Option<ExternalActor> {
-		self.exac_associations
+		self.external_actors
 			.iter()
 			.filter_map(|account_id| ctx.db().external_actor().id().find(account_id))
 			.find(|account| {

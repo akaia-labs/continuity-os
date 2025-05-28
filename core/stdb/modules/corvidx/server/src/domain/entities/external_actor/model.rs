@@ -1,19 +1,13 @@
-use std::{
-	fmt::{self, Display, Formatter},
-	str::FromStr,
-};
-
 use capitalize::Capitalize;
-use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
-use strum_macros::{Display, EnumString};
+use spacetimedb::{DbContext, ReducerContext, table};
 
 use crate::{
 	common::ports::RecordResolution,
-	domain::entities::{account::AccountId, actor_profile::ActorProfileId},
+	domain::entities::shared::actor::{
+		ActorProfileId, ExternalActorId, ExternalActorReference, ExternalActorReferenceParseErr,
+		InternalActorId,
+	},
 };
-
-/// "{String}@{ExternalActorOrigin}"
-pub type ExternalActorId = String;
 
 #[table(name = external_actor, public)]
 /// Locally recognized format for third-party accounts
@@ -28,7 +22,7 @@ pub struct ExternalActor {
 	pub callsign: Option<String>,
 
 	#[index(btree)]
-	pub account: Option<AccountId>,
+	pub account: Option<InternalActorId>,
 
 	#[unique]
 	#[index(btree)]
@@ -51,58 +45,8 @@ impl RecordResolution<ExternalActor> for ExternalActorId {
 	}
 }
 
-#[derive(SpacetimeType, Clone)]
-pub struct ExternalActorReference {
-	pub id:           String,
-	pub origin: ExternalActorOrigin,
-}
-
-#[derive(SpacetimeType, Debug, Clone, PartialEq, Display, EnumString)]
-#[strum(serialize_all = "lowercase")]
-pub enum ExternalActorOrigin {
-	Telegram,
-	Unknown,
-}
-
 impl RecordResolution<ExternalActor> for ExternalActorReference {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ExternalActor, String> {
 		self.to_string().try_resolve(ctx)
-	}
-}
-
-impl ExternalActorReference {
-	pub const DELIMITER: char = '@';
-}
-
-impl Display for ExternalActorReference {
-	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
-		write!(
-			formatter,
-			"{}{}{}",
-			self.id,
-			Self::DELIMITER,
-			self.origin // uses Display from strum
-		)
-	}
-}
-
-type ExternalActorReferenceParseErr = &'static str;
-
-impl FromStr for ExternalActorReference {
-	type Err = ExternalActorReferenceParseErr;
-
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		let mut parts = s.rsplitn(2, Self::DELIMITER);
-		let platform_name_str = parts.next().ok_or("missing platform name")?;
-		let id = parts.next().ok_or("missing id")?;
-
-		let origin = platform_name_str
-			.parse::<ExternalActorOrigin>()
-			.map_err(|_| "invalid or unsupported platform specifier")?;
-
-		Ok(ExternalActorReference {
-			id: id.to_owned(),
-			origin,
-		})
 	}
 }

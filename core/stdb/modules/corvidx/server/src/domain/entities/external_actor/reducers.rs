@@ -1,7 +1,9 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::{ExternalActor, ExternalActorReference, external_actor};
-use crate::domain::entities::actor_profile::{ActorProfile, ActorProfileMetadata, actor_profile};
+use super::{ExternalActor, external_actor};
+use crate::domain::entities::shared::actor::{
+	ActorProfile, ActorProfileMetadata, ExternalActorReference, actor_profile,
+};
 
 #[reducer]
 /// Registers a local representation of the given 3rd party platform actor.
@@ -66,7 +68,8 @@ pub fn update_external_actor_callsign(
 #[reducer]
 /// Updates the local representation of a 3rd party platform actor profile.
 pub fn update_external_actor_profile(
-	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference, metadata: Option<ActorProfileMetadata>,
+	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference,
+	metadata: Option<ActorProfileMetadata>,
 ) -> Result<(), String> {
 	let account = ctx
 		.db

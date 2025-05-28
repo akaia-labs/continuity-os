@@ -1,23 +1,23 @@
 use spacetimedb::{Identity, ScheduleAt, Timestamp, table};
 
 use super::reducers::scheduled_delete_external_authentication_request;
-use crate::domain::entities::{account::AccountId, external_actor::ExternalActorId};
+use crate::domain::entities::{account::AccountId, shared::actor::ExternalActorId};
 
 pub type ExternalAuthenticationRequestId = u64;
 
 #[table(name = external_authentication_request, public)]
 /// Represents a pending link request
-/// from a internal account to a third-party account
+/// from an internal account to a third-party platform actor
 pub struct ExternalAuthenticationRequest {
 	#[primary_key]
 	#[auto_inc]
 	pub id: ExternalAuthenticationRequestId,
 
-	pub issuer:               Identity,
-	pub created_at:           Timestamp,
-	pub expires_at:           Timestamp,
-	pub requester_account_id: AccountId,
-	pub subject_account_id:   ExternalActorId,
+	pub issuer:     Identity,
+	pub requester:  AccountId,
+	pub subject:    ExternalActorId,
+	pub created_at: Timestamp,
+	pub expires_at: Timestamp,
 }
 
 #[table(

@@ -13,8 +13,9 @@ use crate::{
 	domain::{
 		entities::{
 			account::account,
-			external_actor::{ExternalActor, ExternalActorReference, external_actor},
-			message::{Message, MessageAuthorId, message},
+			external_actor::{ExternalActor, external_actor},
+			message::{Message, message},
+			shared::actor::{ActorId, ExternalActorReference},
 		},
 		features::external_authentication::external_authentication_request_schedule,
 	},
@@ -42,11 +43,11 @@ pub fn initiate_external_authentication(
 		.db
 		.external_authentication_request()
 		.insert(ExternalAuthenticationRequest {
-			id:                   0,
-			issuer:               ctx.identity(),
-			created_at:           ctx.timestamp,
-			requester_account_id: account.id,
-			subject_account_id:   external_actor.id,
+			id:         0,
+			issuer:     ctx.identity(),
+			created_at: ctx.timestamp,
+			requester:  account.id,
+			subject:    external_actor.id,
 
 			expires_at: ctx
 				.timestamp
@@ -81,24 +82,19 @@ pub fn resolve_external_authentication_request(
 	let request = request_id.try_resolve(ctx)?;
 
 	let ExternalAuthenticationRequest {
-		requester_account_id,
-		subject_account_id,
-		..
+		requester, subject, ..
 	} = &request;
 
 	if is_approved {
-		let mut account = requester_account_id.try_resolve(ctx)?;
-		let external_actor = subject_account_id.try_resolve(ctx)?;
+		let mut account = requester.try_resolve(ctx)?;
+		let external_actor = subject.try_resolve(ctx)?;
 
 		ctx.db.external_actor().id().update(ExternalActor {
 			account: Some(account.id),
 			..external_actor
 		});
 
-		account
-			.exac_associations
-			.push(subject_account_id.to_string());
-
+		account.external_actors.push(subject.to_string());
 		ctx.db.account().id().update(account);
 	}
 
@@ -133,7 +129,7 @@ pub fn unlink_external_actor(
 	});
 
 	account
-		.exac_associations
+		.external_actors
 		.retain(|id| id != &ext_actor_ref.to_string());
 
 	ctx.db.account().id().update(account);
@@ -147,28 +143,27 @@ pub fn report_external_authentication_resolution(
 	ctx: &ReducerContext, request: ExternalAuthenticationRequest, is_approved: bool,
 ) {
 	let ExternalAuthenticationRequest {
-		requester_account_id: _,
-		subject_account_id,
+		requester: _,
+		subject,
 		..
 	} = request;
 
-	let display_ext_ref = subject_account_id.parse::<ExternalActorReference>().map_or(
-		subject_account_id,
-		|ext_ref| {
+	let display_ext_ref = subject
+		.parse::<ExternalActorReference>()
+		.map_or(subject, |ext_ref| {
 			format!(
 				"{platform_name} account {fa_id}",
 				platform_name = ext_ref.origin.to_string().capitalize(),
 				fa_id = ext_ref.id,
 			)
-		},
-	);
+		});
 
 	// TODO: Send DM instead, once DMs are implemented
 	let result = ctx.db.message().try_insert(Message {
 		id:        0,
 		sender:    ctx.identity(),
 		sent_at:   ctx.timestamp,
-		author_id: MessageAuthorId::AccountId(ctx.identity()),
+		author_id: ActorId::Internal(ctx.identity()),
 
 		text: if is_approved {
 			format!("{display_ext_ref} has been linked to your account.")
