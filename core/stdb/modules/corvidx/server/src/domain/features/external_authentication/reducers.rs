@@ -160,10 +160,10 @@ pub fn report_external_authentication_resolution(
 
 	// TODO: Send DM instead, once DMs are implemented
 	let result = ctx.db.message().try_insert(Message {
-		id:        0,
-		sender:    ctx.identity(),
-		sent_at:   ctx.timestamp,
-		author_id: ActorId::Internal(ctx.identity()),
+		id:      0,
+		sender:  ctx.identity(),
+		sent_at: ctx.timestamp,
+		author:  ActorId::Internal(ctx.identity()),
 
 		text: if is_approved {
 			format!("{display_ext_ref} has been linked to your account.")
@@ -196,6 +196,7 @@ pub fn scheduled_delete_external_authentication_request(
 		.external_authentication_request()
 		.id()
 		.delete(args.request_id);
+
 	log::info!("Account link request {} expired.", args.request_id);
 
 	Ok(())

@@ -23,7 +23,7 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 		id: 0,
 		sender: ctx.sender,
 		sent_at: ctx.timestamp,
-		author_id,
+		author: author_id,
 		text,
 	});
 
@@ -49,7 +49,7 @@ pub fn import_message(
 		id: 0,
 		sender,
 		sent_at: ctx.timestamp,
-		author_id: ActorId::External(actor.id),
+		author: ActorId::External(actor.id),
 		text,
 	});
 

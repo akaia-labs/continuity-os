@@ -15,7 +15,7 @@ pub struct Message {
 
 	#[index(btree)]
 	/// The original message author.
-	pub author_id: ActorId,
+	pub author: ActorId,
 
 	pub text: String,
 }
