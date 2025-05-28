@@ -1,7 +1,10 @@
 use spacetimedb::{ReducerContext, reducer};
 
 use crate::domain::{
-	entities::account::{Account, AccountId, AccountRole, account},
+	entities::{
+		account::{Account, AccountRole, account},
+		shared::keys::AccountId,
+	},
 	features::shared::assert_admin,
 };
 

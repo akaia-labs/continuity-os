@@ -1,7 +1,8 @@
-//* WIP
+use spacetimedb::table;
 
 pub type ChannelConfigId = i128;
 
+//* WIP
 // TODO: Consider introducing versioning in the future
 #[table(name = channel_config, public)]
 pub struct ChannelConfig {

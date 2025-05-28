@@ -2,12 +2,14 @@ use spacetimedb::{ReducerContext, SpacetimeType, Timestamp, table};
 
 use crate::{
 	common::ports::RecordResolution,
-	domain::entities::shared::actor::{ActorProfileId, ExternalActorId, InternalActorId},
+	domain::entities::shared::{
+		actor::ActorProfileId,
+		keys::{AccountId, ExternalActorId},
+	},
 };
 
-pub type AccountId = InternalActorId;
-
 #[table(name = account, public)]
+/// Represents an internal actor.
 pub struct Account {
 	#[primary_key]
 	pub id: AccountId,
@@ -40,7 +42,7 @@ pub enum AccountRole {
 	Interactor,
 }
 
-impl RecordResolution<Account> for InternalActorId {
+impl RecordResolution<Account> for AccountId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<Account, String> {
 		ctx.db
 			.account()

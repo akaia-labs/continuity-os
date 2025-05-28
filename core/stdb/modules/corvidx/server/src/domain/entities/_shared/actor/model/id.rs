@@ -1,10 +1,10 @@
 use spacetimedb::SpacetimeType;
 
-use super::{ExternalActorId, InternalActorId};
+use crate::domain::entities::shared::keys::{AccountId, ExternalActorId};
 
 #[derive(SpacetimeType, Clone)]
 pub enum ActorId {
-	Internal(InternalActorId),
+	Internal(AccountId),
 	External(ExternalActorId),
 
 	// TODO: Consider removing in the future

@@ -3,14 +3,14 @@ use spacetimedb::{Timestamp, table};
 use super::{ChannelId, metadata::ChannelMetadata};
 use crate::domain::entities::shared::{actor::ActorId, keys::AccountId};
 
-#[table(name = standalone_channel, public)]
-/// A standalone message channel.
+#[table(name = primary_channel, public)]
+/// A message channel that hosts other channels.
 ///
 /// Addresses Matrix compatibility to some degree,
-/// where it can be mapped to a `Room` with `"type": null`.
-pub struct StandaloneChannel {
+/// where it can be mapped to a `Room` with `"type": "m.space"`.
+pub struct PrimaryChannel {
 	#[primary_key]
-	/// Maps to the `opaque_id` part of `m.room.id`
+	/// Maps to `opaque_id`: of `m.room.id`
 	pub id: ChannelId,
 
 	#[unique]
@@ -21,7 +21,7 @@ pub struct StandaloneChannel {
 	#[index(btree)]
 	pub creator: AccountId,
 
-	// pub config:  ChannelConfigId,
+	// pub config:     ChannelConfigId,
 	pub created_at: Timestamp,
 	pub updated_at: Timestamp,
 
@@ -29,4 +29,6 @@ pub struct StandaloneChannel {
 	pub metadata: ChannelMetadata,
 
 	pub members: Vec<ActorId>,
+
+	pub subchannels: Vec<ChannelId>,
 }

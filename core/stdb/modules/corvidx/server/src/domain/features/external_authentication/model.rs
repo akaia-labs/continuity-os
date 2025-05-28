@@ -1,7 +1,7 @@
 use spacetimedb::{Identity, ScheduleAt, Timestamp, table};
 
 use super::reducers::scheduled_delete_external_authentication_request;
-use crate::domain::entities::{account::AccountId, shared::actor::ExternalActorId};
+use crate::domain::entities::shared::keys::{AccountId, ExternalActorId};
 
 pub type ExternalAuthenticationRequestId = u64;
 

@@ -1,9 +1,7 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::{ExternalActor, external_actor};
-use crate::domain::entities::shared::actor::{
-	ActorProfile, ActorProfileMetadata, ExternalActorReference, actor_profile,
-};
+use super::{ExternalActor, ExternalActorReference, external_actor};
+use crate::domain::entities::shared::actor::{ActorProfile, ActorProfileMetadata, actor_profile};
 
 #[reducer]
 /// Registers a local representation of the given 3rd party platform actor.

@@ -2,7 +2,10 @@ use spacetimedb::{ReducerContext, reducer};
 
 use crate::{
 	common::ports::RecordResolution,
-	domain::entities::shared::actor::{ActorProfile, ExternalActorReference, actor_profile},
+	domain::entities::{
+		external_actor::ExternalActorReference,
+		shared::actor::{ActorProfile, actor_profile},
+	},
 };
 
 #[reducer]

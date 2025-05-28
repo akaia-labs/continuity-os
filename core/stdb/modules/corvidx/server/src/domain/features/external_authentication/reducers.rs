@@ -13,9 +13,9 @@ use crate::{
 	domain::{
 		entities::{
 			account::account,
-			external_actor::{ExternalActor, external_actor},
+			external_actor::{ExternalActor, ExternalActorReference, external_actor},
 			message::{Message, message},
-			shared::actor::{ActorId, ExternalActorReference},
+			shared::actor::ActorId,
 		},
 		features::external_authentication::external_authentication_request_schedule,
 	},
