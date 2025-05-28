@@ -2,7 +2,7 @@
 //! allowing reusing the same type as both primary and foreign key
 //! without cross-references between entity modules.
 
-use spacetimedb::Identity;
+use spacetimedb::{Identity, SpacetimeType};
 
 /// Primary key for the account table
 pub type AccountId = Identity;
@@ -12,3 +12,16 @@ pub type AccountId = Identity;
 /// Must convey the following format:
 /// `"{String}@{ExternalActorOrigin}"`
 pub type ExternalActorId = String;
+
+#[derive(SpacetimeType, Clone)]
+pub enum ChannelId {
+	Standalone(StandaloneChannelId),
+	Primary(PrimaryChannelId),
+	Subordinate(SubordinateChannelId),
+}
+
+pub type StandaloneChannelId = String;
+
+pub type PrimaryChannelId = String;
+
+pub type SubordinateChannelId = String;

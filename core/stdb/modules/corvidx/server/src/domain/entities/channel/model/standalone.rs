@@ -1,7 +1,10 @@
 use spacetimedb::{Timestamp, table};
 
-use super::{StandaloneChannelId, metadata::ChannelMetadata};
-use crate::domain::entities::shared::{actor::ActorId, keys::AccountId};
+use super::metadata::ChannelMetadata;
+use crate::domain::entities::shared::{
+	actor::ActorId,
+	keys::{AccountId, StandaloneChannelId},
+};
 
 #[table(name = standalone_channel, public)]
 /// A standalone message channel.

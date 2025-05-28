@@ -1,9 +1,14 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::{model::*, validation::*};
 use crate::{
 	common::ports::RecordResolution,
-	domain::entities::{external_actor::ExternalActorReference, shared::actor::ActorId},
+	domain::entities::{
+		external_actor::ExternalActorReference,
+		shared::{
+			actor::ActorId,
+			message::{Message, message, validate_message},
+		},
+	},
 };
 
 #[reducer]

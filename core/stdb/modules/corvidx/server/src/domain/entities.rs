@@ -7,4 +7,3 @@ pub mod shared {
 pub mod account;
 pub mod channel;
 pub mod external_actor;
-pub mod message;

@@ -6,3 +6,4 @@
 
 pub mod actor;
 pub mod keys;
+pub mod message;

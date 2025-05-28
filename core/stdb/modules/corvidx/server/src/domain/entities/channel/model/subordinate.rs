@@ -1,7 +1,10 @@
 use spacetimedb::{Timestamp, table};
 
-use super::{PrimaryChannelId, SubordinateChannelId, metadata::ChannelMetadata};
-use crate::domain::entities::shared::{actor::ActorId, keys::AccountId};
+use super::metadata::ChannelMetadata;
+use crate::domain::entities::shared::{
+	actor::ActorId,
+	keys::{AccountId, PrimaryChannelId, SubordinateChannelId},
+};
 
 #[table(name = subordinate_channel, public)]
 /// A message channel confined within another, higher order channel.
