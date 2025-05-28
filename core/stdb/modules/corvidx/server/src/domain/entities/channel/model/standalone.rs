@@ -1,6 +1,6 @@
 use spacetimedb::{Timestamp, table};
 
-use super::{ChannelId, metadata::ChannelMetadata};
+use super::{StandaloneChannelId, metadata::ChannelMetadata};
 use crate::domain::entities::shared::{actor::ActorId, keys::AccountId};
 
 #[table(name = standalone_channel, public)]
@@ -11,7 +11,7 @@ use crate::domain::entities::shared::{actor::ActorId, keys::AccountId};
 pub struct StandaloneChannel {
 	#[primary_key]
 	/// Maps to the `opaque_id` part of `m.room.id`
-	pub id: ChannelId,
+	pub id: StandaloneChannelId,
 
 	#[unique]
 	#[index(btree)]

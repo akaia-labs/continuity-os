@@ -2,16 +2,17 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use super::{model::*, validation::*};
 use crate::{
-	common::ports::RecordResolution, domain::entities::external_actor::ExternalActorReference,
+	common::ports::RecordResolution,
+	domain::entities::{external_actor::ExternalActorReference, shared::actor::ActorId},
 };
 
 #[reducer]
 /// Facilitates the basic internal messaging functionality
 pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
-	let author_id: MessageAuthorId = if let Some(account) = ctx.sender.try_resolve(ctx).ok() {
-		MessageAuthorId::AccountId(account.id)
+	let author_id: ActorId = if let Some(account) = ctx.sender.try_resolve(ctx).ok() {
+		ActorId::Internal(account.id)
 	} else {
-		MessageAuthorId::Unknown
+		ActorId::Unknown
 	};
 
 	let text = validate_message(text)?;
@@ -48,7 +49,7 @@ pub fn import_message(
 		id: 0,
 		sender,
 		sent_at: ctx.timestamp,
-		author_id: MessageAuthorId::ExternalActorId(actor.id),
+		author_id: ActorId::External(actor.id),
 		text,
 	});
 

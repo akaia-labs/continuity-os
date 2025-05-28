@@ -1,6 +1,6 @@
 use spacetimedb::{Timestamp, table};
 
-use super::{ChannelId, metadata::ChannelMetadata};
+use super::{PrimaryChannelId, SubordinateChannelId, metadata::ChannelMetadata};
 use crate::domain::entities::shared::{actor::ActorId, keys::AccountId};
 
 #[table(name = subordinate_channel, public)]
@@ -11,7 +11,7 @@ use crate::domain::entities::shared::{actor::ActorId, keys::AccountId};
 pub struct SubordinateChannel {
 	#[primary_key]
 	/// Maps to `opaque_id`: of `m.room.id`
-	pub id: ChannelId,
+	pub id: SubordinateChannelId,
 
 	#[unique]
 	#[index(btree)]
@@ -30,5 +30,5 @@ pub struct SubordinateChannel {
 
 	pub members: Vec<ActorId>,
 
-	pub superchannel: ChannelId,
+	pub superchannel: PrimaryChannelId,
 }
