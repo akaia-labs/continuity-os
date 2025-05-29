@@ -6,21 +6,21 @@ use crowdcomm_sdk::{
 		ports::{ProfileResolution, RecordResolution},
 		presentation::{DisplayName, Displayable},
 		stdb::{
-			ActorProfileTableAccess, DbConnection, ErrorContext, Message, MessageAuthorId,
-			MessageTableAccess, RemoteDbContext, SubscriptionEventContext, ExternalActorTableAccess,
+			ActorId, ActorProfileTableAccess, DbConnection, ErrorContext, ExternalActorTableAccess,
+			Message, MessageTableAccess, RemoteDbContext, SubscriptionEventContext,
 		},
 	},
 };
 use spacetimedb_sdk::{DbContext, Error, Identity, Table, credentials};
 
 pub fn print_message(corvidx: &impl RemoteDbContext, message: &Message) {
-	let sender = match &message.author_id {
-		| MessageAuthorId::AccountId(author_id) => author_id
+	let sender = match &message.author {
+		| ActorId::Internal(author_id) => author_id
 			.resolve(corvidx)
 			.map(|account| account.display_name(corvidx))
 			.unwrap_or_else(|| "unknown".to_string()),
 
-		| MessageAuthorId::ExternalActorId(author_id) => author_id
+		| ActorId::External(author_id) => author_id
 			.resolve(corvidx)
 			.map(|account| {
 				account
@@ -30,7 +30,7 @@ pub fn print_message(corvidx: &impl RemoteDbContext, message: &Message) {
 			})
 			.unwrap_or_else(|| "unknown".to_string()),
 
-		| MessageAuthorId::Unknown => "unknown".to_string(),
+		| ActorId::Unknown => "unknown".to_string(),
 	};
 
 	println!("{}: {}", sender, message.text);

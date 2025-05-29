@@ -2,10 +2,10 @@ use corvidx_client::{
 	common::{
 		ports::{ProfileResolution, RecordResolution},
 		presentation::Displayable,
-		stdb::{EventContext, MessageAuthorId},
+		stdb::{ActorId, EventContext},
 	},
 	domain::{
-		entities::{message::MessageType, external_platform::SupportedExternalActorOrigin},
+		entities::{external_platform::SupportedExternalActorOrigin, message::MessageType},
 		intersections::PlatformAssociation,
 	},
 };
@@ -15,12 +15,12 @@ use crate::integrations::{ports::CorvidxMessage, telegram::OutboundTelegramMessa
 
 impl OutboundTelegramMessage {
 	pub fn from_native(ctx: &EventContext, msg: &CorvidxMessage) -> Self {
-		let (author_role, author_profile) = match &msg.author_id {
-			| MessageAuthorId::ExternalActorId(account_id) => account_id
+		let (author_role, author_profile) = match &msg.author {
+			| ActorId::External(account_id) => account_id
 				.resolve(ctx)
 				.map_or((None, None), |account| (None, account.profile(ctx))),
 
-			| MessageAuthorId::AccountId(account_id) => account_id
+			| ActorId::Internal(account_id) => account_id
 				.resolve(ctx)
 				.map(|account| {
 					account
@@ -32,7 +32,7 @@ impl OutboundTelegramMessage {
 				})
 				.unwrap_or((None, None)),
 
-			| MessageAuthorId::Unknown => (None, None),
+			| ActorId::Unknown => (None, None),
 		};
 
 		let author_name = author_profile

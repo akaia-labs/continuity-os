@@ -35,7 +35,7 @@ impl TelegramActionRequestForwarder {
 
 impl CorvidxEventHandler<ExternalAuthenticationRequest> for TelegramActionRequestForwarder {
 	fn handle(&self, ctx: &EventContext, ext_auth_req: &ExternalAuthenticationRequest) {
-		let ext_actor_origin = ExternalActorReference::from_str(&ext_auth_req.subject_account_id)
+		let ext_actor_origin = ExternalActorReference::from_str(&ext_auth_req.subject)
 			.map_or(None, |ext_ref| Some(ext_ref.origin.into_supported()));
 
 		if ext_actor_origin.is_some_and(|tag| tag == SupportedExternalActorOrigin::Telegram) {

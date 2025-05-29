@@ -27,7 +27,7 @@ impl OutboundTelegramActionRequest {
 			.ok_or("Unable to resolve issuer account.")?;
 
 		let requester_account = ext_auth_req
-			.requester_account_id
+			.requester
 			.resolve(ctx)
 			.ok_or("Unable to resolve requester account.")?;
 
@@ -35,7 +35,7 @@ impl OutboundTelegramActionRequest {
 			id: raw_user_id,
 			origin,
 		} = ext_auth_req
-			.subject_account_id
+			.subject
 			.parse()
 			.map_err(|_| "Unable to parse subject account reference.")?;
 

@@ -1,7 +1,7 @@
 use std::{str::FromStr, sync::Arc};
 
 use corvidx_client::{
-	common::stdb::{EventContext, ExternalActorReference, Message, MessageAuthorId},
+	common::stdb::{ActorId, EventContext, ExternalActorReference, Message},
 	domain::entities::external_platform::SupportedExternalActorOrigin,
 };
 use spacetimedb_sdk::Timestamp;
@@ -34,13 +34,11 @@ impl TelegramMessageForwarder {
 
 impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
 	fn handle(&self, ctx: &EventContext, msg: &Message) {
-		let ext_actor_origin = match &msg.author_id {
-			| MessageAuthorId::ExternalActorId(account_id) => {
-				ExternalActorReference::from_str(&account_id)
-					.map_or(None, |ext_ref| Some(ext_ref.origin.into_supported()))
-			},
+		let ext_actor_origin = match &msg.author {
+			| ActorId::External(account_id) => ExternalActorReference::from_str(&account_id)
+				.map_or(None, |ext_ref| Some(ext_ref.origin.into_supported())),
 
-			| MessageAuthorId::AccountId(_) | MessageAuthorId::Unknown => None,
+			| ActorId::Internal(_) | ActorId::Unknown => None,
 		};
 
 		// Ignore messages originated from Telegram
