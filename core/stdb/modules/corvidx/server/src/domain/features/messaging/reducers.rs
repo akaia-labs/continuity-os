@@ -38,11 +38,11 @@ pub fn send_message(ctx: &ReducerContext, text: String) -> Result<(), String> {
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, ext_author_ref: ExternalActorReference, text: String,
+	ctx: &ReducerContext, author_ref: ExternalActorReference, text: String,
 ) -> Result<(), String> {
-	let actor = ext_author_ref.try_resolve(ctx)?;
+	let author = author_ref.try_resolve(ctx)?;
 
-	let sender = if let Some(identity) = actor.account {
+	let sender = if let Some(identity) = author.account {
 		identity
 	} else {
 		ctx.sender
@@ -54,7 +54,7 @@ pub fn import_message(
 		id: 0,
 		sender,
 		sent_at: ctx.timestamp,
-		author: ActorId::External(actor.id),
+		author: ActorId::External(author.id),
 		text,
 	});
 

@@ -6,15 +6,11 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub struct ExternalAuthenticationRequest {
-	pub id:         u64,
-	pub issuer:     __sdk::Identity,
-	pub requester:  __sdk::Identity,
-	pub subject:    String,
-	pub created_at: __sdk::Timestamp,
-	pub expires_at: __sdk::Timestamp,
+pub struct ActorName {
+	pub short_name:     String,
+	pub name_extension: Option<String>,
 }
 
-impl __sdk::InModule for ExternalAuthenticationRequest {
+impl __sdk::InModule for ActorName {
 	type Module = super::RemoteModule;
 }

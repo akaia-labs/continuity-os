@@ -6,14 +6,12 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub enum MessageAuthorId {
-	AccountId(__sdk::Identity),
-
-	ExternalActorId(String),
-
-	Unknown,
+pub struct ChannelMetadata {
+	pub description: Option<String>,
+	pub avatar_url:  Option<String>,
+	pub alt_aliases: Option<Vec<String>>,
 }
 
-impl __sdk::InModule for MessageAuthorId {
+impl __sdk::InModule for ChannelMetadata {
 	type Module = super::RemoteModule;
 }

@@ -6,11 +6,14 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub struct TextChannel {
-	pub id:   i128,
-	pub name: String,
+pub enum ActorId {
+	Internal(__sdk::Identity),
+
+	External(String),
+
+	Unknown,
 }
 
-impl __sdk::InModule for TextChannel {
+impl __sdk::InModule for ActorId {
 	type Module = super::RemoteModule;
 }

@@ -6,11 +6,15 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub struct ActorProfileName {
-	pub short_name:     String,
-	pub name_extension: Option<String>,
+pub struct ChannelConfig {
+	pub id:                 i128,
+	pub m_federate:         bool,
+	pub join_rule:          Option<String>,
+	pub history_visibility: Option<String>,
+	pub guest_access:       Option<String>,
+	pub encryption_algo:    Option<String>,
 }
 
-impl __sdk::InModule for ActorProfileName {
+impl __sdk::InModule for ChannelConfig {
 	type Module = super::RemoteModule;
 }

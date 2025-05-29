@@ -6,7 +6,7 @@ mod subordinate;
 
 use spacetimedb::SpacetimeType;
 
-pub use self::{primary::*, standalone::*, subordinate::*};
+pub use self::{config::*, metadata::*, primary::*, standalone::*, subordinate::*};
 
 #[derive(SpacetimeType, Clone)]
 pub enum ChannelKind {

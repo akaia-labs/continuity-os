@@ -12,3 +12,13 @@ pub struct ChannelMetadata {
 	/// From `m.room.aliases`
 	pub alt_aliases: Option<Vec<String>>,
 }
+
+impl Default for ChannelMetadata {
+	fn default() -> Self {
+		Self {
+			description: None,
+			avatar_url:  None,
+			alt_aliases: None,
+		}
+	}
+}

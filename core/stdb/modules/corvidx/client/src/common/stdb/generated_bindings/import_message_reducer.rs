@@ -9,15 +9,15 @@ use super::external_actor_reference_type::ExternalActorReference;
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct ImportMessageArgs {
-	pub ext_author_ref: ExternalActorReference,
-	pub text:           String,
+	pub author_ref: ExternalActorReference,
+	pub text:       String,
 }
 
 impl From<ImportMessageArgs> for super::Reducer {
 	fn from(args: ImportMessageArgs) -> Self {
 		Self::ImportMessage {
-			ext_author_ref: args.ext_author_ref,
-			text:           args.text,
+			author_ref: args.author_ref,
+			text:       args.text,
 		}
 	}
 }
@@ -40,9 +40,8 @@ pub trait import_message {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_import_message`] callbacks.
-	fn import_message(
-		&self, ext_author_ref: ExternalActorReference, text: String,
-	) -> __sdk::Result<()>;
+	fn import_message(&self, author_ref: ExternalActorReference, text: String)
+	-> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `import_message`.
 	///
@@ -64,12 +63,10 @@ pub trait import_message {
 
 impl import_message for super::RemoteReducers {
 	fn import_message(
-		&self, ext_author_ref: ExternalActorReference, text: String,
+		&self, author_ref: ExternalActorReference, text: String,
 	) -> __sdk::Result<()> {
-		self.imp.call_reducer("import_message", ImportMessageArgs {
-			ext_author_ref,
-			text,
-		})
+		self.imp
+			.call_reducer("import_message", ImportMessageArgs { author_ref, text })
 	}
 
 	fn on_import_message(
@@ -84,11 +81,7 @@ impl import_message for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer:
-								super::Reducer::ImportMessage {
-									ext_author_ref,
-									text,
-								},
+							reducer: super::Reducer::ImportMessage { author_ref, text },
 							..
 						},
 					..
@@ -96,7 +89,7 @@ impl import_message for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, ext_author_ref, text)
+				callback(ctx, author_ref, text)
 			}),
 		))
 	}

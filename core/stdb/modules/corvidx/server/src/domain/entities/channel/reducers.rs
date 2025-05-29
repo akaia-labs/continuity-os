@@ -1,13 +1,24 @@
 use spacetimedb::{ReducerContext, Table, reducer};
-use uuid::Uuid;
 
-use super::{ChannelKind, PrimaryChannel, StandaloneChannel, primary_channel, standalone_channel};
+use super::{
+	ChannelKind, ChannelMetadata, PrimaryChannel, StandaloneChannel, primary_channel,
+	standalone_channel,
+};
+use crate::{common::types::StUuid, domain::entities::shared::actor::ActorId};
 
 #[reducer]
 /// Creates a new standalone channel.
-pub fn create_standalone_channel(ctx: &ReducerContext, kind: ChannelKind) -> Result<(), String> {
+pub fn create_standalone_channel(
+	ctx: &ReducerContext, alias: String, metadata: Option<ChannelMetadata>,
+) -> Result<(), String> {
 	ctx.db.standalone_channel().insert(StandaloneChannel {
-		id: Uuid::new_v4().to_string(),
+		id:              StUuid::new(ctx).to_string(),
+		canonical_alias: alias,
+		creator:         ctx.sender,
+		created_at:      ctx.timestamp,
+		updated_at:      ctx.timestamp,
+		members:         vec![ActorId::Internal(ctx.sender)],
+		metadata:        metadata.unwrap_or_default(),
 	});
 
 	Ok(())
@@ -16,20 +27,20 @@ pub fn create_standalone_channel(ctx: &ReducerContext, kind: ChannelKind) -> Res
 #[reducer]
 /// Creates a record for an existing channel
 /// bridged from an external source.
-pub fn register_channel(ctx: &ReducerContext, kind: ChannelKind) -> Result<(), String> {
-	let id = Uuid::new_v4().to_string();
+pub fn register_standalone_channel(
+	ctx: &ReducerContext, id: String, alias: String, members: Option<Vec<ActorId>>,
+	metadata: Option<ChannelMetadata>,
+) -> Result<(), String> {
+	ctx.db.standalone_channel().insert(StandaloneChannel {
+		id,
 
-	match kind {
-		| ChannelKind::Standalone => {
-			ctx.db.standalone_channel().insert(StandaloneChannel { id });
-		},
-
-		| ChannelKind::Primary => {
-			ctx.db.primary_channel().insert(PrimaryChannel { id });
-		},
-
-		| _ => todo!(),
-	};
+		canonical_alias: alias,
+		creator: ctx.sender,
+		created_at: ctx.timestamp,
+		updated_at: ctx.timestamp,
+		members: vec![ActorId::Internal(ctx.sender)],
+		metadata: metadata.unwrap_or_default(),
+	});
 
 	Ok(())
 }

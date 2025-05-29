@@ -4,12 +4,12 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::actor_profile_name_type::ActorProfileName;
+use super::actor_name_type::ActorName;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub struct ActorProfileMetadata {
-	pub name:        ActorProfileName,
+	pub name:        ActorName,
 	pub description: String,
 }
 

@@ -56,3 +56,4 @@ erl_crash.dump
 .history
 .svn/
 migrate_working_dir/
+rustc-ice-*.txt
