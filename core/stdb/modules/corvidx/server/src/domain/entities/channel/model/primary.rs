@@ -1,13 +1,11 @@
 use spacetimedb::{Timestamp, table};
 
 use super::metadata::ChannelMetadata;
-use crate::domain::entities::shared::{
-	actor::ActorId,
-	keys::{AccountId, PrimaryChannelId, SubordinateChannelId},
-};
+use crate::domain::entities::shared::keys::{AccountId, PrimaryChannelId, SubordinateChannelId};
 
 #[table(name = primary_channel, public)]
-/// A message channel that hosts other channels.
+/// A message channel that hosts other channels,
+/// and does not hold member list, which is instead delegated to subchannels.
 ///
 /// Addresses Matrix compatibility to some degree,
 /// where it can be mapped to a `Room` with `"type": "m.space"`.
@@ -30,8 +28,6 @@ pub struct PrimaryChannel {
 
 	/// Non-indexable additional properties.
 	pub metadata: ChannelMetadata,
-
-	pub members: Vec<ActorId>,
 
 	pub subchannels: Vec<SubordinateChannelId>,
 }

@@ -8,6 +8,7 @@ use crate::domain::entities::shared::{
 
 #[table(name = standalone_channel, public)]
 /// A standalone message channel.
+/// Useful for DMs or any other cases that do not require channel hierarchy.
 ///
 /// Addresses Matrix compatibility to some degree,
 /// where it can be mapped to a `Room` with `"type": null`.
