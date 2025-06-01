@@ -5,7 +5,7 @@ use super::{
 	SubordinateChannel, subordinate_channel,
 };
 use crate::{
-	common::{ports::RecordResolution, types::StUuid},
+	common::{ports::RecordResolver, types::StUuid},
 	domain::entities::{
 		channel::primary_channel,
 		shared::{

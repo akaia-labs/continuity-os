@@ -1,6 +1,6 @@
 use super::AccountId;
 use crate::common::{
-	ports::{ProfileResolution, RecordResolution},
+	ports::{ProfileResolution, RecordResolver},
 	stdb::{Account, AccountTableAccess, ActorProfile, ActorProfileTableAccess, RemoteDbContext},
 };
 
@@ -17,7 +17,7 @@ impl ProfileResolution for Account {
 }
 
 // TODO: Implement try_resolve
-impl RecordResolution<Account> for AccountId {
+impl RecordResolver<Account> for AccountId {
 	/// Resolves a internal account by ID
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<Account> {
 		ctx.db().account().id().find(&self)

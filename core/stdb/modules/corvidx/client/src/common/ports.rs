@@ -1,6 +1,6 @@
 use super::stdb::{ActorProfile, RemoteDbContext};
 
-pub trait RecordResolution<RecordType> {
+pub trait RecordResolver<RecordType> {
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<RecordType>;
 }
 

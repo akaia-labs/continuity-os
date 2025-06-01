@@ -7,7 +7,6 @@ impl Display for ActorId {
 		match self {
 			| ActorId::Internal(id) => write!(f, "{id}"),
 			| ActorId::External(id) => write!(f, "{id}"),
-			| ActorId::Unknown => write!(f, "unknown"),
 		}
 	}
 }

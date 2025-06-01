@@ -1,12 +1,14 @@
 use spacetimedb::{ReducerContext, reducer};
 
 use super::{
-	PrimaryChannel, primary_channel,
+	PrimaryChannel,
+	direct::{DirectChannel, direct_channel},
+	primary_channel,
 	standalone::{StandaloneChannel, standalone_channel},
 	subordinate::{SubordinateChannel, delete_subchannel},
 };
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::RecordResolver,
 	domain::entities::shared::{keys::ChannelId, message::message},
 };
 
@@ -14,8 +16,14 @@ use crate::{
 /// Deletes a channel along with all of its subchannels and messages, if any.
 pub fn delete_channel(ctx: &ReducerContext, channel_id: ChannelId) -> Result<(), String> {
 	match &channel_id {
-		| ChannelId::Direct(_id) => {
-			todo!("Direct channel support");
+		| ChannelId::Direct(id) => {
+			let channel: DirectChannel = channel_id.try_resolve(ctx)?;
+
+			for message_id in channel.messages {
+				ctx.db.message().id().delete(&message_id);
+			}
+
+			ctx.db.direct_channel().id().delete(id);
 		},
 
 		| ChannelId::Standalone(id) => {

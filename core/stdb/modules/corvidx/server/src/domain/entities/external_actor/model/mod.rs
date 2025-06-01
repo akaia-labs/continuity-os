@@ -10,7 +10,7 @@ use spacetimedb::{DbContext, ReducerContext, SpacetimeType, table};
 use strum_macros::{Display, EnumString};
 
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::{RecordResolver, Resolvable},
 	domain::entities::shared::{
 		actor::ActorProfileId,
 		keys::{AccountId, ExternalActorId},
@@ -55,18 +55,12 @@ impl ExternalActorReference {
 }
 
 impl Display for ExternalActorReference {
-	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
-		write!(
-			formatter,
-			"{}{}{}",
-			self.id,
-			Self::DELIMITER,
-			self.origin // uses Display from strum
-		)
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(f, "{}{}{}", self.id, Self::DELIMITER, self.origin)
 	}
 }
 
-pub type ExternalActorReferenceParseErr = &'static str;
+type ExternalActorReferenceParseErr = &'static str;
 
 impl FromStr for ExternalActorReference {
 	type Err = ExternalActorReferenceParseErr;
@@ -87,7 +81,17 @@ impl FromStr for ExternalActorReference {
 	}
 }
 
-impl RecordResolution<ExternalActor> for ExternalActorId {
+// TODO! FIXME: this leaks into String!
+impl Resolvable for ExternalActorId {
+	fn try_is_resolvable(&self, ctx: &ReducerContext) -> Result<(), String> {
+		let result: Result<ExternalActor, String> = self.try_resolve(ctx);
+
+		result.map(|_| ())
+	}
+}
+
+// TODO! FIXME: this leaks into String!
+impl RecordResolver<ExternalActor> for ExternalActorId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ExternalActor, String> {
 		let ExternalActorReference {
 			id: external_author_id,
@@ -103,7 +107,7 @@ impl RecordResolution<ExternalActor> for ExternalActorId {
 	}
 }
 
-impl RecordResolution<ExternalActor> for ExternalActorReference {
+impl RecordResolver<ExternalActor> for ExternalActorReference {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ExternalActor, String> {
 		self.to_string().try_resolve(ctx)
 	}

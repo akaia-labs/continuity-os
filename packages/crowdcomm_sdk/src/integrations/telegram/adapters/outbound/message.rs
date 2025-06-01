@@ -1,6 +1,6 @@
 use corvidx_client::{
 	common::{
-		ports::{ProfileResolution, RecordResolution},
+		ports::{ProfileResolution, RecordResolver},
 		presentation::Displayable,
 		stdb::{ActorId, EventContext},
 	},
@@ -31,8 +31,6 @@ impl OutboundTelegramMessage {
 						)
 				})
 				.unwrap_or((None, None)),
-
-			| ActorId::Unknown => (None, None),
 		};
 
 		let author_name = author_profile

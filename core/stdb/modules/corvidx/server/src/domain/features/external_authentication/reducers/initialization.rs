@@ -3,7 +3,7 @@ use std::time::Duration;
 use spacetimedb::{ReducerContext, Table, reducer};
 
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::RecordResolver,
 	domain::entities::{
 		action_request::{
 			ExternalAuthenticationRequest, ExternalAuthenticationRequestExpirySchedule,

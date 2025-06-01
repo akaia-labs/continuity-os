@@ -38,7 +38,7 @@ impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
 			| ActorId::External(account_id) => ExternalActorReference::from_str(&account_id)
 				.map_or(None, |ext_ref| Some(ext_ref.origin.into_supported())),
 
-			| ActorId::Internal(_) | ActorId::Unknown => None,
+			| ActorId::Internal(_) => None,
 		};
 
 		// Ignore messages originated from Telegram

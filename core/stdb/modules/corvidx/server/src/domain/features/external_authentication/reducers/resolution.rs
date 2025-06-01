@@ -2,7 +2,7 @@ use spacetimedb::{ReducerContext, reducer};
 
 use super::report::report_external_authentication_resolution;
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::RecordResolver,
 	domain::entities::{
 		account::account,
 		action_request::{

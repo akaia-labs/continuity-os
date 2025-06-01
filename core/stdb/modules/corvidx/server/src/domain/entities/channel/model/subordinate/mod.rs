@@ -5,7 +5,7 @@ use spacetimedb::{ReducerContext, Timestamp, table};
 pub use self::reducers::delete_subchannel;
 use super::metadata::ChannelMetadata;
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::RecordResolver,
 	domain::entities::shared::{
 		keys::{AccountId, ActorId, ChannelId, PrimaryChannelId, SubordinateChannelId},
 		message::MessageId,
@@ -42,7 +42,7 @@ pub struct SubordinateChannel {
 	pub messages: Vec<MessageId>,
 }
 
-impl RecordResolution<SubordinateChannel> for ChannelId {
+impl RecordResolver<SubordinateChannel> for ChannelId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<SubordinateChannel, String> {
 		match self {
 			| ChannelId::Subordinate(id) => ctx

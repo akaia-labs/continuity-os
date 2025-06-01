@@ -3,7 +3,7 @@ mod reducers;
 use spacetimedb::{ReducerContext, SpacetimeType, Timestamp, table};
 
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::{RecordResolver, Resolvable},
 	domain::entities::shared::{
 		actor::ActorProfileId,
 		keys::{AccountId, ExternalActorId},
@@ -44,7 +44,13 @@ pub enum AccountRole {
 	Interactor,
 }
 
-impl RecordResolution<Account> for AccountId {
+impl Resolvable for AccountId {
+	fn try_is_resolvable(&self, ctx: &ReducerContext) -> Result<(), String> {
+		self.try_resolve(ctx).map(|_| ())
+	}
+}
+
+impl RecordResolver<Account> for AccountId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<Account, String> {
 		ctx.db
 			.account()

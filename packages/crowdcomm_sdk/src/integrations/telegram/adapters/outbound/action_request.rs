@@ -1,7 +1,7 @@
 use capitalize::Capitalize;
 use corvidx_client::{
 	common::{
-		ports::RecordResolution,
+		ports::RecordResolver,
 		presentation::DisplayName,
 		stdb::{EventContext, ExternalActorReference, ExternalAuthenticationRequest},
 	},

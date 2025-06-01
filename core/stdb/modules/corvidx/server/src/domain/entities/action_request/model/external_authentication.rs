@@ -2,7 +2,7 @@ use corvutils::StringExtensions;
 use spacetimedb::{Identity, ReducerContext, ScheduleAt, Timestamp, reducer, table};
 
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::RecordResolver,
 	domain::entities::shared::keys::{AccountId, ExternalActorId},
 };
 
@@ -23,7 +23,7 @@ pub struct ExternalAuthenticationRequest {
 	pub expires_at: Timestamp,
 }
 
-impl RecordResolution<ExternalAuthenticationRequest> for ExternalAuthenticationRequestId {
+impl RecordResolver<ExternalAuthenticationRequest> for ExternalAuthenticationRequestId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<ExternalAuthenticationRequest, String> {
 		ctx.db
 			.external_authentication_request()

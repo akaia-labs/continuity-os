@@ -9,10 +9,6 @@ use strum::Display;
 pub enum ActorId {
 	Internal(AccountId),
 	External(ExternalActorId),
-
-	// TODO: Consider removing in the future
-	/// Fallback value, use with caution.
-	Unknown,
 }
 
 /// Primary key for the account table

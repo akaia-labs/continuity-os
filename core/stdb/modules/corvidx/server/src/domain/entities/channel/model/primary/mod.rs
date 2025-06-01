@@ -4,7 +4,7 @@ use spacetimedb::{ReducerContext, Timestamp, table};
 
 use super::metadata::ChannelMetadata;
 use crate::{
-	common::ports::RecordResolution,
+	common::ports::RecordResolver,
 	domain::entities::shared::keys::{
 		AccountId, ChannelId, PrimaryChannelId, SubordinateChannelId,
 	},
@@ -36,7 +36,7 @@ pub struct PrimaryChannel {
 	pub subchannels: Vec<SubordinateChannelId>,
 }
 
-impl RecordResolution<PrimaryChannel> for ChannelId {
+impl RecordResolver<PrimaryChannel> for ChannelId {
 	fn try_resolve(&self, ctx: &ReducerContext) -> Result<PrimaryChannel, String> {
 		match self {
 			| ChannelId::Primary(id) => ctx

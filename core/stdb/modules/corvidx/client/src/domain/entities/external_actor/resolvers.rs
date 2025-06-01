@@ -1,6 +1,6 @@
 use super::ExternalActorId;
 use crate::common::{
-	ports::{ProfileResolution, RecordResolution},
+	ports::{ProfileResolution, RecordResolver},
 	stdb::{
 		AccountTableAccess, ActorProfile, ActorProfileTableAccess, ExternalActor,
 		ExternalActorReference, ExternalActorTableAccess, RemoteDbContext,
@@ -33,14 +33,14 @@ impl ProfileResolution for ExternalActor {
 	}
 }
 
-impl RecordResolution<ExternalActor> for ExternalActorReference {
+impl RecordResolver<ExternalActor> for ExternalActorReference {
 	/// Resolves a third-party account by its reference
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<ExternalActor> {
 		ctx.db().external_actor().id().find(&self.to_string())
 	}
 }
 
-impl RecordResolution<ExternalActor> for ExternalActorId {
+impl RecordResolver<ExternalActor> for ExternalActorId {
 	/// Resolves a third-party account by ID
 	fn resolve(&self, ctx: &impl RemoteDbContext) -> Option<ExternalActor> {
 		ctx.db().external_actor().id().find(&self)

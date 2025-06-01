@@ -3,7 +3,7 @@ use std::process;
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
 	corvidx::{
-		ports::{ProfileResolution, RecordResolution},
+		ports::{ProfileResolution, RecordResolver},
 		presentation::{DisplayName, Displayable},
 		stdb::{
 			ActorId, ActorProfileTableAccess, DbConnection, ErrorContext, ExternalActorTableAccess,
@@ -29,8 +29,6 @@ pub fn print_message(corvidx: &impl RemoteDbContext, message: &Message) {
 					.unwrap_or_else(|| "unknown".to_string())
 			})
 			.unwrap_or_else(|| "unknown".to_string()),
-
-		| ActorId::Unknown => "unknown".to_string(),
 	};
 
 	println!("{}: {}", sender, message.text);
