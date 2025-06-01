@@ -10,6 +10,7 @@ pub struct Message {
 	#[primary_key]
 	pub id: MessageId,
 
+	// TODO: Improve type safety by disallowing sending messages to superchannels
 	#[index(btree)]
 	pub channel: ChannelId,
 
