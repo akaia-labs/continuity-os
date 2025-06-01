@@ -3,6 +3,7 @@ use spacetimedb::{ReducerContext, Table, reducer};
 
 use crate::domain::entities::{
 	action_request::ExternalAuthenticationRequest,
+	channel::DirectChannelReference,
 	external_actor::ExternalActorReference,
 	shared::{
 		keys::{ActorId, ChannelId},
@@ -30,8 +31,16 @@ pub fn report_external_authentication_resolution(
 		});
 
 	let result = ctx.db.message().try_insert(Message {
-		id:      0,
-		channel: ChannelId::Direct(ActorId::Internal(requester)),
+		id: 0,
+
+		channel: ChannelId::Direct(
+			DirectChannelReference {
+				a: ActorId::Internal(ctx.identity()),
+				b: ActorId::Internal(requester),
+			}
+			.to_string(),
+		),
+
 		sender:  ctx.identity(),
 		sent_at: ctx.timestamp,
 		author:  ActorId::Internal(ctx.identity()),

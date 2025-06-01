@@ -36,7 +36,7 @@ pub fn send_message(
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, author_ref: ExternalActorReference, text: String,
+	ctx: &ReducerContext, author_ref: ExternalActorReference, channel_id: ChannelId, text: String,
 ) -> Result<(), String> {
 	let author = author_ref.try_resolve(ctx)?;
 

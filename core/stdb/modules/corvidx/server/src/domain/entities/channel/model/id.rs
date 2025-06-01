@@ -1,5 +1,5 @@
 use super::{
-	PrimaryChannel, direct::DirectChannel, standalone::StandaloneChannel,
+	direct::DirectChannel, primary::PrimaryChannel, standalone::StandaloneChannel,
 	subordinate::SubordinateChannel,
 };
 use crate::{
