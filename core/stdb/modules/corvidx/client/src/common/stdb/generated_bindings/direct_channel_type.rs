@@ -6,12 +6,14 @@ use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
-pub enum ActorId {
-	Internal(__sdk::Identity),
-
-	External(String),
+pub struct DirectChannel {
+	pub id:         String,
+	pub creator:    __sdk::Identity,
+	pub created_at: __sdk::Timestamp,
+	pub updated_at: __sdk::Timestamp,
+	pub messages:   Vec<i128>,
 }
 
-impl __sdk::InModule for ActorId {
+impl __sdk::InModule for DirectChannel {
 	type Module = super::RemoteModule;
 }

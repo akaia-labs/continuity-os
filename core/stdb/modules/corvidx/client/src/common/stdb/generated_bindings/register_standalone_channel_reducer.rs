@@ -4,24 +4,24 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::{actor_id_type::ActorId, channel_metadata_type::ChannelMetadata};
+use super::channel_metadata_type::ChannelMetadata;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct RegisterStandaloneChannelArgs {
-	pub id:       String,
-	pub alias:    String,
-	pub members:  Option<Vec<ActorId>>,
-	pub metadata: Option<ChannelMetadata>,
+	pub channel_id: String,
+	pub alias:      String,
+	pub metadata:   Option<ChannelMetadata>,
+	pub members:    Option<Vec<String>>,
 }
 
 impl From<RegisterStandaloneChannelArgs> for super::Reducer {
 	fn from(args: RegisterStandaloneChannelArgs) -> Self {
 		Self::RegisterStandaloneChannel {
-			id:       args.id,
-			alias:    args.alias,
-			members:  args.members,
-			metadata: args.metadata,
+			channel_id: args.channel_id,
+			alias:      args.alias,
+			metadata:   args.metadata,
+			members:    args.members,
 		}
 	}
 }
@@ -45,8 +45,8 @@ pub trait register_standalone_channel {
 	///  and its status can be observed by listening for
 	/// [`Self::on_register_standalone_channel`] callbacks.
 	fn register_standalone_channel(
-		&self, id: String, alias: String, members: Option<Vec<ActorId>>,
-		metadata: Option<ChannelMetadata>,
+		&self, channel_id: String, alias: String, metadata: Option<ChannelMetadata>,
+		members: Option<Vec<String>>,
 	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `register_standalone_channel`.
@@ -62,8 +62,8 @@ pub trait register_standalone_channel {
 			&super::ReducerEventContext,
 			&String,
 			&String,
-			&Option<Vec<ActorId>>,
 			&Option<ChannelMetadata>,
+			&Option<Vec<String>>,
 		) + Send
 		+ 'static,
 	) -> RegisterStandaloneChannelCallbackId;
@@ -75,16 +75,16 @@ pub trait register_standalone_channel {
 
 impl register_standalone_channel for super::RemoteReducers {
 	fn register_standalone_channel(
-		&self, id: String, alias: String, members: Option<Vec<ActorId>>,
-		metadata: Option<ChannelMetadata>,
+		&self, channel_id: String, alias: String, metadata: Option<ChannelMetadata>,
+		members: Option<Vec<String>>,
 	) -> __sdk::Result<()> {
 		self.imp.call_reducer(
 			"register_standalone_channel",
 			RegisterStandaloneChannelArgs {
-				id,
+				channel_id,
 				alias,
-				members,
 				metadata,
+				members,
 			},
 		)
 	}
@@ -95,8 +95,8 @@ impl register_standalone_channel for super::RemoteReducers {
 			&super::ReducerEventContext,
 			&String,
 			&String,
-			&Option<Vec<ActorId>>,
 			&Option<ChannelMetadata>,
+			&Option<Vec<String>>,
 		) + Send
 		+ 'static,
 	) -> RegisterStandaloneChannelCallbackId {
@@ -108,10 +108,10 @@ impl register_standalone_channel for super::RemoteReducers {
 						__sdk::ReducerEvent {
 							reducer:
 								super::Reducer::RegisterStandaloneChannel {
-									id,
+									channel_id,
 									alias,
-									members,
 									metadata,
+									members,
 								},
 							..
 						},
@@ -120,7 +120,7 @@ impl register_standalone_channel for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, id, alias, members, metadata)
+				callback(ctx, channel_id, alias, metadata, members)
 			}),
 		))
 	}

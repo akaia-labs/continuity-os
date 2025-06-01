@@ -4,7 +4,7 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::{actor_id_type::ActorId, message_type::Message};
+use super::{actor_id_type::ActorId, channel_id_type::ChannelId, message_type::Message};
 
 /// Table handle for the table `message`.
 ///

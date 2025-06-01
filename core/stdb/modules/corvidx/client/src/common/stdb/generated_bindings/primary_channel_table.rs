@@ -4,10 +4,7 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::{
-	actor_id_type::ActorId, channel_metadata_type::ChannelMetadata,
-	primary_channel_type::PrimaryChannel,
-};
+use super::{channel_metadata_type::ChannelMetadata, primary_channel_type::PrimaryChannel};
 
 /// Table handle for the table `primary_channel`.
 ///

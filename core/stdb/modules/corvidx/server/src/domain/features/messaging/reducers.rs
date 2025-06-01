@@ -24,6 +24,7 @@ pub fn send_message(
 
 	ctx.db.message().insert(Message {
 		id: 0,
+		channel: channel_id,
 		sender: ctx.sender,
 		sent_at: ctx.timestamp,
 		author: ActorId::Internal(author.id),
@@ -36,7 +37,7 @@ pub fn send_message(
 #[reducer]
 // Registers a message relayed from an external platform
 pub fn import_message(
-	ctx: &ReducerContext, author_ref: ExternalActorReference, channel_id: ChannelId, text: String,
+	ctx: &ReducerContext, channel_id: ChannelId, author_ref: ExternalActorReference, text: String,
 ) -> Result<(), String> {
 	let author = author_ref.try_resolve(ctx)?;
 
@@ -50,6 +51,7 @@ pub fn import_message(
 
 	ctx.db.message().insert(Message {
 		id: 0,
+		channel: channel_id,
 		sender,
 		sent_at: ctx.timestamp,
 		author: ActorId::External(author.id),

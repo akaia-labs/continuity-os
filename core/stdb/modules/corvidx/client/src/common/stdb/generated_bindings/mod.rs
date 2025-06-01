@@ -15,10 +15,18 @@ pub mod actor_profile_type;
 pub mod admin_set_account_role_reducer;
 pub mod channel_config_table;
 pub mod channel_config_type;
+pub mod channel_id_type;
 pub mod channel_metadata_type;
 pub mod client_connected_reducer;
 pub mod client_disconnected_reducer;
+pub mod create_direct_channel_reducer;
 pub mod create_standalone_channel_reducer;
+pub mod create_subchannel_reducer;
+pub mod create_superchannel_reducer;
+pub mod delete_channel_reducer;
+pub mod delete_subchannel_reducer;
+pub mod direct_channel_table;
+pub mod direct_channel_type;
 pub mod external_actor_origin_type;
 pub mod external_actor_reference_type;
 pub mod external_actor_table;
@@ -36,16 +44,18 @@ pub mod primary_channel_table;
 pub mod primary_channel_type;
 pub mod register_external_actor_reducer;
 pub mod register_standalone_channel_reducer;
+pub mod register_subchannel_reducer;
+pub mod register_superchannel_reducer;
 pub mod report_external_authentication_resolution_reducer;
 pub mod resolve_external_authentication_request_reducer;
-pub mod scheduled_delete_external_authentication_request_reducer;
+pub mod revoke_external_authentication_reducer;
+pub mod scheduled_delete_ext_auth_req_reducer;
 pub mod send_message_reducer;
 pub mod set_account_callsign_reducer;
 pub mod standalone_channel_table;
 pub mod standalone_channel_type;
 pub mod subordinate_channel_table;
 pub mod subordinate_channel_type;
-pub mod unlink_external_actor_reducer;
 pub mod update_external_actor_callsign_reducer;
 pub mod update_external_actor_profile_reducer;
 
@@ -62,6 +72,7 @@ pub use admin_set_account_role_reducer::{
 };
 pub use channel_config_table::*;
 pub use channel_config_type::ChannelConfig;
+pub use channel_id_type::ChannelId;
 pub use channel_metadata_type::ChannelMetadata;
 pub use client_connected_reducer::{
 	ClientConnectedCallbackId, client_connected, set_flags_for_client_connected,
@@ -69,10 +80,27 @@ pub use client_connected_reducer::{
 pub use client_disconnected_reducer::{
 	ClientDisconnectedCallbackId, client_disconnected, set_flags_for_client_disconnected,
 };
+pub use create_direct_channel_reducer::{
+	CreateDirectChannelCallbackId, create_direct_channel, set_flags_for_create_direct_channel,
+};
 pub use create_standalone_channel_reducer::{
 	CreateStandaloneChannelCallbackId, create_standalone_channel,
 	set_flags_for_create_standalone_channel,
 };
+pub use create_subchannel_reducer::{
+	CreateSubchannelCallbackId, create_subchannel, set_flags_for_create_subchannel,
+};
+pub use create_superchannel_reducer::{
+	CreateSuperchannelCallbackId, create_superchannel, set_flags_for_create_superchannel,
+};
+pub use delete_channel_reducer::{
+	DeleteChannelCallbackId, delete_channel, set_flags_for_delete_channel,
+};
+pub use delete_subchannel_reducer::{
+	DeleteSubchannelCallbackId, delete_subchannel, set_flags_for_delete_subchannel,
+};
+pub use direct_channel_table::*;
+pub use direct_channel_type::DirectChannel;
 pub use external_actor_origin_type::ExternalActorOrigin;
 pub use external_actor_reference_type::ExternalActorReference;
 pub use external_actor_table::*;
@@ -102,6 +130,12 @@ pub use register_standalone_channel_reducer::{
 	RegisterStandaloneChannelCallbackId, register_standalone_channel,
 	set_flags_for_register_standalone_channel,
 };
+pub use register_subchannel_reducer::{
+	RegisterSubchannelCallbackId, register_subchannel, set_flags_for_register_subchannel,
+};
+pub use register_superchannel_reducer::{
+	RegisterSuperchannelCallbackId, register_superchannel, set_flags_for_register_superchannel,
+};
 pub use report_external_authentication_resolution_reducer::{
 	ReportExternalAuthenticationResolutionCallbackId, report_external_authentication_resolution,
 	set_flags_for_report_external_authentication_resolution,
@@ -110,10 +144,13 @@ pub use resolve_external_authentication_request_reducer::{
 	ResolveExternalAuthenticationRequestCallbackId, resolve_external_authentication_request,
 	set_flags_for_resolve_external_authentication_request,
 };
-pub use scheduled_delete_external_authentication_request_reducer::{
-	ScheduledDeleteExternalAuthenticationRequestCallbackId,
-	scheduled_delete_external_authentication_request,
-	set_flags_for_scheduled_delete_external_authentication_request,
+pub use revoke_external_authentication_reducer::{
+	RevokeExternalAuthenticationCallbackId, revoke_external_authentication,
+	set_flags_for_revoke_external_authentication,
+};
+pub use scheduled_delete_ext_auth_req_reducer::{
+	ScheduledDeleteExtAuthReqCallbackId, scheduled_delete_ext_auth_req,
+	set_flags_for_scheduled_delete_ext_auth_req,
 };
 pub use send_message_reducer::{SendMessageCallbackId, send_message, set_flags_for_send_message};
 pub use set_account_callsign_reducer::{
@@ -123,9 +160,6 @@ pub use standalone_channel_table::*;
 pub use standalone_channel_type::StandaloneChannel;
 pub use subordinate_channel_table::*;
 pub use subordinate_channel_type::SubordinateChannel;
-pub use unlink_external_actor_reducer::{
-	UnlinkExternalActorCallbackId, set_flags_for_unlink_external_actor, unlink_external_actor,
-};
 pub use update_external_actor_callsign_reducer::{
 	UpdateExternalActorCallsignCallbackId, set_flags_for_update_external_actor_callsign,
 	update_external_actor_callsign,
@@ -149,11 +183,31 @@ pub enum Reducer {
 	},
 	ClientConnected,
 	ClientDisconnected,
+	CreateDirectChannel {
+		a_id: ActorId,
+		b_id: ActorId,
+	},
 	CreateStandaloneChannel {
 		alias:    String,
 		metadata: Option<ChannelMetadata>,
 	},
+	CreateSubchannel {
+		alias:           String,
+		metadata:        Option<ChannelMetadata>,
+		superchannel_id: String,
+	},
+	CreateSuperchannel {
+		alias:    String,
+		metadata: Option<ChannelMetadata>,
+	},
+	DeleteChannel {
+		channel_id: ChannelId,
+	},
+	DeleteSubchannel {
+		id: String,
+	},
 	ImportMessage {
+		channel_id: ChannelId,
 		author_ref: ExternalActorReference,
 		text:       String,
 	},
@@ -169,10 +223,22 @@ pub enum Reducer {
 		metadata:      Option<ActorProfileMetadata>,
 	},
 	RegisterStandaloneChannel {
-		id:       String,
-		alias:    String,
-		members:  Option<Vec<ActorId>>,
-		metadata: Option<ChannelMetadata>,
+		channel_id: String,
+		alias:      String,
+		metadata:   Option<ChannelMetadata>,
+		members:    Option<Vec<String>>,
+	},
+	RegisterSubchannel {
+		subchannel_id:   String,
+		alias:           String,
+		metadata:        Option<ChannelMetadata>,
+		superchannel_id: String,
+		members:         Option<Vec<String>>,
+	},
+	RegisterSuperchannel {
+		channel_id: String,
+		alias:      String,
+		metadata:   Option<ChannelMetadata>,
 	},
 	ReportExternalAuthenticationResolution {
 		request:     ExternalAuthenticationRequest,
@@ -182,17 +248,18 @@ pub enum Reducer {
 		request_id:  u64,
 		is_approved: bool,
 	},
-	ScheduledDeleteExternalAuthenticationRequest {
+	RevokeExternalAuthentication {
+		ext_actor_ref: ExternalActorReference,
+	},
+	ScheduledDeleteExtAuthReq {
 		args: ExternalAuthenticationRequestExpirySchedule,
 	},
 	SendMessage {
-		text: String,
+		channel_id: ChannelId,
+		text:       String,
 	},
 	SetAccountCallsign {
 		callsign: String,
-	},
-	UnlinkExternalActor {
-		ext_actor_ref: ExternalActorReference,
 	},
 	UpdateExternalActorCallsign {
 		ext_actor_ref: ExternalActorReference,
@@ -214,24 +281,29 @@ impl __sdk::Reducer for Reducer {
 			| Reducer::AdminSetAccountRole { .. } => "admin_set_account_role",
 			| Reducer::ClientConnected => "client_connected",
 			| Reducer::ClientDisconnected => "client_disconnected",
+			| Reducer::CreateDirectChannel { .. } => "create_direct_channel",
 			| Reducer::CreateStandaloneChannel { .. } => "create_standalone_channel",
+			| Reducer::CreateSubchannel { .. } => "create_subchannel",
+			| Reducer::CreateSuperchannel { .. } => "create_superchannel",
+			| Reducer::DeleteChannel { .. } => "delete_channel",
+			| Reducer::DeleteSubchannel { .. } => "delete_subchannel",
 			| Reducer::ImportMessage { .. } => "import_message",
 			| Reducer::InitiateExternalAuthentication { .. } => "initiate_external_authentication",
 			| Reducer::MirrorExternalProfile { .. } => "mirror_external_profile",
 			| Reducer::RegisterExternalActor { .. } => "register_external_actor",
 			| Reducer::RegisterStandaloneChannel { .. } => "register_standalone_channel",
+			| Reducer::RegisterSubchannel { .. } => "register_subchannel",
+			| Reducer::RegisterSuperchannel { .. } => "register_superchannel",
 			| Reducer::ReportExternalAuthenticationResolution { .. } => {
 				"report_external_authentication_resolution"
 			},
 			| Reducer::ResolveExternalAuthenticationRequest { .. } => {
 				"resolve_external_authentication_request"
 			},
-			| Reducer::ScheduledDeleteExternalAuthenticationRequest { .. } => {
-				"scheduled_delete_external_authentication_request"
-			},
+			| Reducer::RevokeExternalAuthentication { .. } => "revoke_external_authentication",
+			| Reducer::ScheduledDeleteExtAuthReq { .. } => "scheduled_delete_ext_auth_req",
 			| Reducer::SendMessage { .. } => "send_message",
 			| Reducer::SetAccountCallsign { .. } => "set_account_callsign",
-			| Reducer::UnlinkExternalActor { .. } => "unlink_external_actor",
 			| Reducer::UpdateExternalActorCallsign { .. } => "update_external_actor_callsign",
 			| Reducer::UpdateExternalActorProfile { .. } => "update_external_actor_profile",
 		}
@@ -245,18 +317,25 @@ impl TryFrom<__ws::ReducerCallInfo<__ws::BsatnFormat>> for Reducer {
                         "admin_set_account_role" => Ok(__sdk::parse_reducer_args::<admin_set_account_role_reducer::AdminSetAccountRoleArgs>("admin_set_account_role", &value.args)?.into()),
             "client_connected" => Ok(__sdk::parse_reducer_args::<client_connected_reducer::ClientConnectedArgs>("client_connected", &value.args)?.into()),
             "client_disconnected" => Ok(__sdk::parse_reducer_args::<client_disconnected_reducer::ClientDisconnectedArgs>("client_disconnected", &value.args)?.into()),
+            "create_direct_channel" => Ok(__sdk::parse_reducer_args::<create_direct_channel_reducer::CreateDirectChannelArgs>("create_direct_channel", &value.args)?.into()),
             "create_standalone_channel" => Ok(__sdk::parse_reducer_args::<create_standalone_channel_reducer::CreateStandaloneChannelArgs>("create_standalone_channel", &value.args)?.into()),
+            "create_subchannel" => Ok(__sdk::parse_reducer_args::<create_subchannel_reducer::CreateSubchannelArgs>("create_subchannel", &value.args)?.into()),
+            "create_superchannel" => Ok(__sdk::parse_reducer_args::<create_superchannel_reducer::CreateSuperchannelArgs>("create_superchannel", &value.args)?.into()),
+            "delete_channel" => Ok(__sdk::parse_reducer_args::<delete_channel_reducer::DeleteChannelArgs>("delete_channel", &value.args)?.into()),
+            "delete_subchannel" => Ok(__sdk::parse_reducer_args::<delete_subchannel_reducer::DeleteSubchannelArgs>("delete_subchannel", &value.args)?.into()),
             "import_message" => Ok(__sdk::parse_reducer_args::<import_message_reducer::ImportMessageArgs>("import_message", &value.args)?.into()),
             "initiate_external_authentication" => Ok(__sdk::parse_reducer_args::<initiate_external_authentication_reducer::InitiateExternalAuthenticationArgs>("initiate_external_authentication", &value.args)?.into()),
             "mirror_external_profile" => Ok(__sdk::parse_reducer_args::<mirror_external_profile_reducer::MirrorExternalProfileArgs>("mirror_external_profile", &value.args)?.into()),
             "register_external_actor" => Ok(__sdk::parse_reducer_args::<register_external_actor_reducer::RegisterExternalActorArgs>("register_external_actor", &value.args)?.into()),
             "register_standalone_channel" => Ok(__sdk::parse_reducer_args::<register_standalone_channel_reducer::RegisterStandaloneChannelArgs>("register_standalone_channel", &value.args)?.into()),
+            "register_subchannel" => Ok(__sdk::parse_reducer_args::<register_subchannel_reducer::RegisterSubchannelArgs>("register_subchannel", &value.args)?.into()),
+            "register_superchannel" => Ok(__sdk::parse_reducer_args::<register_superchannel_reducer::RegisterSuperchannelArgs>("register_superchannel", &value.args)?.into()),
             "report_external_authentication_resolution" => Ok(__sdk::parse_reducer_args::<report_external_authentication_resolution_reducer::ReportExternalAuthenticationResolutionArgs>("report_external_authentication_resolution", &value.args)?.into()),
             "resolve_external_authentication_request" => Ok(__sdk::parse_reducer_args::<resolve_external_authentication_request_reducer::ResolveExternalAuthenticationRequestArgs>("resolve_external_authentication_request", &value.args)?.into()),
-            "scheduled_delete_external_authentication_request" => Ok(__sdk::parse_reducer_args::<scheduled_delete_external_authentication_request_reducer::ScheduledDeleteExternalAuthenticationRequestArgs>("scheduled_delete_external_authentication_request", &value.args)?.into()),
+            "revoke_external_authentication" => Ok(__sdk::parse_reducer_args::<revoke_external_authentication_reducer::RevokeExternalAuthenticationArgs>("revoke_external_authentication", &value.args)?.into()),
+            "scheduled_delete_ext_auth_req" => Ok(__sdk::parse_reducer_args::<scheduled_delete_ext_auth_req_reducer::ScheduledDeleteExtAuthReqArgs>("scheduled_delete_ext_auth_req", &value.args)?.into()),
             "send_message" => Ok(__sdk::parse_reducer_args::<send_message_reducer::SendMessageArgs>("send_message", &value.args)?.into()),
             "set_account_callsign" => Ok(__sdk::parse_reducer_args::<set_account_callsign_reducer::SetAccountCallsignArgs>("set_account_callsign", &value.args)?.into()),
-            "unlink_external_actor" => Ok(__sdk::parse_reducer_args::<unlink_external_actor_reducer::UnlinkExternalActorArgs>("unlink_external_actor", &value.args)?.into()),
             "update_external_actor_callsign" => Ok(__sdk::parse_reducer_args::<update_external_actor_callsign_reducer::UpdateExternalActorCallsignArgs>("update_external_actor_callsign", &value.args)?.into()),
             "update_external_actor_profile" => Ok(__sdk::parse_reducer_args::<update_external_actor_profile_reducer::UpdateExternalActorProfileArgs>("update_external_actor_profile", &value.args)?.into()),
             unknown => Err(__sdk::InternalError::unknown_name("reducer", unknown, "ReducerCallInfo").into()),
@@ -271,6 +350,7 @@ pub struct DbUpdate {
 	account: __sdk::TableUpdate<Account>,
 	actor_profile: __sdk::TableUpdate<ActorProfile>,
 	channel_config: __sdk::TableUpdate<ChannelConfig>,
+	direct_channel: __sdk::TableUpdate<DirectChannel>,
 	external_actor: __sdk::TableUpdate<ExternalActor>,
 	external_authentication_request: __sdk::TableUpdate<ExternalAuthenticationRequest>,
 	external_authentication_request_schedule:
@@ -295,6 +375,10 @@ impl TryFrom<__ws::DatabaseUpdate<__ws::BsatnFormat>> for DbUpdate {
 				| "channel_config" => {
 					db_update.channel_config =
 						channel_config_table::parse_table_update(table_update)?
+				},
+				| "direct_channel" => {
+					db_update.direct_channel =
+						direct_channel_table::parse_table_update(table_update)?
 				},
 				| "external_actor" => {
 					db_update.external_actor =
@@ -357,6 +441,9 @@ impl __sdk::DbUpdate for DbUpdate {
 		diff.channel_config = cache
 			.apply_diff_to_table::<ChannelConfig>("channel_config", &self.channel_config)
 			.with_updates_by_pk(|row| &row.id);
+		diff.direct_channel = cache
+			.apply_diff_to_table::<DirectChannel>("direct_channel", &self.direct_channel)
+			.with_updates_by_pk(|row| &row.id);
 		diff.external_actor = cache
 			.apply_diff_to_table::<ExternalActor>("external_actor", &self.external_actor)
 			.with_updates_by_pk(|row| &row.id);
@@ -402,6 +489,7 @@ pub struct AppliedDiff<'r> {
 	account: __sdk::TableAppliedDiff<'r, Account>,
 	actor_profile: __sdk::TableAppliedDiff<'r, ActorProfile>,
 	channel_config: __sdk::TableAppliedDiff<'r, ChannelConfig>,
+	direct_channel: __sdk::TableAppliedDiff<'r, DirectChannel>,
 	external_actor: __sdk::TableAppliedDiff<'r, ExternalActor>,
 	external_authentication_request: __sdk::TableAppliedDiff<'r, ExternalAuthenticationRequest>,
 	external_authentication_request_schedule:
@@ -429,6 +517,11 @@ impl<'r> __sdk::AppliedDiff<'r> for AppliedDiff<'r> {
 		callbacks.invoke_table_row_callbacks::<ChannelConfig>(
 			"channel_config",
 			&self.channel_config,
+			event,
+		);
+		callbacks.invoke_table_row_callbacks::<DirectChannel>(
+			"direct_channel",
+			&self.direct_channel,
 			event,
 		);
 		callbacks.invoke_table_row_callbacks::<ExternalActor>(
@@ -1094,6 +1187,7 @@ impl __sdk::SpacetimeModule for RemoteModule {
 		account_table::register_table(client_cache);
 		actor_profile_table::register_table(client_cache);
 		channel_config_table::register_table(client_cache);
+		direct_channel_table::register_table(client_cache);
 		external_actor_table::register_table(client_cache);
 		external_authentication_request_table::register_table(client_cache);
 		external_authentication_request_schedule_table::register_table(client_cache);

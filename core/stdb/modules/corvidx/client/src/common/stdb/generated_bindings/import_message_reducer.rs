@@ -4,11 +4,12 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::external_actor_reference_type::ExternalActorReference;
+use super::{channel_id_type::ChannelId, external_actor_reference_type::ExternalActorReference};
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
 pub(super) struct ImportMessageArgs {
+	pub channel_id: ChannelId,
 	pub author_ref: ExternalActorReference,
 	pub text:       String,
 }
@@ -16,6 +17,7 @@ pub(super) struct ImportMessageArgs {
 impl From<ImportMessageArgs> for super::Reducer {
 	fn from(args: ImportMessageArgs) -> Self {
 		Self::ImportMessage {
+			channel_id: args.channel_id,
 			author_ref: args.author_ref,
 			text:       args.text,
 		}
@@ -40,8 +42,9 @@ pub trait import_message {
 	/// send the request. The reducer will run asynchronously in the future,
 	///  and its status can be observed by listening for
 	/// [`Self::on_import_message`] callbacks.
-	fn import_message(&self, author_ref: ExternalActorReference, text: String)
-	-> __sdk::Result<()>;
+	fn import_message(
+		&self, channel_id: ChannelId, author_ref: ExternalActorReference, text: String,
+	) -> __sdk::Result<()>;
 	/// Register a callback to run whenever we are notified of an invocation of
 	/// the reducer `import_message`.
 	///
@@ -52,7 +55,7 @@ pub trait import_message {
 	/// [`Self::remove_on_import_message`] to cancel the callback.
 	fn on_import_message(
 		&self,
-		callback: impl FnMut(&super::ReducerEventContext, &ExternalActorReference, &String)
+		callback: impl FnMut(&super::ReducerEventContext, &ChannelId, &ExternalActorReference, &String)
 		+ Send
 		+ 'static,
 	) -> ImportMessageCallbackId;
@@ -63,16 +66,23 @@ pub trait import_message {
 
 impl import_message for super::RemoteReducers {
 	fn import_message(
-		&self, author_ref: ExternalActorReference, text: String,
+		&self, channel_id: ChannelId, author_ref: ExternalActorReference, text: String,
 	) -> __sdk::Result<()> {
-		self.imp
-			.call_reducer("import_message", ImportMessageArgs { author_ref, text })
+		self.imp.call_reducer("import_message", ImportMessageArgs {
+			channel_id,
+			author_ref,
+			text,
+		})
 	}
 
 	fn on_import_message(
 		&self,
-		mut callback: impl FnMut(&super::ReducerEventContext, &ExternalActorReference, &String)
-		+ Send
+		mut callback: impl FnMut(
+			&super::ReducerEventContext,
+			&ChannelId,
+			&ExternalActorReference,
+			&String,
+		) + Send
 		+ 'static,
 	) -> ImportMessageCallbackId {
 		ImportMessageCallbackId(self.imp.on_reducer(
@@ -81,7 +91,12 @@ impl import_message for super::RemoteReducers {
 				let super::ReducerEventContext {
 					event:
 						__sdk::ReducerEvent {
-							reducer: super::Reducer::ImportMessage { author_ref, text },
+							reducer:
+								super::Reducer::ImportMessage {
+									channel_id,
+									author_ref,
+									text,
+								},
 							..
 						},
 					..
@@ -89,7 +104,7 @@ impl import_message for super::RemoteReducers {
 				else {
 					unreachable!()
 				};
-				callback(ctx, author_ref, text)
+				callback(ctx, channel_id, author_ref, text)
 			}),
 		))
 	}

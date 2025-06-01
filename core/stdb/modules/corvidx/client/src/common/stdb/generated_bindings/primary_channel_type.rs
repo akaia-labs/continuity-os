@@ -4,7 +4,7 @@
 #![allow(unused, clippy::all)]
 use spacetimedb_sdk::__codegen::{self as __sdk, __lib, __sats, __ws};
 
-use super::{actor_id_type::ActorId, channel_metadata_type::ChannelMetadata};
+use super::channel_metadata_type::ChannelMetadata;
 
 #[derive(__lib::ser::Serialize, __lib::de::Deserialize, Clone, PartialEq, Debug)]
 #[sats(crate = __lib)]
@@ -15,7 +15,6 @@ pub struct PrimaryChannel {
 	pub created_at:      __sdk::Timestamp,
 	pub updated_at:      __sdk::Timestamp,
 	pub metadata:        ChannelMetadata,
-	pub members:         Vec<ActorId>,
 	pub subchannels:     Vec<String>,
 }
 

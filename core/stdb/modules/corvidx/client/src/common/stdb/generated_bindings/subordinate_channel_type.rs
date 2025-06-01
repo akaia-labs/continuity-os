@@ -15,8 +15,9 @@ pub struct SubordinateChannel {
 	pub created_at:      __sdk::Timestamp,
 	pub updated_at:      __sdk::Timestamp,
 	pub metadata:        ChannelMetadata,
-	pub members:         Vec<ActorId>,
 	pub superchannel:    String,
+	pub members:         Vec<ActorId>,
+	pub messages:        Vec<i128>,
 }
 
 impl __sdk::InModule for SubordinateChannel {
