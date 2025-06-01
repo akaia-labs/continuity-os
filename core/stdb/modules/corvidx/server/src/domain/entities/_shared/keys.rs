@@ -3,6 +3,7 @@
 //! without cross-references between entity modules.
 
 use spacetimedb::{Identity, SpacetimeType};
+use strum::Display;
 
 #[derive(SpacetimeType, Clone)]
 pub enum ActorId {
@@ -23,7 +24,7 @@ pub type AccountId = Identity;
 /// `"{String}@{ExternalActorOrigin}"`
 pub type ExternalActorId = String;
 
-#[derive(SpacetimeType, Clone)]
+#[derive(SpacetimeType, Clone, Display)]
 pub enum ChannelId {
 	Direct(ActorId),
 	Standalone(StandaloneChannelId),

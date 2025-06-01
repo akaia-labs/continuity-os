@@ -1,25 +1,33 @@
 use spacetimedb::{ReducerContext, Table, reducer};
 
-use super::{super::ChannelMetadata, StandaloneChannel, standalone_channel};
+use super::{
+	super::{ChannelMetadata, PrimaryChannel},
+	SubordinateChannel, subordinate_channel,
+};
 use crate::{
-	common::types::StUuid,
-	domain::entities::shared::keys::{ActorId, ExternalActorId},
+	common::{ports::RecordResolution, types::StUuid},
+	domain::entities::shared::keys::{ActorId, ChannelId, ExternalActorId, PrimaryChannelId},
 };
 
 #[reducer]
-/// Creates a new standalone channel.
-pub fn create_standalone_channel(
+/// Creates a new subordinate channel.
+pub fn create_subordinate_channel(
 	ctx: &ReducerContext, alias: String, metadata: Option<ChannelMetadata>,
+	superchannel_id: PrimaryChannelId,
 ) -> Result<(), String> {
+	let superchannel: PrimaryChannel =
+		ChannelId::Primary(superchannel_id.clone()).try_resolve(ctx)?;
+
 	ctx.db
-		.standalone_channel()
-		.try_insert(StandaloneChannel {
+		.subordinate_channel()
+		.try_insert(SubordinateChannel {
 			id:              StUuid::new(ctx).to_string(),
 			canonical_alias: alias,
 			creator:         ctx.sender,
 			created_at:      ctx.timestamp,
 			updated_at:      ctx.timestamp,
 			metadata:        metadata.unwrap_or_default(),
+			superchannel:    superchannel.id,
 			members:         vec![ActorId::Internal(ctx.sender)],
 			messages:        vec![],
 		})
@@ -28,21 +36,25 @@ pub fn create_standalone_channel(
 }
 
 #[reducer]
-/// Creates a record for an existing channel
+/// Creates a record for an existing channel space
 /// bridged from an external source.
-pub fn register_standalone_channel(
+pub fn register_subordinate_channel(
 	ctx: &ReducerContext, channel_id: String, alias: String, metadata: Option<ChannelMetadata>,
-	members: Option<Vec<ExternalActorId>>,
+	superchannel_id: PrimaryChannelId, members: Option<Vec<ExternalActorId>>,
 ) -> Result<(), String> {
+	let superchannel: PrimaryChannel =
+		ChannelId::Primary(superchannel_id.clone()).try_resolve(ctx)?;
+
 	ctx.db
-		.standalone_channel()
-		.try_insert(StandaloneChannel {
+		.subordinate_channel()
+		.try_insert(SubordinateChannel {
 			id:              channel_id,
 			canonical_alias: alias,
 			creator:         ctx.sender,
 			created_at:      ctx.timestamp,
 			updated_at:      ctx.timestamp,
 			metadata:        metadata.unwrap_or_default(),
+			superchannel:    superchannel.id,
 
 			members: members
 				.map(|ext_ids| {

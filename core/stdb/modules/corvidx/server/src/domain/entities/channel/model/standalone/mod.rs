@@ -1,11 +1,14 @@
 mod reducers;
 
-use spacetimedb::{Timestamp, table};
+use spacetimedb::{ReducerContext, Timestamp, table};
 
 use super::metadata::ChannelMetadata;
-use crate::domain::entities::shared::{
-	keys::{AccountId, ActorId, StandaloneChannelId},
-	message::MessageId,
+use crate::{
+	common::ports::RecordResolution,
+	domain::entities::shared::{
+		keys::{AccountId, ActorId, ChannelId, StandaloneChannelId},
+		message::MessageId,
+	},
 };
 
 #[table(name = standalone_channel, public)]
@@ -33,4 +36,19 @@ pub struct StandaloneChannel {
 	pub metadata:   ChannelMetadata,
 	pub members:    Vec<ActorId>,
 	pub messages:   Vec<MessageId>,
+}
+
+impl RecordResolution<StandaloneChannel> for ChannelId {
+	fn try_resolve(&self, ctx: &ReducerContext) -> Result<StandaloneChannel, String> {
+		match self {
+			| ChannelId::Standalone(id) => ctx
+				.db
+				.standalone_channel()
+				.id()
+				.find(id)
+				.ok_or(format!("Standalone channel {self} does not exist.")),
+
+			| _ => Err(format!("Channel {self} is not a standalone channel.")),
+		}
+	}
 }

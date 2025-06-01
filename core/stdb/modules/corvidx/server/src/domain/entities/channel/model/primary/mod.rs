@@ -1,9 +1,14 @@
 mod reducers;
 
-use spacetimedb::{Timestamp, table};
+use spacetimedb::{ReducerContext, Timestamp, table};
 
 use super::metadata::ChannelMetadata;
-use crate::domain::entities::shared::keys::{AccountId, PrimaryChannelId, SubordinateChannelId};
+use crate::{
+	common::ports::RecordResolution,
+	domain::entities::shared::keys::{
+		AccountId, ChannelId, PrimaryChannelId, SubordinateChannelId,
+	},
+};
 
 #[table(name = primary_channel, public)]
 /// A message channel that hosts other channels,
@@ -29,4 +34,19 @@ pub struct PrimaryChannel {
 	pub updated_at:  Timestamp,
 	pub metadata:    ChannelMetadata,
 	pub subchannels: Vec<SubordinateChannelId>,
+}
+
+impl RecordResolution<PrimaryChannel> for ChannelId {
+	fn try_resolve(&self, ctx: &ReducerContext) -> Result<PrimaryChannel, String> {
+		match self {
+			| ChannelId::Primary(id) => ctx
+				.db
+				.primary_channel()
+				.id()
+				.find(id)
+				.ok_or(format!("Primary channel {self} does not exist.")),
+
+			| _ => Err(format!("Channel {self} is not a primary channel.")),
+		}
+	}
 }
