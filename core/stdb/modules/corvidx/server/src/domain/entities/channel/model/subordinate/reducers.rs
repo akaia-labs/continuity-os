@@ -36,7 +36,7 @@ pub fn create_subordinate_channel(
 }
 
 #[reducer]
-/// Creates a record for an existing channel space
+/// Creates a record for an existing subchannel
 /// bridged from an external source.
 pub fn register_subordinate_channel(
 	ctx: &ReducerContext, channel_id: String, alias: String, metadata: Option<ChannelMetadata>,

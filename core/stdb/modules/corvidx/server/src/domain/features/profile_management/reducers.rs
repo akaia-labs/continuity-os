@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[reducer]
-/// Copies the linked third-party account's profile data
+/// Copies the linked third-party profile data
 /// over to the internal account profile.
 pub fn mirror_external_profile(
 	ctx: &ReducerContext, ext_actor_ref: ExternalActorReference,
