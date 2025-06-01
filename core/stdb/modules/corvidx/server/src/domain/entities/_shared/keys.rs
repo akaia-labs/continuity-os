@@ -4,6 +4,16 @@
 
 use spacetimedb::{Identity, SpacetimeType};
 
+#[derive(SpacetimeType, Clone)]
+pub enum ActorId {
+	Internal(AccountId),
+	External(ExternalActorId),
+
+	// TODO: Consider removing in the future
+	/// Fallback value, use with caution.
+	Unknown,
+}
+
 /// Primary key for the account table
 pub type AccountId = Identity;
 
@@ -15,6 +25,7 @@ pub type ExternalActorId = String;
 
 #[derive(SpacetimeType, Clone)]
 pub enum ChannelId {
+	Direct(ActorId),
 	Standalone(StandaloneChannelId),
 	Primary(PrimaryChannelId),
 	Subordinate(SubordinateChannelId),

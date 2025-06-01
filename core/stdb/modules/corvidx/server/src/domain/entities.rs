@@ -5,5 +5,6 @@ pub mod shared {
 }
 
 pub mod account;
+pub mod action_request;
 pub mod channel;
 pub mod external_actor;

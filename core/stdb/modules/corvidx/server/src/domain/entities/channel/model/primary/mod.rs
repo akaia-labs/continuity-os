@@ -1,3 +1,5 @@
+mod reducers;
+
 use spacetimedb::{Timestamp, table};
 
 use super::metadata::ChannelMetadata;
@@ -23,11 +25,8 @@ pub struct PrimaryChannel {
 	pub creator: AccountId,
 
 	// pub config:     ChannelConfigId,
-	pub created_at: Timestamp,
-	pub updated_at: Timestamp,
-
-	/// Non-indexable additional properties.
-	pub metadata: ChannelMetadata,
-
+	pub created_at:  Timestamp,
+	pub updated_at:  Timestamp,
+	pub metadata:    ChannelMetadata,
 	pub subchannels: Vec<SubordinateChannelId>,
 }

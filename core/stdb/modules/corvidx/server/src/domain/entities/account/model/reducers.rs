@@ -1,6 +1,6 @@
 use spacetimedb::{ReducerContext, reducer};
 
-use super::{account, model::Account, validation::validate_callsign};
+use super::{super::validation::validate_callsign, Account, account};
 
 #[reducer]
 /// Accounts invoke this reducer to set their callsigns.

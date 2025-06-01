@@ -5,7 +5,7 @@ use crate::{
 	domain::entities::{
 		external_actor::ExternalActorReference,
 		shared::{
-			actor::ActorId,
+			keys::ActorId,
 			message::{Message, message, validate_message},
 		},
 	},

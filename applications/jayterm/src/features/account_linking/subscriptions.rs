@@ -3,7 +3,7 @@ use crowdcomm_sdk::corvidx::{
 	external_authentication::ExternalAuthenticationRequestId,
 	stdb::{
 		DbConnection, ExternalActorReference, ReducerEventContext, mirror_external_profile,
-		resolve_external_authentication_request, unlink_external_actor,
+		resolve_external_authentication_request, revoke_external_authentication,
 	},
 };
 use spacetimedb_sdk::Status;
@@ -15,7 +15,7 @@ pub fn subscribe(corvidx: &DbConnection) {
 
 	corvidx
 		.reducers
-		.on_unlink_external_actor(on_unlink_external_actor);
+		.on_revoke_external_authentication(on_revoke_external_authentication);
 
 	corvidx
 		.reducers
@@ -48,7 +48,9 @@ fn on_resolve_external_authentication_request(
 	}
 }
 
-fn on_unlink_external_actor(corvidx: &ReducerEventContext, reference: &ExternalActorReference) {
+fn on_revoke_external_authentication(
+	corvidx: &ReducerEventContext, reference: &ExternalActorReference,
+) {
 	let ExternalActorReference {
 		id: external_identifier,
 		origin,
@@ -70,8 +72,7 @@ fn on_unlink_external_actor(corvidx: &ReducerEventContext, reference: &ExternalA
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to unlink {external_identifier} {origin} account:\n{err}")
-					.padded();
+				format!("Unable to unlink {external_identifier} {origin} account:\n{err}").padded();
 
 			eprintln!("{message}")
 		},
@@ -102,8 +103,7 @@ fn on_mirror_external_profile(corvidx: &ReducerEventContext, reference: &Externa
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to mirror {external_identifier} {origin} profile:\n{err}")
-					.padded();
+				format!("Unable to mirror {external_identifier} {origin} profile:\n{err}").padded();
 
 			eprintln!("{message}")
 		},

@@ -1,1 +1,1 @@
-mod reducers;
+mod model;

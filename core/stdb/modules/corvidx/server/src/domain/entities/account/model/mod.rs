@@ -1,3 +1,5 @@
+mod reducers;
+
 use spacetimedb::{ReducerContext, SpacetimeType, Timestamp, table};
 
 use crate::{

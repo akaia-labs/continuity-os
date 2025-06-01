@@ -1,6 +1,6 @@
 use spacetimedb::{Identity, Timestamp, table};
 
-use crate::domain::entities::shared::actor::ActorId;
+use crate::domain::entities::shared::keys::{ActorId, ChannelId};
 
 pub type MessageId = i128;
 
@@ -9,6 +9,9 @@ pub struct Message {
 	#[auto_inc]
 	#[primary_key]
 	pub id: MessageId,
+
+	#[index(btree)]
+	pub channel: ChannelId,
 
 	pub sent_at: Timestamp,
 	pub sender:  Identity,

@@ -1,3 +1,5 @@
+mod reducers;
+
 use std::{
 	fmt::{self, Display, Formatter},
 	str::FromStr,

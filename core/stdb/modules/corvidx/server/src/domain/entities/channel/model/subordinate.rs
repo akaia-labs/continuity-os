@@ -2,8 +2,8 @@ use spacetimedb::{Timestamp, table};
 
 use super::metadata::ChannelMetadata;
 use crate::domain::entities::shared::{
-	actor::ActorId,
-	keys::{AccountId, PrimaryChannelId, SubordinateChannelId},
+	keys::{AccountId, ActorId, PrimaryChannelId, SubordinateChannelId},
+	message::MessageId,
 };
 
 #[table(name = subordinate_channel, public)]
@@ -24,14 +24,11 @@ pub struct SubordinateChannel {
 	#[index(btree)]
 	pub creator: AccountId,
 
+	pub created_at:   Timestamp,
+	pub updated_at:   Timestamp,
 	// pub config:     ChannelConfigId,
-	pub created_at: Timestamp,
-	pub updated_at: Timestamp,
-
-	/// Non-indexable additional properties.
-	pub metadata: ChannelMetadata,
-
-	pub members: Vec<ActorId>,
-
+	pub metadata:     ChannelMetadata,
 	pub superchannel: PrimaryChannelId,
+	pub members:      Vec<ActorId>,
+	pub messages:     Vec<MessageId>,
 }
