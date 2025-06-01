@@ -1,12 +1,14 @@
 mod config;
+mod direct;
 mod metadata;
 mod primary;
+mod reducers;
 mod standalone;
 mod subordinate;
 
 use spacetimedb::SpacetimeType;
 
-pub use self::{config::*, metadata::*, primary::*, standalone::*, subordinate::*};
+pub use self::{metadata::*, primary::*};
 
 #[derive(SpacetimeType, Clone)]
 pub enum ChannelKind {

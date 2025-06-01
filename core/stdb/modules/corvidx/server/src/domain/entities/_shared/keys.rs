@@ -26,11 +26,13 @@ pub type ExternalActorId = String;
 
 #[derive(SpacetimeType, Clone, Display)]
 pub enum ChannelId {
-	Direct(ActorId),
+	Direct(DirectChannelId),
 	Standalone(StandaloneChannelId),
 	Primary(PrimaryChannelId),
 	Subordinate(SubordinateChannelId),
 }
+
+pub type DirectChannelId = String;
 
 pub type StandaloneChannelId = String;
 

@@ -2,6 +2,7 @@ mod reducers;
 
 use spacetimedb::{ReducerContext, Timestamp, table};
 
+pub use self::reducers::delete_subchannel;
 use super::metadata::ChannelMetadata;
 use crate::{
 	common::ports::RecordResolution,

@@ -5,7 +5,7 @@ use crate::common::types::StUuid;
 
 #[reducer]
 /// Creates a new primary channel.
-pub fn create_primary_channel(
+pub fn create_superchannel(
 	ctx: &ReducerContext, alias: String, metadata: Option<ChannelMetadata>,
 ) -> Result<(), String> {
 	ctx.db
@@ -26,7 +26,7 @@ pub fn create_primary_channel(
 #[reducer]
 /// Creates a record for an existing channel space
 /// bridged from an external source.
-pub fn register_primary_channel(
+pub fn register_superchannel(
 	ctx: &ReducerContext, channel_id: String, alias: String, metadata: Option<ChannelMetadata>,
 ) -> Result<(), String> {
 	ctx.db
