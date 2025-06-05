@@ -5,12 +5,12 @@ members = [
 	"applications/*",
 	"core/stdb/modules/corvidx/*",
 	"packages/*",
-	"subsystem/corvi.d/services/*",
+	"subsystems/communication/services/*",
 ]
 
 
 [workspace.package]
-version = "0.3.0"
+version = "0.4.0"
 
 authors = [
 	"AkaiaLabs <cvo.akaia@gmail.com>",
@@ -19,9 +19,9 @@ authors = [
 
 keywords = [
 	"algorithmic-society",
-	"akaia-labs",
-	"communication",
+	"groupware",
 	"community",
+	"communication",
 	"knowledge base",
 ]
 

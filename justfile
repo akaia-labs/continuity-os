@@ -20,10 +20,10 @@ generate: corvidx-generate
     (echo "✅ DONE.")
 
 telecrow-dev:
-    (cd subsystem/corvi.d/services/telecrow && cargo run)
+    (cd subsystems/communication/services/telecrow && cargo run)
 
 telecrow-inspect:
-    (cd subsystem/corvi.d/services/telecrow && RUST_LOG=trace cargo run)
+    (cd subsystems/communication/services/telecrow && RUST_LOG=trace cargo run)
 
 jayterm-dev:
     (cd applications/jayterm && cargo run)

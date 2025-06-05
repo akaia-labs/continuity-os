@@ -15,7 +15,7 @@
 **/logs
 *.log
 .buildlog/
-subsystem/log.txt
+**/log.txt
 
 
 # Artifacts and cache

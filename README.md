@@ -1,23 +1,30 @@
 # AkaiaLabs Corvi.d
 
-🐦‍⬛ AI-powered local-first community hub
+🐦‍⬛ Decentralized community operating system
 
 🚧 WORK IN PROGRESS 🚧
 
 ## Roadmap / Features
 
-- [ ] ⏳ Telegram integration via bridge services
-- [ ] ⏳ Partial compatibility with the Matrix standard
-- [ ] Integration with self-hosted AI agents
-- [ ] Community-driven continuous knowledge base development
-- [ ] Blockchain integrations for decentralized community governance
-- [ ] Self-hosted isolated subsystem encapsulated in a microVM
-- [ ] Matrix integration via bridge services
-- [ ] Integrations with open collaboration tools
-- [ ] IoT integrations for environmental awareness
-- [ ] Peer-to-Peer messaging
+### Network subsystem
 
-..._🚧 TBD 🚧_...
+A resilient community-owned network solution ready for off-grid applications.
+
+- [ ] [Reticulum](https://reticulum.network/manual/whatis.html) as internal topology basis
+- [ ] [Yggdrasil](https://yggdrasil-network.github.io/) as Internet bridge
+
+### Communication subsystem
+
+- [ ] ⏳ Telegram integration via bridge service
+- [ ] Integration with self-hosted AI agents
+- [ ] Matrix integration via bridge service
+- [ ] IoT integrations for environmental awareness
+- [ ] Integration with open collaboration tools for continuous knowledge base development
+- [ ] Blockchain integrations for decentralized governance
+
+### Final product
+
+A modular OS built around isolated subsystems encapsulated in microVMs.
 
 ## Development
 
