@@ -14,24 +14,33 @@ Implements foundational functionalities and data storages and configures crucial
 
 #### Singularity
 
-The most important part of the system, a [SpacetimeDB](https://github.com/clockworklabs/SpacetimeDB.git) module
+The central part of the system, a [SpacetimeDB](https://github.com/clockworklabs/SpacetimeDB.git) module that:
 
-that acts as an identity provider and communication buffer, handles authentication / authorization, ...
+- Acts as an identity provider and handles authentication / authorization
+- Stores basic social profiles and agent personas
+- Serves as a communication buffer, implementing common ground messaging primitives
+- Provides configuration storage for subsystems
 
-#### Roadmap
+#### Network
+
+##### TODO
 
 - [ ] ⏳ A resilient community-owned network infrastructure solution ready for off-grid applications.
 
   1. [ ] ⏳ [Reticulum](https://reticulum.network/manual/whatis.html) as intranet topology basis
   2. [ ] [Yggdrasil](https://yggdrasil-network.github.io/) as Internet bridge
 
-- [ ] Consensus subsystem — a custom minimalistic low-footprint blockchain for DAO-driven decentralized governance
-
 ### Subsystems
 
 Subsystems are complex software solutions each focused on a specific part of the use case spectrum.
 
-## Endgame roadmap
+[Corvi.d](./subsystems/corvi.d/README.md) - communication
+[RAIven](./subsystems/raiven/README.md) - artificial intelligence
+[Knowledge](./subsystems/kb/README.md) - knowledge base development
+[Intelligence](./subsystems/intel/README.md) - intel gathering and environmental awareness
+[Consensus](./subsystems/consensus/README.md) - decentralized governance
+
+## High level TODO
 
 - [ ] MicroVM encapsulation for each individual subsystem
 - [ ] A modular OS distribution tailored for hosting subsystems on dedicated hardware nodes

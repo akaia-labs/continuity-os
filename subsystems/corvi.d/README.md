@@ -8,4 +8,4 @@ Cross-platform communication subsystem.
 
 - [ ] [LXMF](https://github.com/markqvist/lxmf) bridge service
 - [ ] ⏳ Telegram bridge service
-- [ ] Matrix bridge service
+- [ ] Matrix bridge service with federation support
