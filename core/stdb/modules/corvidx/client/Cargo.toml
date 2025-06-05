@@ -1,6 +1,6 @@
 [package]
 name = "corvidx_client"
-description = "AkaiaLabs Corvi.d core SpacetimeDB module client library"
+description = "Continuity OS core SpacetimeDB module client library"
 version = "0.5.0"
 edition = "2024"
 

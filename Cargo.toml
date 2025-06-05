@@ -5,7 +5,8 @@ members = [
 	"applications/*",
 	"core/stdb/modules/corvidx/*",
 	"packages/*",
-	"subsystems/communication/services/*",
+	"subsystems/ai/services/*",
+	"subsystems/corvi.d/services/*",
 ]
 
 

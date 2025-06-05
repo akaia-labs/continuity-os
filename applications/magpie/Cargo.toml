@@ -1,6 +1,6 @@
 [package]
 name = "corvid_magpie"
-description = "Chat GUI for AkaiaLabs Corvi.d written in Rust"
+description = "Chat GUI for Continuity OS written in Rust"
 version = "0.1.0"
 edition = "2024"
 

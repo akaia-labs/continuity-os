@@ -1,3 +1,3 @@
 # AkaiaLabs corvidx_client
 
-AkaiaLabs Corvi.d core SpacetimeDB module client library.
+Continuity OS core SpacetimeDB module client library.

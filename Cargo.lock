@@ -1365,6 +1365,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "oracle"
+version = "0.1.0"
+dependencies = [
+ "crowdcomm_sdk",
+ "dotenvy",
+ "hex",
+ "log",
+ "pretty_env_logger",
+ "spacetimedb-sdk",
+ "teloxide",
+ "tokio",
+]
+
+[[package]]
 name = "parking_lot"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1536,20 +1550,6 @@ name = "r-efi"
 version = "5.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "74765f6d916ee2faa39bc8e68e4f3ed8949b48cccdac59983d287a7cb71ce9c5"
-
-[[package]]
-name = "raiven"
-version = "0.1.0"
-dependencies = [
- "crowdcomm_sdk",
- "dotenvy",
- "hex",
- "log",
- "pretty_env_logger",
- "spacetimedb-sdk",
- "teloxide",
- "tokio",
-]
 
 [[package]]
 name = "rand"

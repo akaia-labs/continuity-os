@@ -1,5 +1,5 @@
 [Unit]
-Description=Akaia Labs Corvi.d Rust telegram bridge
+Description=Continuity OS Rust telegram bridge
 After=multi-user.target
 
 [Service]
@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 RestartSec=10
 User=corvid
-ExecStart=/subsystems/communication/services/telecrow
+ExecStart=/subsystems/corvi.d/services/telecrow
 
 [Install]
 WantedBy=multi-user.target

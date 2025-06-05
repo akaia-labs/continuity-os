@@ -1,14 +1,14 @@
 [package]
 publish = false
-name = "raiven"
-description = "AkaiaLabs Corvi.d AI provider service"
+name = "oracle"
+description = "Continuity OS AI provider service"
 version = "0.1.0"
 edition = "2024"
-default-run = "raiven"
+default-run = "oracle"
 
 # Subject to be extracted into a separate package, resides here for the initial prototyping
 [[bin]]
-name = "raiven"
+name = "oracle"
 path = "src/main.rs"
 
 
