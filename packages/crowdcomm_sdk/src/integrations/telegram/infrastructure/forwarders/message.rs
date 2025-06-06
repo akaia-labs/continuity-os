@@ -1,18 +1,18 @@
 use std::{str::FromStr, sync::Arc};
 
-use corvidx_client::{
-	common::stdb::{EventContext, Message, MessageAuthorId, TpAccountReference},
-	domain::entities::tp_platform::SupportedTpPlatformTag,
+use singularity_client::{
+	common::stdb::{ActorId, EventContext, ExternalActorReference, Message},
+	domain::entities::external_platform::SupportedExternalActorOrigin,
 };
 use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
 
 use crate::{
-	integrations::{ports::CorvidxEventHandler, telegram::OutboundTelegramMessage},
+	integrations::{ports::SingularityUpdateHandler, telegram::OutboundTelegramMessage},
 	runtime::AsyncHandler,
 };
 
-/// A reusable forwarder that listens to corvidx [`Message`]s
+/// A reusable forwarder that listens to Singularity [`Message`]s
 /// and pushes them into a Telegram bridge message channel.
 pub struct TelegramMessageForwarder {
 	tx:             mpsc::Sender<OutboundTelegramMessage>,
@@ -32,18 +32,18 @@ impl TelegramMessageForwarder {
 	}
 }
 
-impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
+impl SingularityUpdateHandler<Message> for TelegramMessageForwarder {
 	fn handle(&self, ctx: &EventContext, msg: &Message) {
-		let tp_platform_tag = match &msg.author_id {
-			| MessageAuthorId::TpAccountId(account_id) => TpAccountReference::from_str(&account_id)
-				.map_or(None, |far| Some(far.platform_tag.into_supported())),
+		let ext_actor_origin = match &msg.author {
+			| ActorId::External(account_id) => ExternalActorReference::from_str(&account_id)
+				.map_or(None, |ext_ref| Some(ext_ref.origin.into_supported())),
 
-			| MessageAuthorId::NativeAccountId(_) | MessageAuthorId::Unknown => None,
+			| ActorId::Internal(_) => None,
 		};
 
 		// Ignore messages originated from Telegram
-		if tp_platform_tag.is_none()
-			|| tp_platform_tag.is_some_and(|tag| tag != SupportedTpPlatformTag::Telegram)
+		if ext_actor_origin.is_none()
+			|| ext_actor_origin.is_some_and(|o| o != SupportedExternalActorOrigin::Telegram)
 		{
 			// Only forward messages sent after forwarder initialization
 			if self.initialized_at.le(&msg.sent_at) {

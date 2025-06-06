@@ -15,7 +15,7 @@
 **/logs
 *.log
 .buildlog/
-subsystem/log.txt
+**/log.txt
 
 
 # Artifacts and cache
@@ -56,3 +56,4 @@ erl_crash.dump
 .history
 .svn/
 migrate_working_dir/
+rustc-ice-*.txt

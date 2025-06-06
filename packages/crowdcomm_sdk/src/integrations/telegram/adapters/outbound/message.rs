@@ -1,38 +1,36 @@
-use corvidx_client::{
+use singularity_client::{
 	common::{
-		ports::{ProfileResolution, RecordResolution},
+		ports::{ProfileResolution, RecordResolver},
 		presentation::Displayable,
-		stdb::{EventContext, MessageAuthorId},
+		stdb::{ActorId, EventContext},
 	},
 	domain::{
-		entities::{message::MessageType, tp_platform::SupportedTpPlatformTag},
+		entities::{external_platform::SupportedExternalActorOrigin, message::MessageType},
 		intersections::PlatformAssociation,
 	},
 };
 use teloxide_core::types::{ChatId, MessageId, ThreadId};
 
-use crate::integrations::{ports::CorvidxMessage, telegram::OutboundTelegramMessage};
+use crate::integrations::{ports::SingularityMessage, telegram::OutboundTelegramMessage};
 
 impl OutboundTelegramMessage {
-	pub fn from_native(ctx: &EventContext, msg: &CorvidxMessage) -> Self {
-		let (author_role, author_profile) = match &msg.author_id {
-			| MessageAuthorId::TpAccountId(account_id) => account_id
+	pub fn from_native(ctx: &EventContext, msg: &SingularityMessage) -> Self {
+		let (author_role, author_profile) = match &msg.author {
+			| ActorId::External(account_id) => account_id
 				.resolve(ctx)
 				.map_or((None, None), |account| (None, account.profile(ctx))),
 
-			| MessageAuthorId::NativeAccountId(account_id) => account_id
+			| ActorId::Internal(account_id) => account_id
 				.resolve(ctx)
-				.map(|native_account| {
-					native_account
-						.platform_association(ctx, SupportedTpPlatformTag::Telegram)
+				.map(|account| {
+					account
+						.platform_association(ctx, SupportedExternalActorOrigin::Telegram)
 						.map_or(
-							(Some(native_account.role), native_account.profile(ctx)),
-							|tp_account| (None, tp_account.profile(ctx)),
+							(Some(account.role), account.profile(ctx)),
+							|external_actor| (None, external_actor.profile(ctx)),
 						)
 				})
 				.unwrap_or((None, None)),
-
-			| MessageAuthorId::Unknown => (None, None),
 		};
 
 		let author_name = author_profile

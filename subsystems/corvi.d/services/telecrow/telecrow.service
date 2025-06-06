@@ -1,0 +1,14 @@
+[Unit]
+Description=Continuity OS Rust telegram bridge
+After=multi-user.target
+
+[Service]
+# ExecStartPre=/bin/sleep 5
+Type=simple
+Restart=always
+RestartSec=10
+User=corvid
+ExecStart=/subsystems/corvi.d/services/telecrow
+
+[Install]
+WantedBy=multi-user.target

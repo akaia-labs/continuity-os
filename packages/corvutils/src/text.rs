@@ -106,12 +106,12 @@ mod tests {
 	#[test]
 	fn test_squash_whitespace() {
 		let external_identifier = "@username:example.com";
-		let platform_tag = "matrix";
+		let origin = "matrix";
 
 		let formatted_example = format!(
 			r#"
 				Your profile has been updated to match the appearance of 
-				{external_identifier} {platform_tag} account.
+				{external_identifier} {origin} account.
 			"#
 		)
 		.squash_whitespace();

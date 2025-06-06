@@ -1,4 +1,4 @@
 pub mod command;
+pub mod external_actor;
 pub mod message;
-pub mod native_account;
-pub mod tp_account;
+pub mod account;

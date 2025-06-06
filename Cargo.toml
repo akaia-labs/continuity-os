@@ -3,14 +3,15 @@ resolver = "3"
 
 members = [
 	"applications/*",
-	"core/stdb/modules/corvidx/*",
+	"core/stdb/modules/singularity/*",
 	"packages/*",
-	"subsystem/corvi.d/services/*",
+	"subsystems/corvi.d/services/*",
+	"subsystems/raiven/services/*",
 ]
 
 
 [workspace.package]
-version = "0.3.0"
+version = "0.4.0"
 
 authors = [
 	"AkaiaLabs <cvo.akaia@gmail.com>",
@@ -19,9 +20,9 @@ authors = [
 
 keywords = [
 	"algorithmic-society",
-	"akaia-labs",
-	"communication",
+	"groupware",
 	"community",
+	"communication",
 	"knowledge base",
 ]
 
@@ -41,6 +42,7 @@ crowdcomm_sdk = { path = "packages/crowdcomm_sdk" }
 # External dependencies
 capitalize = "0.3.4"
 dotenvy = "0.15.7"
+getrandom = { version = "0.3.2" }
 hex = "0.4"
 log = "0.4"
 pretty_env_logger = "0.5"
@@ -54,6 +56,7 @@ strum = { version = "0.27.1", features = ["derive"] }
 strum_macros = "0.27.1"
 teloxide = { version = "0.15.0", features = ["macros"] }
 teloxide-core = "0.11.2"
-tokio = { version = "1.45.0", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1.45.1", features = ["rt-multi-thread", "macros"] }
 unicode-segmentation = "1.12.0"
+uuid = { version = "1.17.0", default-features = false }
 # wasm-opt = "0.116.1"

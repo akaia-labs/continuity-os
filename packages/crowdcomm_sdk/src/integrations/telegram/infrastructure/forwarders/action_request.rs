@@ -1,18 +1,18 @@
 use std::{str::FromStr, sync::Arc};
 
-use corvidx_client::{
-	common::stdb::{AccountLinkRequest, EventContext, TpAccountReference},
-	domain::entities::tp_platform::SupportedTpPlatformTag,
+use singularity_client::{
+	common::stdb::{EventContext, ExternalActorReference, ExternalAuthenticationRequest},
+	domain::entities::external_platform::SupportedExternalActorOrigin,
 };
 use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
 
 use crate::{
-	integrations::{ports::CorvidxEventHandler, telegram::OutboundTelegramActionRequest},
+	integrations::{ports::SingularityUpdateHandler, telegram::OutboundTelegramActionRequest},
 	runtime::AsyncHandler,
 };
 
-/// A reusable forwarder that listens to action requests from corvidx
+/// A reusable forwarder that listens to action requests from Singularity
 /// and pushes them into a Telegram bridge message channel.
 pub struct TelegramActionRequestForwarder {
 	tx:             mpsc::Sender<OutboundTelegramActionRequest>,
@@ -33,13 +33,13 @@ impl TelegramActionRequestForwarder {
 	}
 }
 
-impl CorvidxEventHandler<AccountLinkRequest> for TelegramActionRequestForwarder {
-	fn handle(&self, ctx: &EventContext, alr: &AccountLinkRequest) {
-		let platform_tag = TpAccountReference::from_str(&alr.subject_account_id)
-			.map_or(None, |tpar| Some(tpar.platform_tag.into_supported()));
+impl SingularityUpdateHandler<ExternalAuthenticationRequest> for TelegramActionRequestForwarder {
+	fn handle(&self, ctx: &EventContext, ext_auth_req: &ExternalAuthenticationRequest) {
+		let ext_actor_origin = ExternalActorReference::from_str(&ext_auth_req.subject)
+			.map_or(None, |ext_ref| Some(ext_ref.origin.into_supported()));
 
-		if platform_tag.is_some_and(|tag| tag == SupportedTpPlatformTag::Telegram) {
-			let dto_result = OutboundTelegramActionRequest::from_account_link_request(ctx, alr);
+		if ext_actor_origin.is_some_and(|tag| tag == SupportedExternalActorOrigin::Telegram) {
+			let dto_result = OutboundTelegramActionRequest::from_ext_auth_req(ctx, ext_auth_req);
 
 			if let Ok(dto) = dto_result {
 				let tx = self.tx.clone();

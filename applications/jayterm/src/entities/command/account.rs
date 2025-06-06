@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
-use crowdcomm_sdk::corvidx::stdb::{
-	DbConnection, TpAccountReference, create_account_link_request, mirror_tp_profile,
-	set_account_callsign, unlink_tp_account,
+use crowdcomm_sdk::singularity::stdb::{
+	DbConnection, ExternalActorReference, initiate_external_authentication,
+	mirror_external_profile, revoke_external_authentication, set_account_callsign,
 };
 use strum_macros::{Display, EnumString};
 
@@ -12,45 +12,42 @@ pub enum AccountCommand {
 	Callsign,
 	LinkAccount,
 	UnlinkAccount,
-	MirrorTpProfile,
+	MirrorExternalProfile,
 }
 
 pub fn on_account_command(
-	corvidx: &DbConnection, command: &AccountCommand, args: Vec<String>,
+	ctx: &DbConnection, command: &AccountCommand, args: Vec<String>,
 ) -> Result<(), String> {
 	match (command, args.len()) {
-		| (AccountCommand::Callsign, 1) => corvidx
+		| (AccountCommand::Callsign, 1) => ctx
 			.reducers
 			.set_account_callsign(args[0].clone())
 			.map_err(|e| e.to_string()),
 
 		| (AccountCommand::LinkAccount, 1) => {
-			let tp_account_ref = TpAccountReference::from_str(&args[0])
+			let ext_actor_ref = ExternalActorReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse third-party account id: {e}"))?;
 
-			corvidx
-				.reducers
-				.create_account_link_request(tp_account_ref)
+			ctx.reducers
+				.initiate_external_authentication(ext_actor_ref)
 				.map_err(|e| e.to_string())
 		},
 
 		| (AccountCommand::UnlinkAccount, 1) => {
-			let tp_account_ref = TpAccountReference::from_str(&args[0])
+			let ext_actor_ref = ExternalActorReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse third-party account id: {e}"))?;
 
-			corvidx
-				.reducers
-				.unlink_tp_account(tp_account_ref)
+			ctx.reducers
+				.revoke_external_authentication(ext_actor_ref)
 				.map_err(|e| e.to_string())
 		},
 
-		| (AccountCommand::MirrorTpProfile, 1) => {
-			let tp_account_ref = TpAccountReference::from_str(&args[0])
+		| (AccountCommand::MirrorExternalProfile, 1) => {
+			let ext_actor_ref = ExternalActorReference::from_str(&args[0])
 				.map_err(|e| format!("Unable to parse third-party account id: {e}"))?;
 
-			corvidx
-				.reducers
-				.mirror_tp_profile(tp_account_ref)
+			ctx.reducers
+				.mirror_external_profile(ext_actor_ref)
 				.map_err(|e| e.to_string())
 		},
 

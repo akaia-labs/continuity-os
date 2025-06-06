@@ -2,19 +2,19 @@ pub use teloxide_core::types::{
 	Message as TelegramMessage, Update as TelegramUpdate, User as TelegramUser,
 };
 
-pub use crate::corvidx::stdb::Message as CorvidxMessage;
-use crate::corvidx::stdb::{AccountProfileMetadata, EventContext, TpAccountReference};
+pub use crate::singularity::stdb::Message as SingularityMessage;
+use crate::singularity::stdb::{ActorProfileMetadata, EventContext, ExternalActorReference};
 
-pub trait TpAccountImport {
-	/// Puts third-party account data into locally recognized format
-	fn into_account_reference(&self) -> TpAccountReference;
+pub trait ExternalActorIdentification {
+	/// Derives locally recognized reference from third-party actor's properties
+	fn into_actor_ref(&self) -> ExternalActorReference;
 }
 
 pub trait ProfileImport {
 	/// Puts third-party profile into locally recognized format
-	fn into_profile_metadata(&self) -> AccountProfileMetadata;
+	fn into_actor_profile_metadata(&self) -> ActorProfileMetadata;
 }
 
-pub trait CorvidxEventHandler<EventType> {
+pub trait SingularityUpdateHandler<EventType> {
 	fn handle(&self, context: &EventContext, event: &EventType);
 }

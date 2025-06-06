@@ -4,12 +4,12 @@ use std::{
 };
 
 use corvutils::StringExtensions;
-use crowdcomm_sdk::corvidx::stdb::{DbConnection, send_message};
+use crowdcomm_sdk::singularity::stdb::{DbConnection, send_message};
 
 use crate::entities::command::{AccountCommand, on_account_command};
 
 /// Starts REPL loop to handle commands and messages.
-pub fn start(corvidx: &DbConnection) {
+pub fn start(ctx: &DbConnection) {
 	let stdin = io::stdin();
 	let handle = stdin.lock();
 
@@ -44,7 +44,7 @@ pub fn start(corvidx: &DbConnection) {
 					Vec::new()
 				};
 
-				match on_account_command(corvidx, &command, args) {
+				match on_account_command(ctx, &command, args) {
 					| Ok(_) => (),
 
 					| Err(err) => {
@@ -60,7 +60,7 @@ pub fn start(corvidx: &DbConnection) {
 			}
 		} else {
 			// Not a command, send as a message
-			if let Err(err) = corvidx.reducers.send_message(line) {
+			if let Err(err) = ctx.reducers.send_message(line) {
 				let response = format!("Error sending message:\n{err}").padded();
 
 				println!("{response}");

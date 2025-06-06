@@ -1,29 +1,29 @@
-use corvidx_client::common::stdb::{
-	AccountProfileMetadata, AccountProfileName, TpAccountReference, TpPlatformTag,
+use crate::{
+	singularity::stdb::{
+		ActorProfileMetadata, ActorName, ExternalActorOrigin, ExternalActorReference,
+	},
+	integrations::ports::{ExternalActorIdentification, ProfileImport, TelegramUser},
 };
-use teloxide_core::types::User;
 
-use crate::integrations::ports::{ProfileImport, TpAccountImport};
-
-impl TpAccountImport for User {
-	fn into_account_reference(&self) -> TpAccountReference {
-		TpAccountReference {
-			id:           self.id.to_string(),
-			platform_tag: TpPlatformTag::Telegram,
+impl ExternalActorIdentification for TelegramUser {
+	fn into_actor_ref(&self) -> ExternalActorReference {
+		ExternalActorReference {
+			id:     self.id.to_string(),
+			origin: ExternalActorOrigin::Telegram,
 		}
 	}
 }
 
-impl ProfileImport for User {
-	fn into_profile_metadata(&self) -> AccountProfileMetadata {
-		AccountProfileMetadata {
-			name: AccountProfileName {
+impl ProfileImport for TelegramUser {
+	fn into_actor_profile_metadata(&self) -> ActorProfileMetadata {
+		ActorProfileMetadata {
+			name: ActorName {
 				short_name:     self.first_name.clone(),
 				name_extension: self.last_name.clone(),
 			},
 
 			// TODO: Implement bio retrieval
-			bio: "".to_string(),
+			description: "".to_string(),
 		}
 	}
 }

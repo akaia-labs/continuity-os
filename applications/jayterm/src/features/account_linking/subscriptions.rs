@@ -1,32 +1,29 @@
 use corvutils::StringExtensions;
-use crowdcomm_sdk::corvidx::{
-	account_linking::AccountLinkRequestId,
+use crowdcomm_sdk::singularity::{
+	external_authentication::ExternalAuthenticationRequestId,
 	stdb::{
-		DbConnection, TpAccountReference, ReducerEventContext, mirror_tp_profile,
-		resolve_account_link_request, unlink_tp_account,
+		DbConnection, ExternalActorReference, ReducerEventContext, mirror_external_profile,
+		resolve_external_authentication_request, revoke_external_authentication,
 	},
 };
 use spacetimedb_sdk::Status;
 
-pub fn subscribe(corvidx: &DbConnection) {
-	corvidx
-		.reducers
-		.on_resolve_account_link_request(on_resolve_account_link_request);
+pub fn subscribe(ctx: &DbConnection) {
+	ctx.reducers
+		.on_resolve_external_authentication_request(on_resolve_external_authentication_request);
 
-	corvidx
-		.reducers
-		.on_unlink_tp_account(on_unlink_tp_account);
+	ctx.reducers
+		.on_revoke_external_authentication(on_revoke_external_authentication);
 
-	corvidx
-		.reducers
-		.on_mirror_tp_profile(on_mirror_tp_profile);
+	ctx.reducers
+		.on_mirror_external_profile(on_mirror_external_profile);
 }
 
 // TODO: Send service DM to the particular requester instead
-fn on_resolve_account_link_request(
-	corvidx: &ReducerEventContext, request_id: &AccountLinkRequestId, is_approved: &bool,
+fn on_resolve_external_authentication_request(
+	ctx: &ReducerEventContext, request_id: &ExternalAuthenticationRequestId, is_approved: &bool,
 ) {
-	match &corvidx.event.status {
+	match &ctx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				"Account link request {request_id} has been {outcome}.",
@@ -48,17 +45,19 @@ fn on_resolve_account_link_request(
 	}
 }
 
-fn on_unlink_tp_account(corvidx: &ReducerEventContext, reference: &TpAccountReference) {
-	let TpAccountReference {
+fn on_revoke_external_authentication(
+	ctx: &ReducerEventContext, reference: &ExternalActorReference,
+) {
+	let ExternalActorReference {
 		id: external_identifier,
-		platform_tag,
+		origin,
 	} = reference;
 
-	match &corvidx.event.status {
+	match &ctx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				r#"
-					{platform_tag} account {external_identifier}
+					{origin} account {external_identifier}
 					has been successfully unlinked from your account.
 				"#
 			)
@@ -70,8 +69,7 @@ fn on_unlink_tp_account(corvidx: &ReducerEventContext, reference: &TpAccountRefe
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to unlink {external_identifier} {platform_tag} account:\n{err}")
-					.padded();
+				format!("Unable to unlink {external_identifier} {origin} account:\n{err}").padded();
 
 			eprintln!("{message}")
 		},
@@ -80,18 +78,18 @@ fn on_unlink_tp_account(corvidx: &ReducerEventContext, reference: &TpAccountRefe
 	}
 }
 
-fn on_mirror_tp_profile(corvidx: &ReducerEventContext, reference: &TpAccountReference) {
-	let TpAccountReference {
+fn on_mirror_external_profile(ctx: &ReducerEventContext, reference: &ExternalActorReference) {
+	let ExternalActorReference {
 		id: external_identifier,
-		platform_tag,
+		origin,
 	} = reference;
 
-	match &corvidx.event.status {
+	match &ctx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				r#"
 					Your profile has been updated to match the appearance of
-					{external_identifier} {platform_tag} account.
+					{external_identifier} {origin} account.
 				"#
 			)
 			.squash_whitespace()
@@ -102,8 +100,7 @@ fn on_mirror_tp_profile(corvidx: &ReducerEventContext, reference: &TpAccountRefe
 
 		| Status::Failed(err) => {
 			let message =
-				format!("Unable to mirror {external_identifier} {platform_tag} profile:\n{err}")
-					.padded();
+				format!("Unable to mirror {external_identifier} {origin} profile:\n{err}").padded();
 
 			eprintln!("{message}")
 		},

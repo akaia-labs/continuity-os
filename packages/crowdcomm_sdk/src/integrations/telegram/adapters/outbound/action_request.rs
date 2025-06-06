@@ -1,49 +1,48 @@
 use capitalize::Capitalize;
-use corvidx_client::{
-	common::{
-		ports::RecordResolution,
-		presentation::DisplayName,
-		stdb::{AccountLinkRequest, EventContext, TpAccountReference},
-	},
-	domain::entities::{message::MessageType, tp_platform::SupportedTpPlatformTag},
-};
 use corvutils::StringExtensions;
+use singularity_client::{
+	common::{
+		ports::RecordResolver,
+		presentation::DisplayName,
+		stdb::{EventContext, ExternalActorReference, ExternalAuthenticationRequest},
+	},
+	domain::entities::{external_platform::SupportedExternalActorOrigin, message::MessageType},
+};
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;
 use crate::integrations::{
-	commands::AccountLinkRequestAction,
-	dtos::{ActionKind, ActionCommand},
+	commands::ExtAuthReqResolution,
+	dtos::{ActionCommand, ActionKind},
 	telegram::shared::constants::TELEGRAM_INLINE_BUTTON_CALLBACK_BYTE_LIMIT,
 };
 
 impl OutboundTelegramActionRequest {
-	pub fn from_account_link_request(
-		ctx: &EventContext, alr: &AccountLinkRequest,
+	pub fn from_ext_auth_req(
+		ctx: &EventContext, ext_auth_req: &ExternalAuthenticationRequest,
 	) -> Result<Self, String> {
-		let issuer_account = alr
+		let issuer_account = ext_auth_req
 			.issuer
 			.resolve(ctx)
 			.ok_or("Unable to resolve issuer account.")?;
 
-		let requester_account = alr
-			.requester_account_id
+		let requester_account = ext_auth_req
+			.requester
 			.resolve(ctx)
 			.ok_or("Unable to resolve requester account.")?;
 
-		let TpAccountReference {
+		let ExternalActorReference {
 			id: raw_user_id,
-			platform_tag,
-		} = alr.subject_account_id
+			origin,
+		} = ext_auth_req
+			.subject
 			.parse()
 			.map_err(|_| "Unable to parse subject account reference.")?;
 
 		//* Double checking the platform tag
 		//* In case of the forwarder letting it through unverified
-		if platform_tag.into_supported() != SupportedTpPlatformTag::Telegram {
-			return Err(format!(
-				"Platform tag {platform_tag} does not match Telegram."
-			));
+		if origin.into_supported() != SupportedExternalActorOrigin::Telegram {
+			return Err(format!("Origin {origin} does not match Telegram."));
 		}
 
 		let subject_user_id: ChatId = raw_user_id
@@ -55,17 +54,17 @@ impl OutboundTelegramActionRequest {
 		let requester_name = requester_account.display_name(ctx);
 
 		// TODO: Abstract the choice mapping away, along with error handling
-		let accept_choice = AccountLinkRequestAction::Accept(alr.id);
-		let reject_choice = AccountLinkRequestAction::Reject(alr.id);
+		let accept_choice = ExtAuthReqResolution::Accept(ext_auth_req.id);
+		let reject_choice = ExtAuthReqResolution::Reject(ext_auth_req.id);
 
 		let accept_callback_payload = ActionCommand {
-			kind:    ActionKind::AccountLinkRequest,
+			kind:    ActionKind::ExtAuthReqResolution,
 			payload: accept_choice,
 		}
 		.try_to_string()?;
 
 		let reject_callback_payload = ActionCommand {
-			kind:    ActionKind::AccountLinkRequest,
+			kind:    ActionKind::ExtAuthReqResolution,
 			payload: reject_choice,
 		}
 		.try_to_string()?;
@@ -110,7 +109,9 @@ impl OutboundTelegramActionRequest {
 						{requester_name} has requested to link this {platform_name} account.
 						If you are the not {requester_name}, please reject this request.
 					"#,
-					platform_name = SupportedTpPlatformTag::Telegram.to_string().capitalize()
+					platform_name = SupportedExternalActorOrigin::Telegram
+						.to_string()
+						.capitalize()
 				)
 				.squash_whitespace(),
 			),
