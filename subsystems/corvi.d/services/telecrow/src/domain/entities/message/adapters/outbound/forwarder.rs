@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, MessageTableAccess},
 	integrations::{
-		ports::CorvidxEventHandler,
+		ports::SingularityUpdateHandler,
 		telegram::{OutboundTelegramMessage, TelegramMessageForwarder},
 	},
 	runtime::AsyncHandler,
+	singularity::stdb::{DbConnection, MessageTableAccess},
 };
 use spacetimedb_sdk::Table;
 use teloxide::{payloads::SendMessageSetters, prelude::Requester, sugar::request::RequestReplyExt};
@@ -14,7 +14,8 @@ use tokio::sync::mpsc;
 
 use crate::BotInstanceType;
 
-/// Sets up message forwarding from corvidx to Telegram through a Tokio channel.
+/// Sets up message forwarding from Singularity to Telegram
+/// through a Tokio channel.
 pub fn forward_to_telegram(
 	ctx: &DbConnection, async_handler: Arc<AsyncHandler>, telegram_bot: BotInstanceType,
 ) {

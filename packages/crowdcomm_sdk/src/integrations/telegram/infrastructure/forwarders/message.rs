@@ -1,6 +1,6 @@
 use std::{str::FromStr, sync::Arc};
 
-use corvidx_client::{
+use singularity_client::{
 	common::stdb::{ActorId, EventContext, ExternalActorReference, Message},
 	domain::entities::external_platform::SupportedExternalActorOrigin,
 };
@@ -8,11 +8,11 @@ use spacetimedb_sdk::Timestamp;
 use tokio::sync::mpsc;
 
 use crate::{
-	integrations::{ports::CorvidxEventHandler, telegram::OutboundTelegramMessage},
+	integrations::{ports::SingularityUpdateHandler, telegram::OutboundTelegramMessage},
 	runtime::AsyncHandler,
 };
 
-/// A reusable forwarder that listens to corvidx [`Message`]s
+/// A reusable forwarder that listens to Singularity [`Message`]s
 /// and pushes them into a Telegram bridge message channel.
 pub struct TelegramMessageForwarder {
 	tx:             mpsc::Sender<OutboundTelegramMessage>,
@@ -32,7 +32,7 @@ impl TelegramMessageForwarder {
 	}
 }
 
-impl CorvidxEventHandler<Message> for TelegramMessageForwarder {
+impl SingularityUpdateHandler<Message> for TelegramMessageForwarder {
 	fn handle(&self, ctx: &EventContext, msg: &Message) {
 		let ext_actor_origin = match &msg.author {
 			| ActorId::External(account_id) => ExternalActorReference::from_str(&account_id)

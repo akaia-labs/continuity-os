@@ -1,11 +1,11 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowdcomm_sdk::{
-	corvidx::stdb::DbConnection,
 	integrations::{
 		commands::ExtAuthReqResolution,
 		dtos::{ActionCommand, ActionDescriptor, ActionKind},
 	},
+	singularity::stdb::DbConnection,
 };
 use teloxide::{RequestError, prelude::Requester, respond, types::CallbackQuery};
 

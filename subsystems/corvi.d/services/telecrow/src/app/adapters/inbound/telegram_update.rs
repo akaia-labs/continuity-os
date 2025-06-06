@@ -1,7 +1,7 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use corvutils::{print_error, print_success};
-use crowdcomm_sdk::{corvidx::stdb::DbConnection, integrations::ports::TelegramUpdate};
+use crowdcomm_sdk::{integrations::ports::TelegramUpdate, singularity::stdb::DbConnection};
 use teloxide::{RequestError, respond, types::UpdateKind};
 
 use crate::{

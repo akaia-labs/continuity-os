@@ -6,14 +6,14 @@ use dotenvy::dotenv;
 use entities::{external_actor, message};
 use features::account_linking;
 
-use crate::{common::clients::corvidx_client, entities::account, features::repl};
+use crate::{common::clients::singularity_client, entities::account, features::repl};
 
 fn main() {
 	let _ = dotenv();
 
-	let singularity = corvidx_client::connect_to_db();
+	let singularity = singularity_client::connect_to_db();
 
-	corvidx_client::subscribe_to_tables(&singularity);
+	singularity_client::subscribe_to_tables(&singularity);
 	account::subscribe(&singularity);
 	external_actor::subscribe(&singularity);
 	message::subscribe(&singularity);

@@ -1,4 +1,4 @@
-use crowdcomm_sdk::corvidx::stdb::{
+use crowdcomm_sdk::singularity::stdb::{
 	Account, AccountTableAccess, DbConnection, EventContext, ReducerEventContext,
 	set_account_callsign,
 };
@@ -11,14 +11,14 @@ pub fn subscribe(ctx: &DbConnection) {
 }
 
 /// If the account is online, prints a notification.
-fn on_insert(_corvidx: &EventContext, account: &Account) {
+fn on_insert(_ctx: &EventContext, account: &Account) {
 	if account.is_online {
 		println!("\nAccount {} connected.\n", account.callsign);
 	}
 }
 
 /// Reports account state changes.
-fn on_update(_corvidx: &EventContext, old: &Account, new: &Account) {
+fn on_update(_ctx: &EventContext, old: &Account, new: &Account) {
 	if old.callsign != new.callsign {
 		println!(
 			"\nAccount {} changed callsign from {} to {}.\n",

@@ -16,7 +16,7 @@ pub fn get() -> CorvidSubsystemConfig {
 		module_host: modulehost,
 
 		components: CorvidSubsystemComponents {
-			corvidx: SubsystemModuleConfig {
+			singularity: SubsystemModuleConfig {
 				db_name: modules.core.dbname,
 			},
 
@@ -35,6 +35,6 @@ pub struct CorvidSubsystemConfig {
 }
 
 pub struct CorvidSubsystemComponents {
-	pub corvidx:  SubsystemModuleConfig,
+	pub singularity:  SubsystemModuleConfig,
 	pub telecrow: SubsystemServiceConfig,
 }

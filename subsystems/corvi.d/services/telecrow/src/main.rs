@@ -18,7 +18,7 @@ use teloxide::{
 	types::{ParseMode, Update},
 };
 
-use crate::{common::clients::corvidx_client, domain::entities::command};
+use crate::{common::clients::singularity_client, domain::entities::command};
 
 pub type TelecrowError = Box<dyn std::error::Error + Send + Sync>;
 pub type BotInstanceType = DefaultParseMode<Bot>;
@@ -30,19 +30,23 @@ async fn main() -> Result<(), TelecrowError> {
 
 	let CorvidSubsystemConfig { components, .. } = corvid_subsystem_config::get();
 	let async_handler = AsyncHandler::new();
-	let corvidx_conn = Arc::new(corvidx_client::connect());
+	let singularity_conn = Arc::new(singularity_client::connect());
 
 	let telegram_bot: BotInstanceType =
 		Bot::new(components.telecrow.auth_token).parse_mode(ParseMode::Html);
 
 	println!("⏳ Initializing subscriptions...\n");
-	app::on_init(&corvidx_conn);
-	app::subscribe_to_corvidx(telegram_bot.clone(), &corvidx_conn, async_handler.clone());
+	app::on_init(&singularity_conn);
+	app::subscribe_to_singularity(
+		telegram_bot.clone(),
+		&singularity_conn,
+		async_handler.clone(),
+	);
 
 	let telegram_bot_handler = dptree::entry()
 		.branch(
 			Update::filter_callback_query()
-				.endpoint(app::callback_query_handler(corvidx_conn.clone())),
+				.endpoint(app::callback_query_handler(singularity_conn.clone())),
 		)
 		.branch(
 			Update::filter_message()
@@ -52,19 +56,19 @@ async fn main() -> Result<(), TelecrowError> {
 		.branch(
 			Update::filter_message()
 				.filter_command::<command::PrivateCommand>()
-				.endpoint(command::private_handler(corvidx_conn.clone())),
+				.endpoint(command::private_handler(singularity_conn.clone())),
 		)
 		.branch(
 			dptree::entry()
 				.filter_map(|update: Update| update.from().cloned())
 				.endpoint(app::telegram_update_handler(
-					corvidx_conn.clone(),
+					singularity_conn.clone(),
 					components.telecrow.delegated_authority_space_id,
 				)),
 		);
 
 	println!("\n⏳ Initializing module clients...\n");
-	corvidx_conn.run_threaded();
+	singularity_conn.run_threaded();
 
 	println!("⌛ Starting Telegram bridge bot dispatcher...\n");
 	Dispatcher::builder(telegram_bot, telegram_bot_handler)

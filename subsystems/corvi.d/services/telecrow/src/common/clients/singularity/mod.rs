@@ -3,7 +3,7 @@ mod handlers;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
-	corvidx::stdb::DbConnection,
+	singularity::stdb::DbConnection,
 };
 use spacetimedb_sdk::DbContext;
 
@@ -26,15 +26,15 @@ pub fn connect() -> DbConnection {
 			.with_token(authentication::credential_store().load()
 				.expect("Error loading credentials")
 			)
-			.with_module_name(components.corvidx.db_name)
+			.with_module_name(components.singularity.db_name)
 			.with_uri(module_host)
 			.build()
 			.expect("Failed to connect")
 }
 
 /// Registers subscriptions to tables.
-pub fn subscribe_to_tables(corvidx: &DbConnection) {
-	corvidx
+pub fn subscribe_to_tables(ctx: &DbConnection) {
+	ctx
 		.subscription_builder()
 		.on_applied(handlers::on_sub_applied)
 		.on_error(handlers::on_sub_error)

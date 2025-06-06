@@ -2,7 +2,7 @@ use std::process;
 
 use crowdcomm_sdk::{
 	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
-	corvidx::{
+	singularity::{
 		ports::{ProfileResolution, RecordResolver},
 		presentation::{DisplayName, Displayable},
 		stdb::{
@@ -54,7 +54,7 @@ pub fn connect_to_db() -> DbConnection {
 		// In that case, we'll load it and pass it to `with_token`,
 		// so we can re-authenticate as the same `Identity`.
 		.with_token(creds_store().load().expect("Error loading credentials"))
-		.with_module_name(components.corvidx.db_name)
+		.with_module_name(components.singularity.db_name)
 		.with_uri(module_host)
 		.build()
 		.expect("Failed to connect")

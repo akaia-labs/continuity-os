@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use corvutils::StringExtensions;
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, send_message},
+	singularity::stdb::{DbConnection, send_message},
 	integrations::ports::ExternalActorIdentification,
 	presentation::Summary,
 };

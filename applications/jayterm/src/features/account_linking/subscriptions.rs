@@ -1,5 +1,5 @@
 use corvutils::StringExtensions;
-use crowdcomm_sdk::corvidx::{
+use crowdcomm_sdk::singularity::{
 	external_authentication::ExternalAuthenticationRequestId,
 	stdb::{
 		DbConnection, ExternalActorReference, ReducerEventContext, mirror_external_profile,

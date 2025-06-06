@@ -2,20 +2,19 @@ use std::sync::Arc;
 
 use capitalize::Capitalize;
 use crowdcomm_sdk::{
-	corvidx::{
+	integrations::ports::{ExternalActorIdentification, ProfileImport},
+	singularity::{
 		ports::ProfileResolution,
 		stdb::{
 			DbConnection, ExternalActorReference, ExternalActorTableAccess,
 			register_external_actor, update_external_actor_callsign, update_external_actor_profile,
 		},
 	},
-	integrations::ports::{ExternalActorIdentification, ProfileImport},
 };
 use teloxide::types::User;
 
 pub fn handle_telegram_user_update(
-	corvidx: Arc<DbConnection>, user_data: User, on_success: fn(msg: String),
-	on_error: fn(msg: String),
+	ctx: Arc<DbConnection>, user_data: User, on_success: fn(msg: String), on_error: fn(msg: String),
 ) {
 	let User {
 		username: tg_username,
@@ -32,17 +31,13 @@ pub fn handle_telegram_user_update(
 
 	let platform_name = origin.to_string().capitalize();
 
-	let external_actor = corvidx
-		.db
-		.external_actor()
-		.id()
-		.find(&tg_ext_ref.to_string());
+	let external_actor = ctx.db.external_actor().id().find(&tg_ext_ref.to_string());
 
 	if let Some(account) = external_actor {
-		let profile = account.profile(&*corvidx);
+		let profile = account.profile(&*ctx);
 
 		if account.callsign != tg_username {
-			let result = corvidx
+			let result = ctx
 				.reducers
 				.update_external_actor_callsign(tg_ext_ref.clone(), tg_username);
 
@@ -71,7 +66,7 @@ pub fn handle_telegram_user_update(
 		if profile.is_none()
 			|| profile.is_some_and(|profile| profile.metadata != tg_profile_metadata)
 		{
-			let result = corvidx
+			let result = ctx
 				.reducers
 				.update_external_actor_profile(tg_ext_ref.clone(), Some(tg_profile_metadata));
 
@@ -96,7 +91,7 @@ pub fn handle_telegram_user_update(
 			}
 		};
 	} else {
-		let result = corvidx
+		let result = ctx
 			.reducers
 			.register_external_actor(tg_ext_ref.clone(), tg_username, Some(tg_profile_metadata))
 			.map_err(|e| e.to_string());

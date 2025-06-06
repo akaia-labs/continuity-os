@@ -1,3 +1,3 @@
-pub mod corvidx;
+pub mod singularity;
 
-pub use corvidx as corvidx_client;
+pub use singularity as singularity_client;

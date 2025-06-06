@@ -1,7 +1,7 @@
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, ExternalActorTableAccess},
+	singularity::stdb::{DbConnection, ExternalActorTableAccess},
 	integrations::ports::ExternalActorIdentification,
 };
 use teloxide::{

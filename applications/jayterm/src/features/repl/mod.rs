@@ -4,7 +4,7 @@ use std::{
 };
 
 use corvutils::StringExtensions;
-use crowdcomm_sdk::corvidx::stdb::{DbConnection, send_message};
+use crowdcomm_sdk::singularity::stdb::{DbConnection, send_message};
 
 use crate::entities::command::{AccountCommand, on_account_command};
 

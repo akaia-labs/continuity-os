@@ -313,34 +313,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "corvidx_client"
-version = "0.5.0"
-dependencies = [
- "corvutils",
- "hex",
- "serde",
- "serde-env",
- "spacetimedb-sdk",
- "strum 0.27.1",
- "strum_macros 0.27.1",
- "teloxide",
-]
-
-[[package]]
-name = "corvidx_server"
-version = "0.5.0"
-dependencies = [
- "capitalize",
- "corvutils",
- "log",
- "serde",
- "spacetimedb",
- "strum 0.27.1",
- "strum_macros 0.27.1",
- "uuid",
-]
-
-[[package]]
 name = "corvutils"
 version = "0.1.0"
 dependencies = [
@@ -371,13 +343,13 @@ name = "crowdcomm_sdk"
 version = "0.5.0"
 dependencies = [
  "capitalize",
- "corvidx_client",
  "corvutils",
  "dotenvy",
  "hex",
  "serde",
  "serde-env",
  "serde_json",
+ "singularity_client",
  "spacetimedb-sdk",
  "strum 0.27.1",
  "strum_macros 0.27.1",
@@ -1938,6 +1910,34 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9203b8055f63a2a00e2f593bb0510367fe707d7ff1e5c872de2f537b339e5410"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "singularity_client"
+version = "0.5.0"
+dependencies = [
+ "corvutils",
+ "hex",
+ "serde",
+ "serde-env",
+ "spacetimedb-sdk",
+ "strum 0.27.1",
+ "strum_macros 0.27.1",
+ "teloxide",
+]
+
+[[package]]
+name = "singularity_server"
+version = "0.5.0"
+dependencies = [
+ "capitalize",
+ "corvutils",
+ "log",
+ "serde",
+ "spacetimedb",
+ "strum 0.27.1",
+ "strum_macros 0.27.1",
+ "uuid",
 ]
 
 [[package]]

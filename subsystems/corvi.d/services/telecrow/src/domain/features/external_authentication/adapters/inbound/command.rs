@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use corvutils::{print_error, print_success};
 use crowdcomm_sdk::{
-	corvidx::stdb::{DbConnection, resolve_external_authentication_request},
+	singularity::stdb::{DbConnection, resolve_external_authentication_request},
 	integrations::{commands::ExtAuthReqResolution, dtos::ActionCommand, ports::TelegramUser},
 };
 use teloxide::{prelude::Requester, types::MaybeInaccessibleMessage};

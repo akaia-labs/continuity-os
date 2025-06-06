@@ -1,9 +1,9 @@
-use crowdcomm_sdk::ctx::stdb::{
+use crowdcomm_sdk::singularity::stdb::{
 	DbConnection, EventContext, Message, MessageTableAccess, ReducerEventContext, send_message,
 };
 use spacetimedb_sdk::{Event, Status, Table};
 
-use crate::common::clients::corvidx_client;
+use crate::common::clients::singularity_client;
 
 pub fn subscribe(ctx: &DbConnection) {
 	ctx.db.message().on_insert(on_insert);
@@ -12,7 +12,7 @@ pub fn subscribe(ctx: &DbConnection) {
 
 fn on_insert(ctx: &EventContext, message: &Message) {
 	if let Event::Reducer(_) = ctx.event {
-		corvidx_client::print_message(ctx, message)
+		singularity_client::print_message(ctx, message)
 	}
 }
 

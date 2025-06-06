@@ -1,5 +1,5 @@
 use crate::{
-	corvidx::stdb::{
+	singularity::stdb::{
 		ActorProfileMetadata, ActorName, ExternalActorOrigin, ExternalActorReference,
 	},
 	integrations::ports::{ExternalActorIdentification, ProfileImport, TelegramUser},

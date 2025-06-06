@@ -1,5 +1,6 @@
 use capitalize::Capitalize;
-use corvidx_client::{
+use corvutils::StringExtensions;
+use singularity_client::{
 	common::{
 		ports::RecordResolver,
 		presentation::DisplayName,
@@ -7,7 +8,6 @@ use corvidx_client::{
 	},
 	domain::entities::{external_platform::SupportedExternalActorOrigin, message::MessageType},
 };
-use corvutils::StringExtensions;
 use teloxide_core::types::{ChatId, InlineKeyboardButton, InlineKeyboardMarkup};
 
 use super::OutboundTelegramActionRequest;

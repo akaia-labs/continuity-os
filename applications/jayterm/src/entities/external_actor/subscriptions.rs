@@ -1,4 +1,4 @@
-use crowdcomm_sdk::corvidx::stdb::{
+use crowdcomm_sdk::singularity::stdb::{
 	ActorProfileMetadata, DbConnection, ExternalActorReference, ReducerEventContext,
 	register_external_actor, update_external_actor_profile,
 };

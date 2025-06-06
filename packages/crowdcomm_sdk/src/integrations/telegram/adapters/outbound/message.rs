@@ -1,4 +1,4 @@
-use corvidx_client::{
+use singularity_client::{
 	common::{
 		ports::{ProfileResolution, RecordResolver},
 		presentation::Displayable,
@@ -11,10 +11,10 @@ use corvidx_client::{
 };
 use teloxide_core::types::{ChatId, MessageId, ThreadId};
 
-use crate::integrations::{ports::CorvidxMessage, telegram::OutboundTelegramMessage};
+use crate::integrations::{ports::SingularityMessage, telegram::OutboundTelegramMessage};
 
 impl OutboundTelegramMessage {
-	pub fn from_native(ctx: &EventContext, msg: &CorvidxMessage) -> Self {
+	pub fn from_native(ctx: &EventContext, msg: &SingularityMessage) -> Self {
 		let (author_role, author_profile) = match &msg.author {
 			| ActorId::External(account_id) => account_id
 				.resolve(ctx)

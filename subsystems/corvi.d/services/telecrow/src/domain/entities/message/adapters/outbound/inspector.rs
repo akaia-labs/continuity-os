@@ -1,7 +1,7 @@
-use crowdcomm_sdk::corvidx::stdb::{DbConnection, ReducerEventContext, send_message};
+use crowdcomm_sdk::singularity::stdb::{DbConnection, ReducerEventContext, send_message};
 use spacetimedb_sdk::Status;
 
-pub fn subscribe_to_corvidx(ctx: &DbConnection) {
+pub fn subscribe_to_singularity(ctx: &DbConnection) {
 	ctx.reducers.on_send_message(on_send_message);
 }
 

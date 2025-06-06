@@ -4,9 +4,8 @@ pub mod integrations;
 
 pub use common::*;
 
-pub mod corvidx {
-	#[allow(unused_imports)]
-	pub use corvidx_client::{
+pub mod singularity {
+	pub use singularity_client::{
 		common::*,
 		domain::{entities::*, features::*, intersections::*},
 	};
