@@ -11,12 +11,12 @@ setup:
 
 #* DEVELOPMENT
 
-corvidx-generate:
+singularity-generate:
     spacetime generate --lang rust \
-    	--project-path core/stdb/modules/corvidx/server \
-    	--out-dir core/stdb/modules/corvidx/client/src/common/stdb/generated_bindings
+    	--project-path core/stdb/modules/singularity/server \
+    	--out-dir core/stdb/modules/singularity/client/src/common/stdb/generated_bindings
 
-generate: corvidx-generate
+generate: singularity-generate
     (echo "✅ DONE.")
 
 telecrow-dev:
@@ -40,27 +40,27 @@ corvutils-test-dbg:
 
 #* DATABASE ADMINISTRATION
 
-unsafe-local-corvidx-drop:
+unsafe-local-singularity-drop:
     (spacetime delete -s localhost $CORVID_MODULES_CORE_DBNAME)
     (echo "✅ DONE.")
 
-local-corvidx-publish:
-    (spacetime publish -s localhost --project-path core/stdb/modules/corvidx/server $CORVID_MODULES_CORE_DBNAME)
+local-singularity-publish:
+    (spacetime publish -s localhost --project-path core/stdb/modules/singularity/server $CORVID_MODULES_CORE_DBNAME)
 
-local-corvidx-call:
+local-singularity-call:
     (spacetime call -s localhost $CORVID_MODULES_CORE_DBNAME)
 
-local-corvidx-sql *args='':
+local-singularity-sql *args='':
     (spacetime sql -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
 
-local-corvidx-subscribe *args='':
+local-singularity-subscribe *args='':
     (spacetime subscribe -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
 
-local-corvidx-log:
+local-singularity-log:
     (spacetime logs -s localhost -f $CORVID_MODULES_CORE_DBNAME)
 
-local-publish: local-corvidx-publish
+local-publish: local-singularity-publish
     (echo "✅ DONE.")
 
-unsafe-local-republish: unsafe-local-corvidx-drop
+unsafe-local-republish: unsafe-local-singularity-drop
     (just local-publish)

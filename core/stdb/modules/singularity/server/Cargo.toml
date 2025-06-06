@@ -1,6 +1,6 @@
 [package]
 publish = false
-name = "corvidx_server"
+name = "singularity_server"
 description = "Continuity OS core SpacetimeDB server module"
 version = "0.5.0"
 edition = "2024"

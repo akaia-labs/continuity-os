@@ -1,8 +1,10 @@
-# 🪐 AkaiaLabs Continuity OS
+# AkaiaLabs 🪐 Continuity OS
 
-Decentralized autonomous community operating system.
+**Decentralized autonomous community operating system.**
 
-🚧 WORK IN PROGRESS 🚧
+## 🚧 Disclaimer 🚧
+
+The project is in active development and it's just the beginning. Expect lots of placeholders and drastic architectural / API changes.
 
 ## Overview
 

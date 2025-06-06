@@ -10,7 +10,7 @@ use crate::domain::entities::{
 pub fn init(ctx: &ReducerContext) {
 	ctx.db.account().insert(Account {
 		id:              ctx.identity(),
-		callsign:        "corvidx".to_string(),
+		callsign:        "singularity".to_string(),
 		role:            AccountRole::Service,
 		is_online:       true,
 		last_seen_at:    ctx.timestamp,
@@ -26,11 +26,11 @@ pub fn init(ctx: &ReducerContext) {
 
 				metadata: ActorProfileMetadata {
 					name: ActorName {
-						short_name:     "Corvi.d".to_string(),
+						short_name:     "System".to_string(),
 						name_extension: None,
 					},
 
-					description: "🐦‍⬛ <-- sees everything".to_string(),
+					description: "".to_string(),
 				},
 			})
 			.id,

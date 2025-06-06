@@ -8,25 +8,22 @@ use crowdcomm_sdk::corvidx::{
 };
 use spacetimedb_sdk::Status;
 
-pub fn subscribe(corvidx: &DbConnection) {
-	corvidx
-		.reducers
+pub fn subscribe(ctx: &DbConnection) {
+	ctx.reducers
 		.on_resolve_external_authentication_request(on_resolve_external_authentication_request);
 
-	corvidx
-		.reducers
+	ctx.reducers
 		.on_revoke_external_authentication(on_revoke_external_authentication);
 
-	corvidx
-		.reducers
+	ctx.reducers
 		.on_mirror_external_profile(on_mirror_external_profile);
 }
 
 // TODO: Send service DM to the particular requester instead
 fn on_resolve_external_authentication_request(
-	corvidx: &ReducerEventContext, request_id: &ExternalAuthenticationRequestId, is_approved: &bool,
+	ctx: &ReducerEventContext, request_id: &ExternalAuthenticationRequestId, is_approved: &bool,
 ) {
-	match &corvidx.event.status {
+	match &ctx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				"Account link request {request_id} has been {outcome}.",
@@ -49,14 +46,14 @@ fn on_resolve_external_authentication_request(
 }
 
 fn on_revoke_external_authentication(
-	corvidx: &ReducerEventContext, reference: &ExternalActorReference,
+	ctx: &ReducerEventContext, reference: &ExternalActorReference,
 ) {
 	let ExternalActorReference {
 		id: external_identifier,
 		origin,
 	} = reference;
 
-	match &corvidx.event.status {
+	match &ctx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				r#"
@@ -81,13 +78,13 @@ fn on_revoke_external_authentication(
 	}
 }
 
-fn on_mirror_external_profile(corvidx: &ReducerEventContext, reference: &ExternalActorReference) {
+fn on_mirror_external_profile(ctx: &ReducerEventContext, reference: &ExternalActorReference) {
 	let ExternalActorReference {
 		id: external_identifier,
 		origin,
 	} = reference;
 
-	match &corvidx.event.status {
+	match &ctx.event.status {
 		| Status::Committed => {
 			let message = format!(
 				r#"

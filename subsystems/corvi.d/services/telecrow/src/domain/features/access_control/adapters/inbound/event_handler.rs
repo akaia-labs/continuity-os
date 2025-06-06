@@ -10,7 +10,7 @@ use teloxide::types::Update;
 
 use crate::common::constants::SERVICE_CANONICAL_NAME;
 
-pub fn handle_unauthorized_use_attempt(corvidx: Arc<DbConnection>, event: Update) {
+pub fn handle_unauthorized_use_attempt(ctx: Arc<DbConnection>, event: Update) {
 	let initiator_specifier = event
 		.from()
 		.map(|user| user.into_actor_ref().to_string())
@@ -26,5 +26,5 @@ pub fn handle_unauthorized_use_attempt(corvidx: Arc<DbConnection>, event: Update
 		|summary| format!("{log_header}\n{summary}"),
 	);
 
-	let _result = corvidx.reducers.send_message(log_text);
+	let _result = ctx.reducers.send_message(log_text);
 }

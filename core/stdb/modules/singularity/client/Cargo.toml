@@ -1,12 +1,12 @@
 [package]
-name = "corvidx_client"
+name = "singularity_client"
 description = "Continuity OS core SpacetimeDB module client library"
 version = "0.5.0"
 edition = "2024"
 
 
 [lib]
-name = "corvidx_client"
+name = "singularity_client"
 path = "src/lib.rs"
 
 

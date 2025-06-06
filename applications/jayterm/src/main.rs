@@ -11,14 +11,14 @@ use crate::{common::clients::corvidx_client, entities::account, features::repl};
 fn main() {
 	let _ = dotenv();
 
-	let corvidx = corvidx_client::connect_to_db();
+	let singularity = corvidx_client::connect_to_db();
 
-	corvidx_client::subscribe_to_tables(&corvidx);
-	account::subscribe(&corvidx);
-	external_actor::subscribe(&corvidx);
-	message::subscribe(&corvidx);
-	account_linking::subscribe(&corvidx);
-	corvidx.run_threaded();
+	corvidx_client::subscribe_to_tables(&singularity);
+	account::subscribe(&singularity);
+	external_actor::subscribe(&singularity);
+	message::subscribe(&singularity);
+	account_linking::subscribe(&singularity);
+	singularity.run_threaded();
 
-	repl::start(&corvidx);
+	repl::start(&singularity);
 }

@@ -15,7 +15,7 @@ use crate::{BotInstanceType, common::constants::ROOT_SUBSYSTEM_CANONICAL_NAME};
 #[command(rename_rule = "lowercase")]
 pub enum PrivateCommand {
 	#[command()]
-	/// ℹ️ Display id of the Corvi.d account record
+	/// ℹ️ Display id of the Singularity account record
 	/// associated with your Telegram account.
 	MyAccountId,
 }
