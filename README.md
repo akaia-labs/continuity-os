@@ -37,9 +37,13 @@ The central part of the system, a [SpacetimeDB](https://github.com/clockworklabs
 Subsystems are complex software solutions each focused on a specific part of the use case spectrum.
 
 [Corvi.d](./subsystems/corvi.d/README.md) - communication
+
 [RAIven](./subsystems/raiven/README.md) - artificial intelligence
+
 [Knowledge](./subsystems/kb/README.md) - knowledge base development
+
 [Intelligence](./subsystems/intel/README.md) - intel gathering and environmental awareness
+
 [Consensus](./subsystems/consensus/README.md) - decentralized governance
 
 ## High level TODO
