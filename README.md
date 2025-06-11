@@ -1,6 +1,6 @@
-# AkaiaLabs 🪐 Continuity OS
+# AkaiaLabs 🪐 ContinuityOS
 
-**Decentralized autonomous community operating system.**
+**Decentralized autonomous Community Operating System for Algorithmic Societies.**
 
 ## 🚧 Disclaimer 🚧
 
@@ -8,29 +8,14 @@ The project is in active development and it's just the beginning. Expect lots of
 
 ## Overview
 
-Continuity mainly consists of two parts — Core and Subsystems.
+ContinuityOS mainly consists of two parts — Core and Subsystems.
 
 ### Core
 
 Implements foundational functionalities and data storages and configures crucial infrastructure services, tying the whole system together.
 
-#### Singularity
-
-The central part of the system, a [SpacetimeDB](https://github.com/clockworklabs/SpacetimeDB.git) module that:
-
-- Acts as an identity provider and handles authentication / authorization
-- Stores basic social profiles and agent personas
-- Serves as a communication buffer, implementing common ground messaging primitives
-- Provides configuration storage for subsystems
-
-#### Network
-
-##### TODO
-
-- [ ] ⏳ A resilient community-owned network infrastructure solution ready for off-grid applications.
-
-  1. [ ] ⏳ [Reticulum](https://reticulum.network/manual/whatis.html) as intranet topology basis
-  2. [ ] [Yggdrasil](https://yggdrasil-network.github.io/) as Internet bridge
+[Singularity](./core/spacetimedb/modules/singularity/README.md)
+[StargateNet](./core/stargatenet/README.md)
 
 ### Subsystems
 
@@ -46,7 +31,7 @@ Subsystems are complex software solutions each focused on a specific part of the
 
 [Consensus](./subsystems/consensus/README.md) - decentralized governance
 
-## High level TODO
+## TODO
 
 - [ ] MicroVM encapsulation for each individual subsystem
 - [ ] A modular OS distribution tailored for hosting subsystems on dedicated hardware nodes

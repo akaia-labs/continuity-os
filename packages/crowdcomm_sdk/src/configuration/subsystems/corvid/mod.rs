@@ -3,21 +3,20 @@ mod runtime_env;
 use self::runtime_env::CorvidSubsystemRuntimeEnvConfig;
 use super::{SubsystemModuleConfig, SubsystemServiceConfig};
 
-pub const CANONICAL_NAME: &str = "Corvi.d";
+pub const CANONICAL_NAME: &str = "ContinuityOS";
 
-pub fn get() -> CorvidSubsystemConfig {
+pub fn get_config() -> ContinuitySystemConfig {
 	let CorvidSubsystemRuntimeEnvConfig {
 		modulehost,
-		modules,
 		services,
 	} = runtime_env::get_config();
 
-	CorvidSubsystemConfig {
+	ContinuitySystemConfig {
 		module_host: modulehost,
 
 		components: CorvidSubsystemComponents {
 			singularity: SubsystemModuleConfig {
-				db_name: modules.core.dbname,
+				module_name: "singularity".to_string(),
 			},
 
 			// TODO: Make subsystem services optional here as well as in env
@@ -29,12 +28,12 @@ pub fn get() -> CorvidSubsystemConfig {
 	}
 }
 
-pub struct CorvidSubsystemConfig {
+pub struct ContinuitySystemConfig {
 	pub module_host: String,
 	pub components:  CorvidSubsystemComponents,
 }
 
 pub struct CorvidSubsystemComponents {
-	pub singularity:  SubsystemModuleConfig,
-	pub telecrow: SubsystemServiceConfig,
+	pub singularity: SubsystemModuleConfig,
+	pub telecrow:    SubsystemServiceConfig,
 }

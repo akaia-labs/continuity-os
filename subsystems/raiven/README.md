@@ -1,6 +1,6 @@
 [<< Back to introduction](/README.md)
 
-# AkaiaLabs 🪐 Continuity OS
+# AkaiaLabs 🪐 ContinuityOS
 
 ## RAIven
 

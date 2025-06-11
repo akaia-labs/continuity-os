@@ -2,7 +2,7 @@ mod authentication;
 mod handlers;
 
 use crowdcomm_sdk::{
-	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
+	configuration::corvid_subsystem::{self, ContinuitySystemConfig},
 	singularity::stdb::DbConnection,
 };
 use spacetimedb_sdk::DbContext;
@@ -11,10 +11,10 @@ use spacetimedb_sdk::DbContext;
 // TODO: only passing the handlers and credential store from here
 /// Loads credentials from a file and connects to the database.
 pub fn connect() -> DbConnection {
-	let CorvidSubsystemConfig {
+	let ContinuitySystemConfig {
 		module_host,
 		components,
-	} = corvid_subsystem_config::get();
+	} = corvid_subsystem::get_config();
 
 	DbConnection::builder()
 			.on_connect(handlers::on_connected)
@@ -26,7 +26,7 @@ pub fn connect() -> DbConnection {
 			.with_token(authentication::credential_store().load()
 				.expect("Error loading credentials")
 			)
-			.with_module_name(components.singularity.db_name)
+			.with_module_name(components.singularity.module_name)
 			.with_uri(module_host)
 			.build()
 			.expect("Failed to connect")

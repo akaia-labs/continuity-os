@@ -1,5 +1,5 @@
 [Unit]
-Description=Continuity OS Rust telegram bridge
+Description=ContinuityOS Rust telegram bridge
 After=multi-user.target
 
 [Service]

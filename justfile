@@ -13,8 +13,8 @@ setup:
 
 singularity-generate:
     spacetime generate --lang rust \
-    	--project-path core/stdb/modules/singularity/server \
-    	--out-dir core/stdb/modules/singularity/client/src/common/stdb/generated_bindings
+    	--project-path core/spacetimedb/modules/singularity/server \
+    	--out-dir core/spacetimedb/modules/singularity/client/src/common/spacetimedb/generated_bindings
 
 generate: singularity-generate
     (echo "✅ DONE.")
@@ -41,23 +41,23 @@ corvutils-test-dbg:
 #* DATABASE ADMINISTRATION
 
 unsafe-local-singularity-drop:
-    (spacetime delete -s localhost $CORVID_MODULES_CORE_DBNAME)
+    (spacetime delete -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME)
     (echo "✅ DONE.")
 
 local-singularity-publish:
-    (spacetime publish -s localhost --project-path core/stdb/modules/singularity/server $CORVID_MODULES_CORE_DBNAME)
+    (spacetime publish -s localhost --project-path core/spacetimedb/modules/singularity/server $CONTINUITYOS_MODULES_CORE_DBNAME)
 
 local-singularity-call:
-    (spacetime call -s localhost $CORVID_MODULES_CORE_DBNAME)
+    (spacetime call -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME)
 
 local-singularity-sql *args='':
-    (spacetime sql -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
+    (spacetime sql -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME "$@")
 
 local-singularity-subscribe *args='':
-    (spacetime subscribe -s localhost $CORVID_MODULES_CORE_DBNAME "$@")
+    (spacetime subscribe -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME "$@")
 
 local-singularity-log:
-    (spacetime logs -s localhost -f $CORVID_MODULES_CORE_DBNAME)
+    (spacetime logs -s localhost -f $CONTINUITYOS_MODULES_CORE_DBNAME)
 
 local-publish: local-singularity-publish
     (echo "✅ DONE.")

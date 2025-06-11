@@ -2,9 +2,9 @@ use corvutils::StringExtensions;
 use serde::Deserialize;
 use serde_env::from_env_with_prefix;
 
-use super::{super::SubsystemModulesRuntimeEnvConfig, CANONICAL_NAME};
+use super::CANONICAL_NAME;
 
-const ENV_PREFIX: &str = "CORVID";
+const ENV_PREFIX: &str = "CONTINUITYOS";
 
 pub fn get_config() -> CorvidSubsystemRuntimeEnvConfig {
 	let error_message = format!(
@@ -22,7 +22,6 @@ pub fn get_config() -> CorvidSubsystemRuntimeEnvConfig {
 #[derive(Debug, Deserialize)]
 pub struct CorvidSubsystemRuntimeEnvConfig {
 	pub modulehost: String,
-	pub modules:    SubsystemModulesRuntimeEnvConfig,
 	pub services:   CorvidServicesRuntimeEnvConfig,
 }
 

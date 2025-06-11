@@ -3,7 +3,7 @@ resolver = "3"
 
 members = [
 	"applications/*",
-	"core/stdb/modules/singularity/*",
+	"core/spacetimedb/modules/singularity/*",
 	"packages/*",
 	"subsystems/corvi.d/services/*",
 	"subsystems/raiven/services/*",

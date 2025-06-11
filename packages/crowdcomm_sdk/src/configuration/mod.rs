@@ -1,3 +1,3 @@
 mod subsystems;
 
-pub use subsystems::corvid_subsystem_config;
+pub use subsystems::corvid_subsystem;

@@ -1,7 +1,7 @@
 use std::process;
 
 use crowdcomm_sdk::{
-	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
+	configuration::corvid_subsystem::{self, ContinuitySystemConfig},
 	singularity::{
 		ports::{ProfileResolution, RecordResolver},
 		presentation::{DisplayName, Displayable},
@@ -40,11 +40,11 @@ fn creds_store() -> credentials::File {
 
 /// Load credentials from a file and connect to the database.
 pub fn connect_to_db() -> DbConnection {
-	let CorvidSubsystemConfig {
+	let ContinuitySystemConfig {
 		module_host,
 		components,
 		..
-	} = corvid_subsystem_config::get();
+	} = corvid_subsystem::get_config();
 
 	DbConnection::builder()
 		.on_connect(on_connected)
@@ -54,7 +54,7 @@ pub fn connect_to_db() -> DbConnection {
 		// In that case, we'll load it and pass it to `with_token`,
 		// so we can re-authenticate as the same `Identity`.
 		.with_token(creds_store().load().expect("Error loading credentials"))
-		.with_module_name(components.singularity.db_name)
+		.with_module_name(components.singularity.module_name)
 		.with_uri(module_host)
 		.build()
 		.expect("Failed to connect")

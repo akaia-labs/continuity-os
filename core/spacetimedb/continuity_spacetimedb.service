@@ -1,0 +1,12 @@
+[Unit]
+Description=AkaiaLabs ContinuityOS SpacetimeDB server
+After=network.target
+
+[Service]
+ExecStart=/core/spacetimedb/spacetime --root-dir=/core/spacetimedb start --listen-addr='127.0.0.1:3333'
+Restart=always
+User=spacetimedb
+WorkingDirectory=/core/spacetimedb
+
+[Install]
+WantedBy=multi-user.target

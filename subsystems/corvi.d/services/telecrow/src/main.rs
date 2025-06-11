@@ -5,7 +5,7 @@ pub mod domain;
 use std::sync::Arc;
 
 use crowdcomm_sdk::{
-	configuration::corvid_subsystem_config::{self, CorvidSubsystemConfig},
+	configuration::corvid_subsystem::{self, ContinuitySystemConfig},
 	runtime::AsyncHandler,
 };
 use dotenvy::dotenv;
@@ -28,7 +28,7 @@ async fn main() -> Result<(), TelecrowError> {
 	pretty_env_logger::init();
 	dotenv()?;
 
-	let CorvidSubsystemConfig { components, .. } = corvid_subsystem_config::get();
+	let ContinuitySystemConfig { components, .. } = corvid_subsystem::get_config();
 	let async_handler = AsyncHandler::new();
 	let singularity_conn = Arc::new(singularity_client::connect());
 
