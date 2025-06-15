@@ -2,7 +2,7 @@
 
 # AkaiaLabs 🪐 ContinuityOS
 
-## Constellation
+## Sovernet
 
 A resilient community-owned network infrastructure solution ready for off-grid applications.
 

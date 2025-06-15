@@ -16,7 +16,7 @@ Implements foundational functionalities and data storages and configures crucial
 
 [Singularity](./core/spacetimedb/modules/singularity/README.md)
 
-[Constellation](./core/constellation/README.md)
+[Sovernet](./core/sovernet/README.md)
 
 ### Subsystems
 
