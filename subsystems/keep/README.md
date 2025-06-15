@@ -2,7 +2,7 @@
 
 # AkaiaLabs 🪐 ContinuityOS
 
-## [no name]
+## Keep
 
 Shared knowledge base subsystem.
 

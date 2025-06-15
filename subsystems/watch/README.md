@@ -2,7 +2,7 @@
 
 # AkaiaLabs 🪐 ContinuityOS
 
-## [no name] intel subsystem
+## Watch
 
 Multi-faceted monitoring complex for wide variety of applications - from agriculture to defense.
 

@@ -15,7 +15,8 @@ ContinuityOS mainly consists of two parts — Core and Subsystems.
 Implements foundational functionalities and data storages and configures crucial infrastructure services, tying the whole system together.
 
 [Singularity](./core/spacetimedb/modules/singularity/README.md)
-[StargateNet](./core/stargatenet/README.md)
+
+[Constellation](./core/constellation/README.md)
 
 ### Subsystems
 
@@ -23,11 +24,11 @@ Subsystems are complex software solutions each focused on a specific part of the
 
 [Corvi.d](./subsystems/corvi.d/README.md) - communication
 
-[RAIven](./subsystems/raiven/README.md) - artificial intelligence
+[Raiven](./subsystems/raiven/README.md) - artificial intelligence
 
-[Knowledge](./subsystems/kb/README.md) - knowledge base development
+[Keep](./subsystems/keep/README.md) - knowledge base
 
-[Intelligence](./subsystems/intel/README.md) - intel gathering and environmental awareness
+[Watch](./subsystems/watch/README.md) - intel gathering and environmental awareness
 
 [Consensus](./subsystems/consensus/README.md) - decentralized governance
 
