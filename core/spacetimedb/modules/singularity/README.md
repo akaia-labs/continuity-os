@@ -2,7 +2,7 @@
 
 # AkaiaLabs 🪐 ContinuityOS
 
-## Singularity
+## ⚫ Singularity
 
 The central part of the system, a [SpacetimeDB](https://github.com/clockworklabs/SpacetimeDB.git) module that:
 

@@ -14,9 +14,11 @@ ContinuityOS mainly consists of two parts — Core and Subsystems.
 
 Implements foundational functionalities and data storages and configures crucial infrastructure services, tying the whole system together.
 
-[Singularity](./core/spacetimedb/modules/singularity/README.md)
+#### Components
 
-[Sovernet](./core/sovernet/README.md)
+[⚫ Singularity](./core/spacetimedb/modules/singularity/README.md) - main community database and interaction medium
+
+[🦉 Sovernet](./core/sovernet/README.md) - software substrate for community networks
 
 ### Subsystems
 
