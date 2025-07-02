@@ -2,9 +2,9 @@ use std::sync::Arc;
 
 use corvutils::StringExtensions;
 use crowdcomm_sdk::{
-	singularity::stdb::{DbConnection, send_message},
 	integrations::ports::ExternalActorIdentification,
 	presentation::Summary,
+	singularity::stdb::{DbConnection, send_message},
 };
 use teloxide::types::Update;
 
@@ -26,5 +26,5 @@ pub fn handle_unauthorized_use_attempt(ctx: Arc<DbConnection>, event: Update) {
 		|summary| format!("{log_header}\n{summary}"),
 	);
 
-	let _result = ctx.reducers.send_message(log_text);
+	// let _result = ctx.reducers.send_message(log_text);
 }

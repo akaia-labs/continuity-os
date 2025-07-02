@@ -41,23 +41,23 @@ corvutils-test-dbg:
 #* DATABASE ADMINISTRATION
 
 unsafe-local-singularity-drop:
-    (spacetime delete -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME)
+    (spacetime delete -s localhost singularity)
     (echo "✅ DONE.")
 
 local-singularity-publish:
-    (spacetime publish -s localhost --project-path core/spacetimedb/modules/singularity/server $CONTINUITYOS_MODULES_CORE_DBNAME)
+    (spacetime publish -s localhost --project-path core/spacetimedb/modules/singularity/server singularity)
 
 local-singularity-call:
-    (spacetime call -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME)
+    (spacetime call -s localhost singularity)
 
 local-singularity-sql *args='':
-    (spacetime sql -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME "$@")
+    (spacetime sql -s localhost singularity "$@")
 
 local-singularity-subscribe *args='':
-    (spacetime subscribe -s localhost $CONTINUITYOS_MODULES_CORE_DBNAME "$@")
+    (spacetime subscribe -s localhost singularity "$@")
 
 local-singularity-log:
-    (spacetime logs -s localhost -f $CONTINUITYOS_MODULES_CORE_DBNAME)
+    (spacetime logs -s localhost -f singularity)
 
 local-publish: local-singularity-publish
     (echo "✅ DONE.")
