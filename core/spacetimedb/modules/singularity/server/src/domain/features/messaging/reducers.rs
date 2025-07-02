@@ -24,6 +24,7 @@ pub fn send_message(
 
 	ctx.db.message().insert(Message {
 		id: 0,
+		channel: channel_id,
 		sender: ctx.sender,
 		sent_at: ctx.timestamp,
 		author: ActorId::Internal(author.id),
@@ -50,6 +51,7 @@ pub fn import_message(
 
 	ctx.db.message().insert(Message {
 		id: 0,
+		channel: channel_id,
 		sender,
 		sent_at: ctx.timestamp,
 		author: ActorId::External(author.id),

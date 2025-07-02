@@ -14,7 +14,7 @@ setup:
 singularity-generate:
     spacetime generate --lang rust \
     	--project-path core/spacetimedb/modules/singularity/server \
-    	--out-dir core/spacetimedb/modules/singularity/client/src/common/spacetimedb/generated_bindings
+    	--out-dir core/spacetimedb/modules/singularity/client/src/common/stdb/generated_bindings
 
 generate: singularity-generate
     (echo "✅ DONE.")
